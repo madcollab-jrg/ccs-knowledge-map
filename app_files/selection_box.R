@@ -1,4 +1,15 @@
+# Functionality for the selection box section of the knowledge graph
+# which gives option to select survey, questions, representative metrics,
+# and census.
+
 get_survey_questions <- function(survey){
+    # Given a survey name, return a list of questions related to that 
+    # survey
+    # Args:
+    #   survey: type string, the survey that is selected
+    #   
+    # Returns:
+    #   List of survey questions
     if (survey == "Survey1"){
         return(c("Survey 1 Q1", "Survey 1 Q2"))
     }else if (survey == "Survey2") {
@@ -8,11 +19,13 @@ get_survey_questions <- function(survey){
     }
 }
 
-#tags$span(style="color: blue;","Choose a Survey")
-#  div(style = "font-size:12px", "Choose a question")
-#div(style = "font-size:12px","Representativeness Comparison")
-
 survey_box_ui <- function(){
+    # Construct and return survey box UI. This contains
+    # Select Survey, Select Questions, Select Representativeness comparisons, select
+    # Census, and an action button to run the survey. 
+    #
+    # Returns:
+    #   box with the required selectInput and conditionalPanels
     surveyui <- box(
                 selectizeInput(inputId = "survey",
                 label = div(style = "font-size:10px", "Choose a survey"),
