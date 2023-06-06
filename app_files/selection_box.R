@@ -2,7 +2,7 @@
 # which gives option to select survey, questions, representative metrics,
 # and census.
 
-get_survey_questions <- function(survey){
+get_survey_questions <- function(survey, all_surveys){
     # Given a survey name, return a list of questions related to that 
     # survey
     # Args:
@@ -10,26 +10,68 @@ get_survey_questions <- function(survey){
     #   
     # Returns:
     #   List of survey questions
-    if (survey == "Survey1"){
-        return(c("Survey 1 Q1", "Survey 1 Q2"))
-    }else if (survey == "Survey2") {
-       return(c("Survey 2 Q1", "Survey 2 Q2", "Survey 2 Q3"))
-    }else if (survey == "Survey3") {
-       return(c("Survey 3 Q1"))
+    survey = gsub("'","",survey)
+    if (survey == all_surveys[1]){
+        air_quality = readLines(paste(getwd(),"/survey_questions/air_quality.txt", sep = ""))
+        return( air_quality )
+    }else if (survey == all_surveys[2]) {
+        # community ideas survey
+        # TODO: are there questions for this?
+       return(c(""))
+    }else if (survey == all_surveys[3]) {
+        # story from the community survey
+        # TODO: are there questions for this?
+       return(c(""))
+    }else if (survey == all_surveys[4]){
+        # environmental justice survey
+        ej_survey = readLines(paste(getwd(),"/survey_questions/ej_survey.txt", sep = ""))
+        return( ej_survey )
+    }else if (survey == all_surveys[5]){
+        # tree canopy survey
+        tree_canopy = readLines(paste(getwd(),"/survey_questions/tree_canopy.txt", sep = ""))
+        return( tree_canopy )
+    }else if (survey == all_surveys[6]){
+        # urban heat survey
+        urban_head = readLines(paste(getwd(),"/survey_questions/urban_heat.txt", sep = ""))
+        return( urban_head )
     }
 }
 
-survey_box_ui <- function(){
+make_conditional_panel <- function(survey, all_surveys, id){
+    # make a conditional panel for the survey box ui that
+    # gives provides different question for the different
+    # survey responses
+    #
+    # Args:
+    #   survey: the survey that is selected. expected to be "'name-of-survey'"
+    #   all_surveys: list of all surveys
+    #   id: id for the selectInpu box created
+    #
+    # Returns:
+    #   conditionalPanel that holds the questions for survey selected
+    #   and contains a selectInput with inputId = id
+    survey_conditional_panel = conditionalPanel(
+        condition = paste("input.survey ==", survey),
+        selectInput(inputId = id,
+                    label = div(style = "font-size:10px", "Choose a question"),
+                    choices = get_survey_questions(survey, all_surveys) )
+    )
+    
+    return(survey_conditional_panel)
+}
+
+survey_box_ui <- function(surveys){
     # Construct and return survey box UI. This contains
     # Select Survey, Select Questions, Select Representativeness comparisons, select
     # Census, and an action button to run the survey. 
     #
     # Returns:
     #   box with the required selectInput and conditionalPanels
+    
     surveyui <- box(
                 selectizeInput(inputId = "survey",
                 label = div(style = "font-size:10px", "Choose a survey"),
-                choices = c("", "Survey1", "Survey2", "Survey3"),
+                choices = surveys,
                 options = list(
                     placeholder = 'Please select an option below',
                     onInitialize = I('function() { this.setValue(""); }')
@@ -40,31 +82,19 @@ survey_box_ui <- function(){
                                 label = div(style = "font-size:10px", "Choose a question"),
                                 choices = c(""))
                     ),
-                conditionalPanel(
-                    condition = "input.survey == 'Survey1'",
-                    selectInput(inputId = "s1questions",
-                    label = div(style = "font-size:10px", "Choose a question"),
-                    choices = get_survey_questions("Survey1"))
-                ),
-                conditionalPanel(
-                    condition = "input.survey == 'Survey2'",
-                    selectInput(inputId = "s2questions",
-                    label = div(style = "font-size:10px", "Choose a question"),
-                    choices = get_survey_questions("Survey2"))
-                ),
-                conditionalPanel(
-                    condition = "input.survey == 'Survey3'",
-                    selectInput(inputId = "s3questions",
-                    label = div(style = "font-size:10px", "Choose a question"),
-                    choices = get_survey_questions("Survey3"))
-                ),
+                make_conditional_panel("'Air Quality Survey'", surveys, "air_quality_qs"),
+                make_conditional_panel("'Community Ideas Survey'", surveys, "ej_report_qs"),
+                make_conditional_panel("'Story From the Community Survey'", surveys, "ej_storytile_qs"),
+                make_conditional_panel("'Environmental Justice Survey'", surveys, "ej_survey_qs"),
+                make_conditional_panel("'Tree Canopy Survey'", surveys, "tree_canopy_qs"),
+                make_conditional_panel("'Urban Heat Survey'", surveys, "urban_head_qs"),
                 p(""),
                 p(""),
                 selectInput(inputId = "rep_comp",
                             label = div(style = "font-size:10px","Representativeness Comparison"),
                             choices = c("Census track")),
                 selectInput(inputId = "census_item",
-                            label = div(style = "font-size:12px","Census Item"),
+                            label = div(style = "font-size:10px","Census Item"),
                             choices = c("Census Tract ...")
                             ),
                 actionButton(inputId = "run_report", label = "Run Report"),
