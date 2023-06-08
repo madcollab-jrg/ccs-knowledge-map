@@ -1,0 +1,13 @@
+Q1: What does the term "environmental justice" mean to you?
+Q2: Which environmental justice issue do you think has the most significant impact on public health?
+Q3: Which of the environmental issues below do you think has the most impact on your health? (Please drag items to the box on the right))
+Q4: Please rate how much do you agree/disagree with the statements...
+Q5: Please rate how much do you agree/disagree with the statements...
+Q6: What is the most important policy change needed to address environmental justice in the United States? (Select up to 3)
+Q7: Rate the following entities on their responsibility for addressing environmental justice issues:
+Q8: Rank the following actions in order of effectiveness in addressing environmental injustice (1 being most effective, 4 being least effective):
+Q9: To what extent do you believe that new technology has the potential to slow down climate change?
+Q10: If there was new technology to slow down climate change, how willing would you be to use it in your community?
+Q11: Who do you think should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?
+Q12: What are some ways that communities can work together to address environmental injustice?
+Q13: What steps can individuals take to support environmental justice initiatives in their communities?
