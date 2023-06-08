@@ -63,12 +63,6 @@ server <- function(input, output){
   
   # Representation 
   
-  observeEvent(input$run_report, 
-               {
-                 g1 = ggplot(mtcars, aes(x=cyl)) + 
-                   geom_histogram()
-                 output$data = renderPlot({ g1 })
-               })
 }
 
 shinyApp(ui = ui, server = server)
