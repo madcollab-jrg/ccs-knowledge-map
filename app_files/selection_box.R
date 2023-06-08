@@ -54,7 +54,8 @@ make_conditional_panel <- function(survey, all_surveys, id){
         condition = paste("input.survey ==", survey),
         selectInput(inputId = id,
                     label = div(style = "font-size:10px", "Choose a question"),
-                    choices = get_survey_questions(survey, all_surveys) )
+                    choices = get_survey_questions(survey, all_surveys),
+                    selectize = F)
     )
     
     return(survey_conditional_panel)
@@ -90,12 +91,14 @@ survey_box_ui <- function(surveys){
                 make_conditional_panel("'Urban Heat Survey'", surveys, "urban_head_qs"),
                 p(""),
                 p(""),
+                
+                # use to compute representation
                 selectInput(inputId = "rep_comp",
-                            label = div(style = "font-size:10px","Representativeness Comparison"),
-                            choices = c("Census track")),
+                            label = div(style = "font-size:10px","Representativeness Comparison Level"),
+                            choices = c("Census Track", "Census State", "Census County", "Census Block")),
                 selectInput(inputId = "census_item",
                             label = div(style = "font-size:10px","Census Item"),
-                            choices = c("Census Tract ...")
+                            choices = c("Census Tract ...") # TODO: Census tract
                             ),
                 actionButton(inputId = "run_report", label = "Run Report"),
                 width = 12
