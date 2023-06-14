@@ -5,14 +5,14 @@ library(tidycensus)
 library(tidyverse)
 library(gtsummary)
 library(dplyr)
-
-
 #######################################################################  
 #####################  GET CCS DATA FROM PLATFORM ####################
 ####################################################################### 
 
 # Import dataframe from CCS platform
-data <- read_csv("~/Library/CloudStorage/Box-Box/ccs-knowledge/ccs-data/Urban Heat Survey.csv")
+data <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/Form-ID-30_wisconsin-community-.csv")
+
+
 
 ### FOR APP
 #### CCS DATA
@@ -39,11 +39,9 @@ names(data)[1:dim(data)[2]] <- data[9,]
 #CLEAR ROWS FROM DATAFRAME
 data <- data[-c(1:9),]
 
-#EXTRACT ONLY DEMOGRAPHIC. 
-rep_data <- data[,c(12:25)]
+# PREPROCESS TO MEET CATEGORIES IN CENSUS DATASETS
 
-# DATA SHOULD BE UNIQUE USERNAME (SOME DATASETS ALLOW MULTUPLE USER ENTRIES)
-# rep_data <- 
+
 
 # ADD CENSUS rep_data, TRACT, CITY, BLOCK data
 census_full1 <- rep_data %>% 
@@ -61,7 +59,8 @@ survey_summary <- gather(census_full1,Object,census_block_full) %>%
   mutate(n = n()) %>%
   unique() %>%
   filter(Object %in% c("Gender","Hipanic/Latino/Spanish Origin","Race / Ethnicity",
-                       "Year of Birth","Annual Household Income level","Education Level","census_block_full"))
+                       "Year of Birth","Annual Household Income level","Education Level",
+                       "census_block_full","census_tract_full","county_fips"))
 
 
 # CONVERSIONS NEEDED 
