@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+author: "Christian Varner"
+date: '2023-06-12'
+output: html_document
+---
+
+Markdown file for a more interactive approach to developing the pre-processing pipeline for the data
+
+```{r}
+source("process_files.R")
+library(rlang)
+library(dplyr)
+```
+
+```{r}
+head = "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
+surveys = c("air-quality/", "tree-canopy/", "urban-heat/")
+survey_save_paths = c("demographic_unprocessed/Forms_demographic_combined.csv", "demographic_unprocessed/SocialMap_demographic_combined.csv")
+```
+
+```{r}
+# combine the demographic files for survey that aren't ej types
+for(i in 1:length(surveys)){
+  survey_path = paste(head, surveys[i], sep = "")
+  files = get_files(survey_path)
+  print(surveys[i])
+  for(j in 1:length(survey_save_paths)){
+    combined_data = combine_files(survey_path, files[[j]], type = "demo")
+    save_path = paste(survey_path, survey_save_paths[j], sep="")
+    write.csv(combined_data, save_path)
+  }
+}
+```
+
+
+```{r}
+# combine the demographic information for ej type surveys
+source("process_files.R")
+head = "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
+surveys = c("ej-report/", "ej-storytile/", "ej-survey/")
+survey_save_paths = c("demographic_unprocessed/demographic_data.csv")
+```
+
+```{r}
+for(i in 1:length(surveys)){
+  survey_path = paste(head, surveys[i], sep = "")
+  files = get_files(survey_path, ej = T)
+  print(surveys[i])
+  for(j in 1:length(survey_save_paths)){
+    combined_data = combine_files(survey_path, files[[j]], type = "demo")
+    save_path = paste(survey_path, survey_save_paths[j], sep="")
+    write.csv(combined_data, save_path)
+  }
+}
+```
+```{r}
+survey_path = paste(head, surveys[1], sep = "")
+files = get_files(survey_path, ej = T)
+combined_data = combine_files(survey_path, files[[1]], type = "demo")
+```
+
+
+
