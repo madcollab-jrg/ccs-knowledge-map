@@ -37,7 +37,11 @@ get_survey_questions <- function(survey, all_surveys){
     }
 }
 
-make_conditional_panel <- function(survey, all_surveys, id){
+get_census_items = function(census_item){
+    
+}
+
+make_conditional_panel_survey <- function(survey, all_surveys, id){
     # make a conditional panel for the survey box ui that
     # gives provides different question for the different
     # survey responses
@@ -45,7 +49,7 @@ make_conditional_panel <- function(survey, all_surveys, id){
     # Args:
     #   survey: the survey that is selected. expected to be "'name-of-survey'"
     #   all_surveys: list of all surveys
-    #   id: id for the selectInpu box created
+    #   id: id for the selectInput box created
     #
     # Returns:
     #   conditionalPanel that holds the questions for survey selected
@@ -59,6 +63,15 @@ make_conditional_panel <- function(survey, all_surveys, id){
     )
     
     return(survey_conditional_panel)
+}
+
+make_conditional_panel_census = function(census_item, id){
+    census_conditional_panel = conditionalPanel(
+        condition = paste("input.census_level ==", census_item),
+        selectInput(inputId = id,
+                    label = div(style = "font-size:10px", "Census Item"),
+                    choices = c(""))
+    )
 }
 
 survey_box_ui <- function(surveys){
@@ -83,23 +96,33 @@ survey_box_ui <- function(surveys){
                                 label = div(style = "font-size:10px", "Choose a question"),
                                 choices = c(""))
                     ),
-                make_conditional_panel("'Air Quality Survey'", surveys, "air_quality_qs"),
-                make_conditional_panel("'Community Ideas Survey'", surveys, "ej_report_qs"),
-                make_conditional_panel("'Story From the Community Survey'", surveys, "ej_storytile_qs"),
-                make_conditional_panel("'Environmental Justice Survey'", surveys, "ej_survey_qs"),
-                make_conditional_panel("'Tree Canopy Survey'", surveys, "tree_canopy_qs"),
-                make_conditional_panel("'Urban Heat Survey'", surveys, "urban_head_qs"),
+                make_conditional_panel_survey("'Air Quality Survey'", surveys, "air_quality_qs"),
+                make_conditional_panel_survey("'Community Ideas Survey'", surveys, "ej_report_qs"),
+                make_conditional_panel_survey("'Story From the Community Survey'", surveys, "ej_storytile_qs"),
+                make_conditional_panel_survey("'Environmental Justice Survey'", surveys, "ej_survey_qs"),
+                make_conditional_panel_survey("'Tree Canopy Survey'", surveys, "tree_canopy_qs"),
+                make_conditional_panel_survey("'Urban Heat Survey'", surveys, "urban_head_qs"),
                 p(""),
                 p(""),
                 
                 # use to compute representation
-                selectInput(inputId = "rep_comp",
-                            label = div(style = "font-size:10px","Representativeness Comparison Level"),
-                            choices = c("Census Track", "Census State", "Census County", "Census Block")),
-                selectInput(inputId = "census_item",
-                            label = div(style = "font-size:10px","Census Item"),
-                            choices = c("Census Tract ...") # TODO: Census tract
-                            ),
+                selectizeInput(inputId = "census_level",
+                               label = div(style = "font-size:10px", "Representativeness Comparison Level"),
+                               choices = c("Census Track", "Census State", "Census County", "Census Block"),
+                               options = list(
+                                   placeholder = 'Please select an option below',
+                                   onInitialize = I('function() { this.setValue(""); }')
+                               )),
+                conditionalPanel(
+                    condition = "input.census_level == ''",
+                    selectInput(inputId = "null",
+                                label = div(style = "font-size:10px", "Census Item"),
+                                choices = c(""))
+                ),
+                make_conditional_panel_census("'Census Track'", "census_track_items"),
+                make_conditional_panel_census("'Census State'", "census_state_items"),
+                make_conditional_panel_census("'Census County'", "census_county_items"),
+                make_conditional_pantel_census("'Census Block'", "census_block_items"),
                 actionButton(inputId = "run_report", label = "Run Report"),
                 width = 12
             )
