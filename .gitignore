@@ -1,0 +1,9 @@
+.DS_Store
+app_files/.DS_Store
+app_files/.RData
+app_files/.Rhistory
+questions.txt
+.Rproj.user
+data_preprocessing/test/
+.R*
+ccs-knowledge-map.Rproj

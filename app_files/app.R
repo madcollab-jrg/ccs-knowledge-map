@@ -42,7 +42,7 @@ ui <- dashboardPage(
 
 server <- function(input, output){
   
-  # place holder for survey data loading
+  # place holder for survey data loading - might need to change this to reactive to run report
   survey_data = reactive({ 
     req(input$survey)
     # import data here - reactive to input$survey

@@ -38,7 +38,27 @@ get_survey_questions <- function(survey, all_surveys){
 }
 
 get_census_items = function(census_item){
+    # "'Census State'", "'Census County'", "'Census Block'"
+    survey_questions = c() # place holder
     
+    # TODO: probably save this locally or within app files
+    file_loc = "/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/census_values.csv"
+    possible_values = read.csv(file_loc)
+    if(census_item == "'Census Track'"){
+        values = unique(possible_values$Location)
+        survey_questions = values[!is.na(values)]
+    }else if(census_item == "'Census State'"){
+        # TODO: is there anything else to put here
+        survey_questions = c("Wisconsin")
+    }else if(census_item == "'Census County'"){
+        values = unique(possible_values$COUNTY)
+        survey_questions = values[!is.na(values)]
+    }else if(census_item == "'Census Block'"){
+        # TODO: what to do here
+        values = unique(possible_values$census_block_full_name)
+        survey_questions = values[!is.na(values)]
+    }
+    return(survey_questions)
 }
 
 make_conditional_panel_survey <- function(survey, all_surveys, id){
@@ -70,7 +90,8 @@ make_conditional_panel_census = function(census_item, id){
         condition = paste("input.census_level ==", census_item),
         selectInput(inputId = id,
                     label = div(style = "font-size:10px", "Census Item"),
-                    choices = c(""))
+                    choices = get_census_items(census_item),
+                    selectize = F)
     )
 }
 
@@ -122,7 +143,7 @@ survey_box_ui <- function(surveys){
                 make_conditional_panel_census("'Census Track'", "census_track_items"),
                 make_conditional_panel_census("'Census State'", "census_state_items"),
                 make_conditional_panel_census("'Census County'", "census_county_items"),
-                make_conditional_pantel_census("'Census Block'", "census_block_items"),
+                make_conditional_panel_census("'Census Block'", "census_block_items"),
                 actionButton(inputId = "run_report", label = "Run Report"),
                 width = 12
             )
