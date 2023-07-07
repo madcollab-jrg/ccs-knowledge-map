@@ -7,7 +7,7 @@
 library(rlang)
 library(dplyr)
 
-characteristic_odds = function(df, x, log = T){
+survey_characteristic_odds = function(df, x, log = T){
   # Given df that assumed to hold survey data 
   # calculate the probability of
   # being of type x (g(x) = 1) divided by probability
@@ -21,7 +21,7 @@ characteristic_odds = function(df, x, log = T){
   #       the same columns names as the dataframe for each characteristic
   #
   # Return:
-  #   odds of being having characteristic x
+  #   list containing odds of having characteristic x and the filtered dataset
   
   
   # count the number of times x occurs
@@ -50,6 +50,51 @@ characteristic_odds = function(df, x, log = T){
   # calculation of odds
   prob_x = count_x/n
   prob_not_x = (1-prob_x)
+  metric = NA
+  if(!log){
+    metric = prob_x/prob_not_x
+  }else{
+    metric = log(prob_x/prob_not_x)
+  }
+  to_return = list("metric":metric, "data":temp)
+  if(!log){
+    return(to_return)
+  }else{
+    return(to_return)
+  }
+}
+
+compute_target_pop = function(df, x){
+  
+}
+
+surveillance_characteristic_odds = function(df, x, log = T){
+  count_x = 0
+  
+  query = x[['query']] # should be a list of atributes:values to filter on
+  subpop = x[['subpop']] # column name where data is
+  
+  # get data from query and check that there is a unique record
+  temp = df
+  for(c in names(query)){
+    temp = temp %>% filter( !! sym(c) == query[[c]] )
+  }
+  if(nrow(temp) > 1){
+    stop("Multiple records in surveillance dataset with this query!")
+  }
+  
+  # get sum of target sub-population and subpopulation counts
+  count_x = 0
+  n = 0
+  for(t in x[['target_pop']]){
+    if(t %in% subpop){
+      count_x = count_x + temp[[t]]
+    }
+    n = n + temp[[t]]
+  }
+  
+  prob_x = count_x/n
+  prob_not_x = 1-prob_x
   odds = prob_x/prob_not_x
   if(!log){
     return(odds)
@@ -73,10 +118,15 @@ log_disparity = function(survey_df,surv_df,x_survey,x_surv){
   #   x_surv: type list, characteristics to be matched in surveillance dataset
   #
   # Return:
-  #   Differences in odds
+  #   Differences in odds and the filtered dataset
   
-  survey_odds = characteristic_odds(survey_df, x_survey, log = T)
-  surveillance_odds = characteristic_odds(surv_df, x_surv, log = T)
-  return(survey_odds - surveillance_odds)
+  survey_odds = survey_characteristic_odds(survey_df, x_survey[['query']], log = T)
+  surveillance_odds = surveillance_characteristic_odds(surv_df, x_surv, log = T)
+  
+  log_disparity = survey_odds[["metric"]] - surveillance_odds[["metric"]]
+  to_return = list("log_disparity" = log_disparity, 
+                   "survey_data" = survey_odds[["data"]], 
+                   "surv_data" = surveillance_odds[["data"]])
+  return(to_return)
 }
 
