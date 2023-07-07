@@ -12,10 +12,10 @@ get_data_description_ui = function(){
   return(data_description)
 }
 
-print_questions = function(survey.selected, survey.selected.question, output){
+print_questions = function(survey.selected, survey.selected.question, output, n){
   if(survey.selected.question == ""){
     # if no questions to select to print out survey and number of responses
-    output$survey_selection = renderText( sprintf("In the %s, there was %d responses", survey.selected, 0 )  )
+    output$survey_selection = renderText( sprintf("In the %s, there was %d responses", survey.selected, n )  )
   }else{
     # format printing the question
     size = length(gregexpr(" ", survey.selected.question)[[1]])
@@ -32,7 +32,7 @@ print_questions = function(survey.selected, survey.selected.question, output){
     output$survey_selection = renderText( sprintf("In the %s, for \"%s\" there was %d responses", 
                                                   survey.selected, 
                                                   survey_q_to_print, 
-                                                  0 ))
+                                                  n  ))
   }
 }
 
@@ -59,7 +59,15 @@ get_data_description_reaction = function(input, output, surveyIds, survey_data =
                  if(survey.selected != ""){
                    survey.selected.Id = surveyIds[survey.selected] # id of the survey selected
                    survey.selected.question = input[[survey.selected.Id]]
-                   print_questions( survey.selected, survey.selected.question, output )
+                   n = 0
+                   if(survey.selected.question != ""){
+                     q_number = as.integer( str_match(survey.selected.question, "Q\\s*(.*?)\\s*:")[,2] )
+                     message(survey.selected.question)
+                     n = nrow(data.frame(survey_data()[[(4+q_number)]]) %>% drop_na() )
+                   }else{
+                     n = nrow(survey_data())
+                   }
+                   print_questions( survey.selected, survey.selected.question, output, n )
                  }
                })
   return(reaction)

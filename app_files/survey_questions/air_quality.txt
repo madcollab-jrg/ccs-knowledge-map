@@ -8,4 +8,3 @@ Q7: If you are providing suggestions for the city regarding where to install air
 Q8: Have you done anything to improve the air quality in your home or neighborhood? If so, what did you do? If not, what prevents you from taking action?
 Q9: If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?
 Q10: If there will be opportunities for you to participate in deciding where to deploy the air quality monitoring sensors. How would you like to be part of it? What roles would you like to take?
-Q11: (Step 3) Show us

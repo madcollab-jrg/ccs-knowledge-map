@@ -2,7 +2,7 @@
 # which gives option to select survey, questions, representative metrics,
 # and census.
 
-get_survey_questions <- function(survey, all_surveys){
+get_survey_questions <- function(survey){
     # Given a survey name, return a list of questions related to that 
     # survey
     # Args:
@@ -11,30 +11,23 @@ get_survey_questions <- function(survey, all_surveys){
     # Returns:
     #   List of survey questions
     survey = gsub("'","",survey)
-    if (survey == all_surveys[1]){
+    if (survey == "Air Quality Survey"){
         air_quality = readLines(paste(getwd(),"/survey_questions/air_quality.txt", sep = ""))
         return( air_quality )
-    }else if (survey == all_surveys[2]) {
-        # community ideas survey
-        # TODO: are there questions for this?
-       return(c(""))
-    }else if (survey == all_surveys[3]) {
-        # story from the community survey
-        # TODO: are there questions for this?
-       return(c(""))
-    }else if (survey == all_surveys[4]){
+    }else if (survey == "Environmental Justice Survey"){
         # environmental justice survey
         ej_survey = readLines(paste(getwd(),"/survey_questions/ej_survey.txt", sep = ""))
         return( ej_survey )
-    }else if (survey == all_surveys[5]){
+    }else if (survey == "Tree Canopy Survey"){
         # tree canopy survey
         tree_canopy = readLines(paste(getwd(),"/survey_questions/tree_canopy.txt", sep = ""))
         return( tree_canopy )
-    }else if (survey == all_surveys[6]){
+    }else if (survey == "Urban Heat Survey"){
         # urban heat survey
         urban_head = readLines(paste(getwd(),"/survey_questions/urban_heat.txt", sep = ""))
         return( urban_head )
     }
+    return(c(""))
 }
 
 get_census_items = function(census_item){
@@ -78,7 +71,7 @@ make_conditional_panel_survey <- function(survey, all_surveys, id){
         condition = paste("input.survey ==", survey),
         selectInput(inputId = id,
                     label = div(style = "font-size:10px", "Choose a question"),
-                    choices = get_survey_questions(survey, all_surveys),
+                    choices = get_survey_questions(survey),
                     selectize = F)
     )
     
@@ -118,18 +111,21 @@ survey_box_ui <- function(surveys){
                                 choices = c(""))
                     ),
                 make_conditional_panel_survey("'Air Quality Survey'", surveys, "air_quality_qs"),
+                make_conditional_panel_survey("'Air Quality Map'", surveys, "air_quality_map_qs"),
                 make_conditional_panel_survey("'Community Ideas Survey'", surveys, "ej_report_qs"),
                 make_conditional_panel_survey("'Story From the Community Survey'", surveys, "ej_storytile_qs"),
                 make_conditional_panel_survey("'Environmental Justice Survey'", surveys, "ej_survey_qs"),
                 make_conditional_panel_survey("'Tree Canopy Survey'", surveys, "tree_canopy_qs"),
-                make_conditional_panel_survey("'Urban Heat Survey'", surveys, "urban_head_qs"),
+                make_conditional_panel_survey("'Tree Canopy Map'", surveys, "tree_canopy_map_qs"),
+                make_conditional_panel_survey("'Urban Heat Survey'", surveys, "urban_heat_qs"),
+                make_conditional_panel_survey("'Urban Heat Map'", surveys, "urban_heat_map_qs"),
                 p(""),
                 p(""),
                 
                 # use to compute representation
                 selectizeInput(inputId = "census_level",
                                label = div(style = "font-size:10px", "Representativeness Comparison Level"),
-                               choices = c("Census Track", "Census State", "Census County", "Census Block"),
+                               choices = c("Census Track", "Census State", "Census County"),
                                options = list(
                                    placeholder = 'Please select an option below',
                                    onInitialize = I('function() { this.setValue(""); }')
@@ -143,7 +139,6 @@ survey_box_ui <- function(surveys){
                 make_conditional_panel_census("'Census Track'", "census_track_items"),
                 make_conditional_panel_census("'Census State'", "census_state_items"),
                 make_conditional_panel_census("'Census County'", "census_county_items"),
-                make_conditional_panel_census("'Census Block'", "census_block_items"),
                 actionButton(inputId = "run_report", label = "Run Report"),
                 width = 12
             )
