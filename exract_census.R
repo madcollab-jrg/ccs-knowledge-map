@@ -224,7 +224,33 @@ names(censustract_genderedu)[2] <- "full_geoid"
 
 censustract_genderedu <- censustract_genderedu %>% select(-contains("NAME"))
 
-
+censustract_genderedu <- censustract_genderedu %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+         BLACK_TOTAL = sum(male_black_total+female_black_total),
+         BLACK_FEMALE = sum(female_black_total), 
+         BLACK_MALE = sum(male_black_total),
+         BLACK_LESS_HS_TOTAL = sum(male_black_less_hs+female_black_less_hs),
+         BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
+         BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
+         BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+         HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
+         HISP_FEMALE = sum(female_hisp_total), 
+         HISP_MALE = sum(male_hisp_total),
+         HISP_LESS_HS_TOTAL = sum(male_hisp_less_hs+female_hisp_less_hs),
+         HISP_HS_TOTAL = sum(male_hisp_hs_grad+female_hisp_hs_grad),
+         HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
+         HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
+         
+         UNDERREP_EDU_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+         UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+         UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+         UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+         UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+         UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+         UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+         
+)
 # export
 write.csv(censustract_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_genderedu.csv")
 
@@ -430,6 +456,35 @@ censusstate_genderedu <- censusstate_genderedu_white %>%
 names(censusstate_genderedu)[2] <- "full_geoid"  
 
 censusstate_genderedu <- censusstate_genderedu %>% select(-contains("NAME"))
+
+censusstate_genderedu <- censusstate_genderedu %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_TOTAL = sum(male_black_total+female_black_total),
+    BLACK_FEMALE = sum(female_black_total), 
+    BLACK_MALE = sum(male_black_total),
+    BLACK_LESS_HS_TOTAL = sum(male_black_less_hs+female_black_less_hs),
+    BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
+    BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
+    BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
+    HISP_FEMALE = sum(female_hisp_total), 
+    HISP_MALE = sum(male_hisp_total),
+    HISP_LESS_HS_TOTAL = sum(male_hisp_less_hs+female_hisp_less_hs),
+    HISP_HS_TOTAL = sum(male_hisp_hs_grad+female_hisp_hs_grad),
+    HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
+    HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
+    
+    UNDERREP_EDU_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    
+  )
 
 # export
 write.csv(censusstate_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_genderedu.csv")
@@ -638,9 +693,36 @@ names(censuscounty_genderedu)[2] <- "full_geoid"
 
 censuscounty_genderedu <- censuscounty_genderedu %>% select(-contains("NAME"))
 
+censuscounty_genderedu <- censuscounty_genderedu %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_TOTAL = sum(male_black_total+female_black_total),
+    BLACK_FEMALE = sum(female_black_total), 
+    BLACK_MALE = sum(male_black_total),
+    BLACK_LESS_HS_TOTAL = sum(male_black_less_hs+female_black_less_hs),
+    BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
+    BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
+    BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
+    HISP_FEMALE = sum(female_hisp_total), 
+    HISP_MALE = sum(male_hisp_total),
+    HISP_LESS_HS_TOTAL = sum(male_hisp_less_hs+female_hisp_less_hs),
+    HISP_HS_TOTAL = sum(male_hisp_hs_grad+female_hisp_hs_grad),
+    HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
+    HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
+    
+    UNDERREP_EDU_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    
+  )
+
 # export
 write.csv(censuscounty_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_genderedu.csv")
-
 
 ################################## 
 ############### AGE ##############
@@ -651,7 +733,8 @@ write.csv(censuscounty_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/
 censustract_age_white = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(male_white_age18to19 = "B01001A_007E", 
+  variables = c(
+                male_white_age18to19 = "B01001A_007E", 
                 male_white_age20to24 = "B01001A_008E",
                 male_white_age25to29 = "B01001A_009E",
                 male_white_age30to34 = "B01001A_010E",
@@ -661,6 +744,7 @@ censustract_age_white = get_acs(
                 male_white_age65to74 = "B01001A_014E",
                 male_white_age75to84 = "B01001A_015E",
                 male_white_age85over = "B01001A_016E",
+                
                 
                 female_white_age18to19 = "B01001A_022E", 
                 female_white_age20to24 = "B01001A_023E",
@@ -776,7 +860,8 @@ censustract_age_asian <- censustract_age_asian %>% select(-contains("B01001"))
 censustract_age_nhpi = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(male_nhpi_age18to19 = "B01001E_007E", 
+  variables = c(
+                male_nhpi_age18to19 = "B01001E_007E", 
                 male_nhpi_age20to24 = "B01001E_008E",
                 male_nhpi_age25to29 = "B01001E_009E",
                 male_nhpi_age30to34 = "B01001E_010E",
@@ -945,6 +1030,52 @@ censustract_age<- censustract_age_white %>%
 names(censustract_age)[2] <- "full_geoid"  
 
 censustract_age <- censustract_age %>% select(-contains("NAME"))
+
+censustract_age <- censustract_age %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
+                         female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
+                         female_black_age85over), 
+    BLACK_MALE = sum(male_black_age18to19+male_black_age20to24+male_black_age25to29+male_black_age30to34+
+                       male_black_age35to44+male_black_age45to54+male_black_age65to74+male_black_age75to84+
+                       male_black_age85over),
+    BLACK_TOTAL = sum(BLACK_FEMALE+BLACK_MALE),
+    BLACK_18_to_24 = sum(male_black_age18to19+male_black_age20to24+female_black_age18to19+female_black_age20to24),
+    BLACK_25_to_34 = sum(male_black_age25to29+male_black_age30to34+female_black_age25to29+female_black_age30to34),
+    BLACK_35_to_44 = sum(male_black_age35to44+female_black_age35to44),
+    BLACK_45_to_54 = sum(male_black_age45to54+female_black_age45to54),
+    BLACK_55_to_64 = sum(male_black_age55to64+female_black_age55to64),
+    BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
+                         female_black_age65to74+female_black_age75to84+female_black_age85over),
+    
+    HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
+                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
+                         female_hisp_age85over), 
+    HISP_MALE = sum(male_hisp_age18to19+male_hisp_age20to24+male_hisp_age25to29+male_hisp_age30to34+
+                       male_hisp_age35to44+male_hisp_age45to54+male_hisp_age65to74+male_hisp_age75to84+
+                       male_hisp_age85over),
+    HISP_TOTAL = sum(HISP_FEMALE+HISP_MALE),
+    HISP_18_to_24 = sum(male_hisp_age18to19+male_hisp_age20to24+female_hisp_age18to19+female_hisp_age20to24),
+    HISP_25_to_34 = sum(male_hisp_age25to29+male_hisp_age30to34+female_hisp_age25to29+female_hisp_age30to34),
+    HISP_35_to_44 = sum(male_hisp_age35to44+female_hisp_age35to44),
+    HISP_45_to_54 = sum(male_hisp_age45to54+female_hisp_age45to54),
+    HISP_55_to_64 = sum(male_hisp_age55to64+female_hisp_age55to64),
+    HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
+                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
+    
+    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    
+  )
+
 
 # export
 write.csv(censustract_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_age.csv")
@@ -1250,6 +1381,51 @@ censuscounty_age<- censuscounty_age_white %>%
 names(censuscounty_age)[2] <- "full_geoid"  
 
 censuscounty_age <- censuscounty_age %>% select(-contains("NAME"))
+
+censuscounty_age <- censuscounty_age %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
+                         female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
+                         female_black_age85over), 
+    BLACK_MALE = sum(male_black_age18to19+male_black_age20to24+male_black_age25to29+male_black_age30to34+
+                       male_black_age35to44+male_black_age45to54+male_black_age65to74+male_black_age75to84+
+                       male_black_age85over),
+    BLACK_TOTAL = sum(BLACK_FEMALE+BLACK_MALE),
+    BLACK_18_to_24 = sum(male_black_age18to19+male_black_age20to24+female_black_age18to19+female_black_age20to24),
+    BLACK_25_to_34 = sum(male_black_age25to29+male_black_age30to34+female_black_age25to29+female_black_age30to34),
+    BLACK_35_to_44 = sum(male_black_age35to44+female_black_age35to44),
+    BLACK_45_to_54 = sum(male_black_age45to54+female_black_age45to54),
+    BLACK_55_to_64 = sum(male_black_age55to64+female_black_age55to64),
+    BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
+                           female_black_age65to74+female_black_age75to84+female_black_age85over),
+    
+    HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
+                        female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
+                        female_hisp_age85over), 
+    HISP_MALE = sum(male_hisp_age18to19+male_hisp_age20to24+male_hisp_age25to29+male_hisp_age30to34+
+                      male_hisp_age35to44+male_hisp_age45to54+male_hisp_age65to74+male_hisp_age75to84+
+                      male_hisp_age85over),
+    HISP_TOTAL = sum(HISP_FEMALE+HISP_MALE),
+    HISP_18_to_24 = sum(male_hisp_age18to19+male_hisp_age20to24+female_hisp_age18to19+female_hisp_age20to24),
+    HISP_25_to_34 = sum(male_hisp_age25to29+male_hisp_age30to34+female_hisp_age25to29+female_hisp_age30to34),
+    HISP_35_to_44 = sum(male_hisp_age35to44+female_hisp_age35to44),
+    HISP_45_to_54 = sum(male_hisp_age45to54+female_hisp_age45to54),
+    HISP_55_to_64 = sum(male_hisp_age55to64+female_hisp_age55to64),
+    HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
+                          female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
+    
+    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    
+  )
 
 # export
 write.csv(censuscounty_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_age.csv")
@@ -1557,6 +1733,50 @@ names(censusstate_age)[2] <- "full_geoid"
 
 censusstate_age <- censusstate_age %>% select(-contains("NAME"))
 
+censusstate_age <- censusstate_age %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
+                         female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
+                         female_black_age85over), 
+    BLACK_MALE = sum(male_black_age18to19+male_black_age20to24+male_black_age25to29+male_black_age30to34+
+                       male_black_age35to44+male_black_age45to54+male_black_age65to74+male_black_age75to84+
+                       male_black_age85over),
+    BLACK_TOTAL = sum(BLACK_FEMALE+BLACK_MALE),
+    BLACK_18_to_24 = sum(male_black_age18to19+male_black_age20to24+female_black_age18to19+female_black_age20to24),
+    BLACK_25_to_34 = sum(male_black_age25to29+male_black_age30to34+female_black_age25to29+female_black_age30to34),
+    BLACK_35_to_44 = sum(male_black_age35to44+female_black_age35to44),
+    BLACK_45_to_54 = sum(male_black_age45to54+female_black_age45to54),
+    BLACK_55_to_64 = sum(male_black_age55to64+female_black_age55to64),
+    BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
+                           female_black_age65to74+female_black_age75to84+female_black_age85over),
+    
+    HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
+                        female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
+                        female_hisp_age85over), 
+    HISP_MALE = sum(male_hisp_age18to19+male_hisp_age20to24+male_hisp_age25to29+male_hisp_age30to34+
+                      male_hisp_age35to44+male_hisp_age45to54+male_hisp_age65to74+male_hisp_age75to84+
+                      male_hisp_age85over),
+    HISP_TOTAL = sum(HISP_FEMALE+HISP_MALE),
+    HISP_18_to_24 = sum(male_hisp_age18to19+male_hisp_age20to24+female_hisp_age18to19+female_hisp_age20to24),
+    HISP_25_to_34 = sum(male_hisp_age25to29+male_hisp_age30to34+female_hisp_age25to29+female_hisp_age30to34),
+    HISP_35_to_44 = sum(male_hisp_age35to44+female_hisp_age35to44),
+    HISP_45_to_54 = sum(male_hisp_age45to54+female_hisp_age45to54),
+    HISP_55_to_64 = sum(male_hisp_age55to64+female_hisp_age55to64),
+    HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
+                          female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
+    
+    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    
+  )
 # export
 write.csv(censusstate_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_age.csv")
 
@@ -1639,242 +1859,260 @@ write.csv(censusstate_raceeth,"/Volumes/cbjackson2/ccs-knowledge/census-data/cen
 censustract_income_white = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(white_less10k = "B19001A_002", 
-                white_10kto14nk = "B19001A_003",
-                white_15kto19nk = "B19001A_004",
-                white_20kto24nk = "B19001A_005",
-                white_25kto29nk = "B19001A_006",
-                white_30kto34nk = "B19001A_007",
-                white_35kto39nk = "B19001A_008",
-                white_40kto44nk = "B19001A_009",
-                white_45kto49nk = "B19001A_010",
-                white_50kto59nk = "B19001A_011",
-                white_60kto74nk = "B19001A_012", 
-                white_75kto99nk = "B19001A_013",
-                white_100kto124nk = "B19001A_014",
-                white_125kto149nk = "B19001A_015",
-                white_150kto199nk = "B19001A_016",
+  variables = c(white_total = "B19001A_001",
+                white_less10k = "B19001A_002", 
+                white_10kto14k = "B19001A_003",
+                white_15kto19k = "B19001A_004",
+                white_20kto24k = "B19001A_005",
+                white_25kto29k = "B19001A_006",
+                white_30kto34k = "B19001A_007",
+                white_35kto39k = "B19001A_008",
+                white_40kto44k = "B19001A_009",
+                white_45kto49k = "B19001A_010",
+                white_50kto59k = "B19001A_011",
+                white_60kto74k = "B19001A_012", 
+                white_75kto99k = "B19001A_013",
+                white_100kto124k = "B19001A_014",
+                white_125kto149k = "B19001A_015",
+                white_150kto199k = "B19001A_016",
                 white_200ktomore = "B19001A_017"),
   #table = "B19001A", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
-censustract_income_white <- censustract_income_white %>% select(-contains("B19001"))
+) %>% 
+  select(-ends_with("M"))
+censustract_income_white <- censustract_income_white %>% select(-contains("B19001A"))
 
 
 censustract_income_black = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(black_less10k = "B19001B_002", 
-                black_10kto14nk = "B19001B_003",
-                black_15kto19nk = "B19001B_004",
-                black_20kto24nk = "B19001B_005",
-                black_25kto29nk = "B19001B_006",
-                black_30kto34nk = "B19001B_007",
-                black_35kto39nk = "B19001B_008",
-                black_40kto44nk = "B19001B_009",
-                black_45kto49nk = "B19001B_010",
-                black_50kto59nk = "B19001B_011",
-                black_60kto74nk = "B19001B_012", 
-                black_75kto99nk = "B19001B_013",
-                black_100kto124nk = "B19001B_014",
-                black_125kto149nk = "B19001B_015",
-                black_150kto199nk = "B19001B_016",
+  variables = c(black_total = "B19001B_001",
+                black_less10k = "B19001B_002", 
+                black_10kto14k = "B19001B_003",
+                black_15kto19k = "B19001B_004",
+                black_20kto24k = "B19001B_005",
+                black_25kto29k = "B19001B_006",
+                black_30kto34k = "B19001B_007",
+                black_35kto39k = "B19001B_008",
+                black_40kto44k = "B19001B_009",
+                black_45kto49k = "B19001B_010",
+                black_50kto59k = "B19001B_011",
+                black_60kto74k = "B19001B_012", 
+                black_75kto99k = "B19001B_013",
+                black_100kto124k = "B19001B_014",
+                black_125kto149k = "B19001B_015",
+                black_150kto199k = "B19001B_016",
                 black_200ktomore = "B19001B_017"),
   #table = "B19001B", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_black <- censustract_income_black %>% select(-contains("B19001"))
 
 
 censustract_income_aian = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(aian_less10k = "B19001C_002", 
-                aian_10kto14nk = "B19001C_003",
-                aian_15kto19nk = "B19001C_004",
-                aian_20kto24nk = "B19001C_005",
-                aian_25kto29nk = "B19001C_006",
-                aian_30kto34nk = "B19001C_007",
-                aian_35kto39nk = "B19001C_008",
-                aian_40kto44nk = "B19001C_009",
-                aian_45kto49nk = "B19001C_010",
-                aian_50kto59nk = "B19001C_011",
-                aian_60kto74nk = "B19001C_012", 
-                aian_75kto99nk = "B19001C_013",
-                aian_100kto124nk = "B19001C_014",
-                aian_125kto149nk = "B19001C_015",
-                aian_150kto199nk = "B19001C_016",
+  variables = c(aian_total = "B19001C_001",
+                aian_less10k = "B19001C_002", 
+                aian_10kto14k = "B19001C_003",
+                aian_15kto19k = "B19001C_004",
+                aian_20kto24k = "B19001C_005",
+                aian_25kto29k = "B19001C_006",
+                aian_30kto34k = "B19001C_007",
+                aian_35kto39k = "B19001C_008",
+                aian_40kto44k = "B19001C_009",
+                aian_45kto49k = "B19001C_010",
+                aian_50kto59k = "B19001C_011",
+                aian_60kto74k = "B19001C_012", 
+                aian_75kto99k = "B19001C_013",
+                aian_100kto124k = "B19001C_014",
+                aian_125kto149k = "B19001C_015",
+                aian_150kto199k = "B19001C_016",
                 aian_200ktomore = "B19001C_017"),
   #table = "B19001C", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_aian <- censustract_income_aian %>% select(-contains("B19001"))
 
 
 censustract_income_asian = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(asian_less10k = "B19001D_002", 
-                asian_10kto14nk = "B19001D_003",
-                asian_15kto19nk = "B19001D_004",
-                asian_20kto24nk = "B19001D_005",
-                asian_25kto29nk = "B19001D_006",
-                asian_30kto34nk = "B19001D_007",
-                asian_35kto39nk = "B19001D_008",
-                asian_40kto44nk = "B19001D_009",
-                asian_45kto49nk = "B19001D_010",
-                asian_50kto59nk = "B19001D_011",
-                asian_60kto74nk = "B19001D_012", 
-                asian_75kto99nk = "B19001D_013",
-                asian_100kto124nk = "B19001D_014",
-                asian_125kto149nk = "B19001D_015",
-                asian_150kto199nk = "B19001D_016",
+  variables = c(asian_total = "B19001D_001",
+                asian_less10k = "B19001D_002", 
+                asian_10kto14k = "B19001D_003",
+                asian_15kto19k = "B19001D_004",
+                asian_20kto24k = "B19001D_005",
+                asian_25kto29k = "B19001D_006",
+                asian_30kto34k = "B19001D_007",
+                asian_35kto39k = "B19001D_008",
+                asian_40kto44k = "B19001D_009",
+                asian_45kto49k = "B19001D_010",
+                asian_50kto59k = "B19001D_011",
+                asian_60kto74k = "B19001D_012", 
+                asian_75kto99k = "B19001D_013",
+                asian_100kto124k = "B19001D_014",
+                asian_125kto149k = "B19001D_015",
+                asian_150kto199k = "B19001D_016",
                 asian_200ktomore = "B19001D_017"),
   #table = "B19001D", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_asian <- censustract_income_asian %>% select(-contains("B19001"))
 
 
 censustract_income_nhpi = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(nhpi_less10k = "B19001E_002", 
-                nhpi_10kto14nk = "B19001E_003",
-                nhpi_15kto19nk = "B19001E_004",
-                nhpi_20kto24nk = "B19001E_005",
-                nhpi_25kto29nk = "B19001E_006",
-                nhpi_30kto34nk = "B19001E_007",
-                nhpi_35kto39nk = "B19001E_008",
-                nhpi_40kto44nk = "B19001E_009",
-                nhpi_45kto49nk = "B19001E_010",
-                nhpi_50kto59nk = "B19001E_011",
-                nhpi_60kto74nk = "B19001E_012", 
-                nhpi_75kto99nk = "B19001E_013",
-                nhpi_100kto124nk = "B19001E_014",
-                nhpi_125kto149nk = "B19001E_015",
-                nhpi_150kto199nk = "B19001E_016",
+  variables = c(nhpi_total = "B19001E_001",
+                nhpi_less10k = "B19001E_002", 
+                nhpi_10kto14k = "B19001E_003",
+                nhpi_15kto19k = "B19001E_004",
+                nhpi_20kto24k = "B19001E_005",
+                nhpi_25kto29k = "B19001E_006",
+                nhpi_30kto34k = "B19001E_007",
+                nhpi_35kto39k = "B19001E_008",
+                nhpi_40kto44k = "B19001E_009",
+                nhpi_45kto49k = "B19001E_010",
+                nhpi_50kto59k = "B19001E_011",
+                nhpi_60kto74k = "B19001E_012", 
+                nhpi_75kto99k = "B19001E_013",
+                nhpi_100kto124k = "B19001E_014",
+                nhpi_125kto149k = "B19001E_015",
+                nhpi_150kto199k = "B19001E_016",
                 nhpi_200ktomore = "B19001E_017"),
   #table = "B19001E", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_nhpi <- censustract_income_nhpi %>% select(-contains("B19001"))
 
 
 censustract_income_other = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(other_less10k = "B19001F_002", 
-                other_10kto14nk = "B19001F_003",
-                other_15kto19nk = "B19001F_004",
-                other_20kto24nk = "B19001F_005",
-                other_25kto29nk = "B19001F_006",
-                other_30kto34nk = "B19001F_007",
-                other_35kto39nk = "B19001F_008",
-                other_40kto44nk = "B19001F_009",
-                other_45kto49nk = "B19001F_010",
-                other_50kto59nk = "B19001F_011",
-                other_60kto74nk = "B19001F_012", 
-                other_75kto99nk = "B19001F_013",
-                other_100kto124nk = "B19001F_014",
-                other_125kto149nk = "B19001F_015",
-                other_150kto199nk = "B19001F_016",
+  variables = c(other_total = "B19001F_001",
+                other_less10k = "B19001F_002", 
+                other_10kto14k = "B19001F_003",
+                other_15kto19k = "B19001F_004",
+                other_20kto24k = "B19001F_005",
+                other_25kto29k = "B19001F_006",
+                other_30kto34k = "B19001F_007",
+                other_35kto39k = "B19001F_008",
+                other_40kto44k = "B19001F_009",
+                other_45kto49k = "B19001F_010",
+                other_50kto59k = "B19001F_011",
+                other_60kto74k = "B19001F_012", 
+                other_75kto99k = "B19001F_013",
+                other_100kto124k = "B19001F_014",
+                other_125kto149k = "B19001F_015",
+                other_150kto199k = "B19001F_016",
                 other_200ktomore = "B19001F_017"),
   #table = "B19001F", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_other <- censustract_income_other %>% select(-contains("B19001"))
 
 
 censustract_income_mixed = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(mixed_less10k = "B19001G_002", 
-                mixed_10kto14nk = "B19001G_003",
-                mixed_15kto19nk = "B19001G_004",
-                mixed_20kto24nk = "B19001G_005",
-                mixed_25kto29nk = "B19001G_006",
-                mixed_30kto34nk = "B19001G_007",
-                mixed_35kto39nk = "B19001G_008",
-                mixed_40kto44nk = "B19001G_009",
-                mixed_45kto49nk = "B19001G_010",
-                mixed_50kto59nk = "B19001G_011",
-                mixed_60kto74nk = "B19001G_012", 
-                mixed_75kto99nk = "B19001G_013",
-                mixed_100kto124nk = "B19001G_014",
-                mixed_125kto149nk = "B19001G_015",
-                mixed_150kto199nk = "B19001G_016",
+  variables = c(mixed_total = "B19001G_001",
+                mixed_less10k = "B19001G_002", 
+                mixed_10kto14k = "B19001G_003",
+                mixed_15kto19k = "B19001G_004",
+                mixed_20kto24k = "B19001G_005",
+                mixed_25kto29k = "B19001G_006",
+                mixed_30kto34k = "B19001G_007",
+                mixed_35kto39k = "B19001G_008",
+                mixed_40kto44k = "B19001G_009",
+                mixed_45kto49k = "B19001G_010",
+                mixed_50kto59k = "B19001G_011",
+                mixed_60kto74k = "B19001G_012", 
+                mixed_75kto99k = "B19001G_013",
+                mixed_100kto124k = "B19001G_014",
+                mixed_125kto149k = "B19001G_015",
+                mixed_150kto199k = "B19001G_016",
                 mixed_200ktomore = "B19001G_017"),
   #table = "B19001G", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_mixed <- censustract_income_mixed %>% select(-contains("B19001"))
 
 
 censustract_income_white_nothispanic = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(w_nothisp_less10k = "B19001H_002", 
-                w_nothisp_10kto14nk = "B19001H_003",
-                w_nothisp_15kto19nk = "B19001H_004",
-                w_nothisp_20kto24nk = "B19001H_005",
-                w_nothisp_25kto29nk = "B19001H_006",
-                w_nothisp_30kto34nk = "B19001H_007",
-                w_nothisp_35kto39nk = "B19001H_008",
-                w_nothisp_40kto44nk = "B19001H_009",
-                w_nothisp_45kto49nk = "B19001H_010",
-                w_nothisp_50kto59nk = "B19001H_011",
-                w_nothisp_60kto74nk = "B19001H_012", 
-                w_nothisp_75kto99nk = "B19001H_013",
-                w_nothisp_100kto124nk = "B19001H_014",
-                w_nothisp_125kto149nk = "B19001H_015",
-                w_nothisp_150kto199nk = "B19001H_016",
+  variables = c(w_nothisp_total = "B19001H_001",
+                w_nothisp_less10k = "B19001H_002", 
+                w_nothisp_10kto14k = "B19001H_003",
+                w_nothisp_15kto19k = "B19001H_004",
+                w_nothisp_20kto24k = "B19001H_005",
+                w_nothisp_25kto29k = "B19001H_006",
+                w_nothisp_30kto34k = "B19001H_007",
+                w_nothisp_35kto39k = "B19001H_008",
+                w_nothisp_40kto44k = "B19001H_009",
+                w_nothisp_45kto49k = "B19001H_010",
+                w_nothisp_50kto59k = "B19001H_011",
+                w_nothisp_60kto74k = "B19001H_012", 
+                w_nothisp_75kto99k = "B19001H_013",
+                w_nothisp_100kto124k = "B19001H_014",
+                w_nothisp_125kto149k = "B19001H_015",
+                w_nothisp_150kto199k = "B19001H_016",
                 w_nothisp_200ktomore = "B19001H_017"),
   #table = "B19001H", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_white_nothispanic <- censustract_income_white_nothispanic %>% select(-contains("B19001"))
 
 censustract_income_hispanic = get_acs(
   geography = "tract",
   state = "WI",
-  variables = c(w_nothisp_less10k = "B19001I_002", 
-                w_nothisp_10kto14nk = "B19001I_003",
-                w_nothisp_15kto19nk = "B19001I_004",
-                w_nothisp_20kto24nk = "B19001I_005",
-                w_nothisp_25kto29nk = "B19001I_006",
-                w_nothisp_30kto34nk = "B19001I_007",
-                w_nothisp_35kto39nk = "B19001I_008",
-                w_nothisp_40kto44nk = "B19001I_009",
-                w_nothisp_45kto49nk = "B19001I_010",
-                w_nothisp_50kto59nk = "B19001I_011",
-                w_nothisp_60kto74nk = "B19001I_012", 
-                w_nothisp_75kto99nk = "B19001I_013",
-                w_nothisp_100kto124nk = "B19001I_014",
-                w_nothisp_125kto149nk = "B19001I_015",
-                w_nothisp_150kto199nk = "B19001I_016",
-                w_nothisp_200ktomore = "B19001I_017"),
+  variables = c(hisp_total = "B19001I_001",
+                hisp_less10k = "B19001I_002", 
+                hisp_10kto14k = "B19001I_003",
+                hisp_15kto19k = "B19001I_004",
+                hisp_20kto24k = "B19001I_005",
+                hisp_25kto29k = "B19001I_006",
+                hisp_30kto34k = "B19001I_007",
+                hisp_35kto39k = "B19001I_008",
+                hisp_40kto44k = "B19001I_009",
+                hisp_45kto49k = "B19001I_010",
+                hisp_50kto59k = "B19001I_011",
+                hisp_60kto74k = "B19001I_012", 
+                hisp_75kto99k = "B19001I_013",
+                hisp_100kto124k = "B19001I_014",
+                hisp_125kto149k = "B19001I_015",
+                hisp_150kto199k = "B19001I_016",
+                hisp_200ktomore = "B19001I_017"),
   #table = "B19001I", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censustract_income_hispanic <- censustract_income_hispanic %>% select(-contains("B19001"))
 
 
@@ -1892,6 +2130,42 @@ names(censustract_income)[2] <- "full_geoid"
 
 censustract_income <- censustract_income %>% select(-contains("NAME"))
 
+censustract_income <- censustract_income %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
+    BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
+    BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
+    BLACK_50_to_74 = sum(black_50kto59kE+black_60kto74kE),
+    BLACK_75_to_99 = black_75kto99kE,
+    BLACK_100_to_149 =  sum(black_100kto124kE+black_125kto149kE),
+    BLACK_150_to_199 =  black_150kto199kE,
+    BLACK_200_more =  black_200ktomoreE,
+    BLACK_TOTAL = black_totalE,
+    
+    HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
+    HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
+    HISP_35_to_49 = sum(hisp_35kto39kE+hisp_40kto44kE+hisp_45kto49kE),
+    HISP_50_to_74 = sum(hisp_50kto59kE+hisp_60kto74kE),
+    HISP_75_to_99 = hisp_75kto99kE,
+    HISP_100_to_149 =  sum(hisp_100kto124kE+hisp_125kto149kE),
+    HISP_150_to_199 =  hisp_150kto199kE,
+    HISP_200_more =  hisp_200ktomoreE,
+    HISP_TOTAL = hisp_totalE,
+    
+    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    
+  )
+
+
 # export
 write.csv(censustract_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_income.csv")
 
@@ -1904,242 +2178,260 @@ write.csv(censustract_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/cens
 censusstate_income_white = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(white_less10k = "B19001A_002", 
-                white_10kto14nk = "B19001A_003",
-                white_15kto19nk = "B19001A_004",
-                white_20kto24nk = "B19001A_005",
-                white_25kto29nk = "B19001A_006",
-                white_30kto34nk = "B19001A_007",
-                white_35kto39nk = "B19001A_008",
-                white_40kto44nk = "B19001A_009",
-                white_45kto49nk = "B19001A_010",
-                white_50kto59nk = "B19001A_011",
-                white_60kto74nk = "B19001A_012", 
-                white_75kto99nk = "B19001A_013",
-                white_100kto124nk = "B19001A_014",
-                white_125kto149nk = "B19001A_015",
-                white_150kto199nk = "B19001A_016",
+  variables = c(white_total = "B19001A_001",
+                white_less10k = "B19001A_002", 
+                white_10kto14k = "B19001A_003",
+                white_15kto19k = "B19001A_004",
+                white_20kto24k = "B19001A_005",
+                white_25kto29k = "B19001A_006",
+                white_30kto34k = "B19001A_007",
+                white_35kto39k = "B19001A_008",
+                white_40kto44k = "B19001A_009",
+                white_45kto49k = "B19001A_010",
+                white_50kto59k = "B19001A_011",
+                white_60kto74k = "B19001A_012", 
+                white_75kto99k = "B19001A_013",
+                white_100kto124k = "B19001A_014",
+                white_125kto149k = "B19001A_015",
+                white_150kto199k = "B19001A_016",
                 white_200ktomore = "B19001A_017"),
   #table = "B19001A", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
-censusstate_income_white <- censusstate_income_white %>% select(-contains("B19001"))
+) %>% 
+  select(-ends_with("M"))
+censusstate_income_white <- censusstate_income_white %>% select(-contains("B19001A"))
 
 
 censusstate_income_black = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(black_less10k = "B19001B_002", 
-                black_10kto14nk = "B19001B_003",
-                black_15kto19nk = "B19001B_004",
-                black_20kto24nk = "B19001B_005",
-                black_25kto29nk = "B19001B_006",
-                black_30kto34nk = "B19001B_007",
-                black_35kto39nk = "B19001B_008",
-                black_40kto44nk = "B19001B_009",
-                black_45kto49nk = "B19001B_010",
-                black_50kto59nk = "B19001B_011",
-                black_60kto74nk = "B19001B_012", 
-                black_75kto99nk = "B19001B_013",
-                black_100kto124nk = "B19001B_014",
-                black_125kto149nk = "B19001B_015",
-                black_150kto199nk = "B19001B_016",
+  variables = c(black_total = "B19001B_001",
+                black_less10k = "B19001B_002", 
+                black_10kto14k = "B19001B_003",
+                black_15kto19k = "B19001B_004",
+                black_20kto24k = "B19001B_005",
+                black_25kto29k = "B19001B_006",
+                black_30kto34k = "B19001B_007",
+                black_35kto39k = "B19001B_008",
+                black_40kto44k = "B19001B_009",
+                black_45kto49k = "B19001B_010",
+                black_50kto59k = "B19001B_011",
+                black_60kto74k = "B19001B_012", 
+                black_75kto99k = "B19001B_013",
+                black_100kto124k = "B19001B_014",
+                black_125kto149k = "B19001B_015",
+                black_150kto199k = "B19001B_016",
                 black_200ktomore = "B19001B_017"),
   #table = "B19001B", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_black <- censusstate_income_black %>% select(-contains("B19001"))
 
 
 censusstate_income_aian = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(aian_less10k = "B19001C_002", 
-                aian_10kto14nk = "B19001C_003",
-                aian_15kto19nk = "B19001C_004",
-                aian_20kto24nk = "B19001C_005",
-                aian_25kto29nk = "B19001C_006",
-                aian_30kto34nk = "B19001C_007",
-                aian_35kto39nk = "B19001C_008",
-                aian_40kto44nk = "B19001C_009",
-                aian_45kto49nk = "B19001C_010",
-                aian_50kto59nk = "B19001C_011",
-                aian_60kto74nk = "B19001C_012", 
-                aian_75kto99nk = "B19001C_013",
-                aian_100kto124nk = "B19001C_014",
-                aian_125kto149nk = "B19001C_015",
-                aian_150kto199nk = "B19001C_016",
+  variables = c(aian_total = "B19001C_001",
+                aian_less10k = "B19001C_002", 
+                aian_10kto14k = "B19001C_003",
+                aian_15kto19k = "B19001C_004",
+                aian_20kto24k = "B19001C_005",
+                aian_25kto29k = "B19001C_006",
+                aian_30kto34k = "B19001C_007",
+                aian_35kto39k = "B19001C_008",
+                aian_40kto44k = "B19001C_009",
+                aian_45kto49k = "B19001C_010",
+                aian_50kto59k = "B19001C_011",
+                aian_60kto74k = "B19001C_012", 
+                aian_75kto99k = "B19001C_013",
+                aian_100kto124k = "B19001C_014",
+                aian_125kto149k = "B19001C_015",
+                aian_150kto199k = "B19001C_016",
                 aian_200ktomore = "B19001C_017"),
   #table = "B19001C", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_aian <- censusstate_income_aian %>% select(-contains("B19001"))
 
 
 censusstate_income_asian = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(asian_less10k = "B19001D_002", 
-                asian_10kto14nk = "B19001D_003",
-                asian_15kto19nk = "B19001D_004",
-                asian_20kto24nk = "B19001D_005",
-                asian_25kto29nk = "B19001D_006",
-                asian_30kto34nk = "B19001D_007",
-                asian_35kto39nk = "B19001D_008",
-                asian_40kto44nk = "B19001D_009",
-                asian_45kto49nk = "B19001D_010",
-                asian_50kto59nk = "B19001D_011",
-                asian_60kto74nk = "B19001D_012", 
-                asian_75kto99nk = "B19001D_013",
-                asian_100kto124nk = "B19001D_014",
-                asian_125kto149nk = "B19001D_015",
-                asian_150kto199nk = "B19001D_016",
+  variables = c(asian_total = "B19001D_001",
+                asian_less10k = "B19001D_002", 
+                asian_10kto14k = "B19001D_003",
+                asian_15kto19k = "B19001D_004",
+                asian_20kto24k = "B19001D_005",
+                asian_25kto29k = "B19001D_006",
+                asian_30kto34k = "B19001D_007",
+                asian_35kto39k = "B19001D_008",
+                asian_40kto44k = "B19001D_009",
+                asian_45kto49k = "B19001D_010",
+                asian_50kto59k = "B19001D_011",
+                asian_60kto74k = "B19001D_012", 
+                asian_75kto99k = "B19001D_013",
+                asian_100kto124k = "B19001D_014",
+                asian_125kto149k = "B19001D_015",
+                asian_150kto199k = "B19001D_016",
                 asian_200ktomore = "B19001D_017"),
   #table = "B19001D", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_asian <- censusstate_income_asian %>% select(-contains("B19001"))
 
 
 censusstate_income_nhpi = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(nhpi_less10k = "B19001E_002", 
-                nhpi_10kto14nk = "B19001E_003",
-                nhpi_15kto19nk = "B19001E_004",
-                nhpi_20kto24nk = "B19001E_005",
-                nhpi_25kto29nk = "B19001E_006",
-                nhpi_30kto34nk = "B19001E_007",
-                nhpi_35kto39nk = "B19001E_008",
-                nhpi_40kto44nk = "B19001E_009",
-                nhpi_45kto49nk = "B19001E_010",
-                nhpi_50kto59nk = "B19001E_011",
-                nhpi_60kto74nk = "B19001E_012", 
-                nhpi_75kto99nk = "B19001E_013",
-                nhpi_100kto124nk = "B19001E_014",
-                nhpi_125kto149nk = "B19001E_015",
-                nhpi_150kto199nk = "B19001E_016",
+  variables = c(nhpi_total = "B19001E_001",
+                nhpi_less10k = "B19001E_002", 
+                nhpi_10kto14k = "B19001E_003",
+                nhpi_15kto19k = "B19001E_004",
+                nhpi_20kto24k = "B19001E_005",
+                nhpi_25kto29k = "B19001E_006",
+                nhpi_30kto34k = "B19001E_007",
+                nhpi_35kto39k = "B19001E_008",
+                nhpi_40kto44k = "B19001E_009",
+                nhpi_45kto49k = "B19001E_010",
+                nhpi_50kto59k = "B19001E_011",
+                nhpi_60kto74k = "B19001E_012", 
+                nhpi_75kto99k = "B19001E_013",
+                nhpi_100kto124k = "B19001E_014",
+                nhpi_125kto149k = "B19001E_015",
+                nhpi_150kto199k = "B19001E_016",
                 nhpi_200ktomore = "B19001E_017"),
   #table = "B19001E", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_nhpi <- censusstate_income_nhpi %>% select(-contains("B19001"))
 
 
 censusstate_income_other = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(other_less10k = "B19001F_002", 
-                other_10kto14nk = "B19001F_003",
-                other_15kto19nk = "B19001F_004",
-                other_20kto24nk = "B19001F_005",
-                other_25kto29nk = "B19001F_006",
-                other_30kto34nk = "B19001F_007",
-                other_35kto39nk = "B19001F_008",
-                other_40kto44nk = "B19001F_009",
-                other_45kto49nk = "B19001F_010",
-                other_50kto59nk = "B19001F_011",
-                other_60kto74nk = "B19001F_012", 
-                other_75kto99nk = "B19001F_013",
-                other_100kto124nk = "B19001F_014",
-                other_125kto149nk = "B19001F_015",
-                other_150kto199nk = "B19001F_016",
+  variables = c(other_total = "B19001F_001",
+                other_less10k = "B19001F_002", 
+                other_10kto14k = "B19001F_003",
+                other_15kto19k = "B19001F_004",
+                other_20kto24k = "B19001F_005",
+                other_25kto29k = "B19001F_006",
+                other_30kto34k = "B19001F_007",
+                other_35kto39k = "B19001F_008",
+                other_40kto44k = "B19001F_009",
+                other_45kto49k = "B19001F_010",
+                other_50kto59k = "B19001F_011",
+                other_60kto74k = "B19001F_012", 
+                other_75kto99k = "B19001F_013",
+                other_100kto124k = "B19001F_014",
+                other_125kto149k = "B19001F_015",
+                other_150kto199k = "B19001F_016",
                 other_200ktomore = "B19001F_017"),
   #table = "B19001F", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_other <- censusstate_income_other %>% select(-contains("B19001"))
 
 
 censusstate_income_mixed = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(mixed_less10k = "B19001G_002", 
-                mixed_10kto14nk = "B19001G_003",
-                mixed_15kto19nk = "B19001G_004",
-                mixed_20kto24nk = "B19001G_005",
-                mixed_25kto29nk = "B19001G_006",
-                mixed_30kto34nk = "B19001G_007",
-                mixed_35kto39nk = "B19001G_008",
-                mixed_40kto44nk = "B19001G_009",
-                mixed_45kto49nk = "B19001G_010",
-                mixed_50kto59nk = "B19001G_011",
-                mixed_60kto74nk = "B19001G_012", 
-                mixed_75kto99nk = "B19001G_013",
-                mixed_100kto124nk = "B19001G_014",
-                mixed_125kto149nk = "B19001G_015",
-                mixed_150kto199nk = "B19001G_016",
+  variables = c(mixed_total = "B19001G_001",
+                mixed_less10k = "B19001G_002", 
+                mixed_10kto14k = "B19001G_003",
+                mixed_15kto19k = "B19001G_004",
+                mixed_20kto24k = "B19001G_005",
+                mixed_25kto29k = "B19001G_006",
+                mixed_30kto34k = "B19001G_007",
+                mixed_35kto39k = "B19001G_008",
+                mixed_40kto44k = "B19001G_009",
+                mixed_45kto49k = "B19001G_010",
+                mixed_50kto59k = "B19001G_011",
+                mixed_60kto74k = "B19001G_012", 
+                mixed_75kto99k = "B19001G_013",
+                mixed_100kto124k = "B19001G_014",
+                mixed_125kto149k = "B19001G_015",
+                mixed_150kto199k = "B19001G_016",
                 mixed_200ktomore = "B19001G_017"),
   #table = "B19001G", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_mixed <- censusstate_income_mixed %>% select(-contains("B19001"))
 
 
 censusstate_income_white_nothispanic = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(w_nothisp_less10k = "B19001H_002", 
-                w_nothisp_10kto14nk = "B19001H_003",
-                w_nothisp_15kto19nk = "B19001H_004",
-                w_nothisp_20kto24nk = "B19001H_005",
-                w_nothisp_25kto29nk = "B19001H_006",
-                w_nothisp_30kto34nk = "B19001H_007",
-                w_nothisp_35kto39nk = "B19001H_008",
-                w_nothisp_40kto44nk = "B19001H_009",
-                w_nothisp_45kto49nk = "B19001H_010",
-                w_nothisp_50kto59nk = "B19001H_011",
-                w_nothisp_60kto74nk = "B19001H_012", 
-                w_nothisp_75kto99nk = "B19001H_013",
-                w_nothisp_100kto124nk = "B19001H_014",
-                w_nothisp_125kto149nk = "B19001H_015",
-                w_nothisp_150kto199nk = "B19001H_016",
+  variables = c(w_nothisp_total = "B19001H_001",
+                w_nothisp_less10k = "B19001H_002", 
+                w_nothisp_10kto14k = "B19001H_003",
+                w_nothisp_15kto19k = "B19001H_004",
+                w_nothisp_20kto24k = "B19001H_005",
+                w_nothisp_25kto29k = "B19001H_006",
+                w_nothisp_30kto34k = "B19001H_007",
+                w_nothisp_35kto39k = "B19001H_008",
+                w_nothisp_40kto44k = "B19001H_009",
+                w_nothisp_45kto49k = "B19001H_010",
+                w_nothisp_50kto59k = "B19001H_011",
+                w_nothisp_60kto74k = "B19001H_012", 
+                w_nothisp_75kto99k = "B19001H_013",
+                w_nothisp_100kto124k = "B19001H_014",
+                w_nothisp_125kto149k = "B19001H_015",
+                w_nothisp_150kto199k = "B19001H_016",
                 w_nothisp_200ktomore = "B19001H_017"),
   #table = "B19001H", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_white_nothispanic <- censusstate_income_white_nothispanic %>% select(-contains("B19001"))
 
 censusstate_income_hispanic = get_acs(
   geography = "state",
   state = "WI",
-  variables = c(w_nothisp_less10k = "B19001I_002", 
-                w_nothisp_10kto14nk = "B19001I_003",
-                w_nothisp_15kto19nk = "B19001I_004",
-                w_nothisp_20kto24nk = "B19001I_005",
-                w_nothisp_25kto29nk = "B19001I_006",
-                w_nothisp_30kto34nk = "B19001I_007",
-                w_nothisp_35kto39nk = "B19001I_008",
-                w_nothisp_40kto44nk = "B19001I_009",
-                w_nothisp_45kto49nk = "B19001I_010",
-                w_nothisp_50kto59nk = "B19001I_011",
-                w_nothisp_60kto74nk = "B19001I_012", 
-                w_nothisp_75kto99nk = "B19001I_013",
-                w_nothisp_100kto124nk = "B19001I_014",
-                w_nothisp_125kto149nk = "B19001I_015",
-                w_nothisp_150kto199nk = "B19001I_016",
-                w_nothisp_200ktomore = "B19001I_017"),
+  variables = c(hisp_total = "B19001I_001",
+                hisp_less10k = "B19001I_002", 
+                hisp_10kto14k = "B19001I_003",
+                hisp_15kto19k = "B19001I_004",
+                hisp_20kto24k = "B19001I_005",
+                hisp_25kto29k = "B19001I_006",
+                hisp_30kto34k = "B19001I_007",
+                hisp_35kto39k = "B19001I_008",
+                hisp_40kto44k = "B19001I_009",
+                hisp_45kto49k = "B19001I_010",
+                hisp_50kto59k = "B19001I_011",
+                hisp_60kto74k = "B19001I_012", 
+                hisp_75kto99k = "B19001I_013",
+                hisp_100kto124k = "B19001I_014",
+                hisp_125kto149k = "B19001I_015",
+                hisp_150kto199k = "B19001I_016",
+                hisp_200ktomore = "B19001I_017"),
   #table = "B19001I", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censusstate_income_hispanic <- censusstate_income_hispanic %>% select(-contains("B19001"))
 
 
@@ -2157,6 +2449,41 @@ names(censusstate_income)[2] <- "full_geoid"
 
 censusstate_income <- censusstate_income %>% select(-contains("NAME"))
 
+censusstate_income <- censusstate_income %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
+    BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
+    BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
+    BLACK_50_to_74 = sum(black_50kto59kE+black_60kto74kE),
+    BLACK_75_to_99 = black_75kto99kE,
+    BLACK_100_to_149 =  sum(black_100kto124kE+black_125kto149kE),
+    BLACK_150_to_199 =  black_150kto199kE,
+    BLACK_200_more =  black_200ktomoreE,
+    BLACK_TOTAL = black_totalE,
+    
+    HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
+    HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
+    HISP_35_to_49 = sum(hisp_35kto39kE+hisp_40kto44kE+hisp_45kto49kE),
+    HISP_50_to_74 = sum(hisp_50kto59kE+hisp_60kto74kE),
+    HISP_75_to_99 = hisp_75kto99kE,
+    HISP_100_to_149 =  sum(hisp_100kto124kE+hisp_125kto149kE),
+    HISP_150_to_199 =  hisp_150kto199kE,
+    HISP_200_more =  hisp_200ktomoreE,
+    HISP_TOTAL = hisp_totalE,
+    
+    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    
+  )
+
 # export
 write.csv(censusstate_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_income.csv")
 
@@ -2165,247 +2492,265 @@ write.csv(censusstate_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/cens
 ############# County ############# 
 #################################
 
-
 censuscounty_income_white = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(white_less10k = "B19001A_002", 
-                white_10kto14nk = "B19001A_003",
-                white_15kto19nk = "B19001A_004",
-                white_20kto24nk = "B19001A_005",
-                white_25kto29nk = "B19001A_006",
-                white_30kto34nk = "B19001A_007",
-                white_35kto39nk = "B19001A_008",
-                white_40kto44nk = "B19001A_009",
-                white_45kto49nk = "B19001A_010",
-                white_50kto59nk = "B19001A_011",
-                white_60kto74nk = "B19001A_012", 
-                white_75kto99nk = "B19001A_013",
-                white_100kto124nk = "B19001A_014",
-                white_125kto149nk = "B19001A_015",
-                white_150kto199nk = "B19001A_016",
+  variables = c(white_total = "B19001A_001",
+                white_less10k = "B19001A_002", 
+                white_10kto14k = "B19001A_003",
+                white_15kto19k = "B19001A_004",
+                white_20kto24k = "B19001A_005",
+                white_25kto29k = "B19001A_006",
+                white_30kto34k = "B19001A_007",
+                white_35kto39k = "B19001A_008",
+                white_40kto44k = "B19001A_009",
+                white_45kto49k = "B19001A_010",
+                white_50kto59k = "B19001A_011",
+                white_60kto74k = "B19001A_012", 
+                white_75kto99k = "B19001A_013",
+                white_100kto124k = "B19001A_014",
+                white_125kto149k = "B19001A_015",
+                white_150kto199k = "B19001A_016",
                 white_200ktomore = "B19001A_017"),
   #table = "B19001A", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
-censuscounty_income_white <- censuscounty_income_white %>% select(-contains("B19001"))
+) %>% 
+  select(-ends_with("M"))
+censuscounty_income_white <- censuscounty_income_white %>% select(-contains("B19001A"))
 
 
 censuscounty_income_black = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(black_less10k = "B19001B_002", 
-                black_10kto14nk = "B19001B_003",
-                black_15kto19nk = "B19001B_004",
-                black_20kto24nk = "B19001B_005",
-                black_25kto29nk = "B19001B_006",
-                black_30kto34nk = "B19001B_007",
-                black_35kto39nk = "B19001B_008",
-                black_40kto44nk = "B19001B_009",
-                black_45kto49nk = "B19001B_010",
-                black_50kto59nk = "B19001B_011",
-                black_60kto74nk = "B19001B_012", 
-                black_75kto99nk = "B19001B_013",
-                black_100kto124nk = "B19001B_014",
-                black_125kto149nk = "B19001B_015",
-                black_150kto199nk = "B19001B_016",
+  variables = c(black_total = "B19001B_001",
+                black_less10k = "B19001B_002", 
+                black_10kto14k = "B19001B_003",
+                black_15kto19k = "B19001B_004",
+                black_20kto24k = "B19001B_005",
+                black_25kto29k = "B19001B_006",
+                black_30kto34k = "B19001B_007",
+                black_35kto39k = "B19001B_008",
+                black_40kto44k = "B19001B_009",
+                black_45kto49k = "B19001B_010",
+                black_50kto59k = "B19001B_011",
+                black_60kto74k = "B19001B_012", 
+                black_75kto99k = "B19001B_013",
+                black_100kto124k = "B19001B_014",
+                black_125kto149k = "B19001B_015",
+                black_150kto199k = "B19001B_016",
                 black_200ktomore = "B19001B_017"),
   #table = "B19001B", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_black <- censuscounty_income_black %>% select(-contains("B19001"))
 
 
 censuscounty_income_aian = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(aian_less10k = "B19001C_002", 
-                aian_10kto14nk = "B19001C_003",
-                aian_15kto19nk = "B19001C_004",
-                aian_20kto24nk = "B19001C_005",
-                aian_25kto29nk = "B19001C_006",
-                aian_30kto34nk = "B19001C_007",
-                aian_35kto39nk = "B19001C_008",
-                aian_40kto44nk = "B19001C_009",
-                aian_45kto49nk = "B19001C_010",
-                aian_50kto59nk = "B19001C_011",
-                aian_60kto74nk = "B19001C_012", 
-                aian_75kto99nk = "B19001C_013",
-                aian_100kto124nk = "B19001C_014",
-                aian_125kto149nk = "B19001C_015",
-                aian_150kto199nk = "B19001C_016",
+  variables = c(aian_total = "B19001C_001",
+                aian_less10k = "B19001C_002", 
+                aian_10kto14k = "B19001C_003",
+                aian_15kto19k = "B19001C_004",
+                aian_20kto24k = "B19001C_005",
+                aian_25kto29k = "B19001C_006",
+                aian_30kto34k = "B19001C_007",
+                aian_35kto39k = "B19001C_008",
+                aian_40kto44k = "B19001C_009",
+                aian_45kto49k = "B19001C_010",
+                aian_50kto59k = "B19001C_011",
+                aian_60kto74k = "B19001C_012", 
+                aian_75kto99k = "B19001C_013",
+                aian_100kto124k = "B19001C_014",
+                aian_125kto149k = "B19001C_015",
+                aian_150kto199k = "B19001C_016",
                 aian_200ktomore = "B19001C_017"),
   #table = "B19001C", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_aian <- censuscounty_income_aian %>% select(-contains("B19001"))
 
 
 censuscounty_income_asian = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(asian_less10k = "B19001D_002", 
-                asian_10kto14nk = "B19001D_003",
-                asian_15kto19nk = "B19001D_004",
-                asian_20kto24nk = "B19001D_005",
-                asian_25kto29nk = "B19001D_006",
-                asian_30kto34nk = "B19001D_007",
-                asian_35kto39nk = "B19001D_008",
-                asian_40kto44nk = "B19001D_009",
-                asian_45kto49nk = "B19001D_010",
-                asian_50kto59nk = "B19001D_011",
-                asian_60kto74nk = "B19001D_012", 
-                asian_75kto99nk = "B19001D_013",
-                asian_100kto124nk = "B19001D_014",
-                asian_125kto149nk = "B19001D_015",
-                asian_150kto199nk = "B19001D_016",
+  variables = c(asian_total = "B19001D_001",
+                asian_less10k = "B19001D_002", 
+                asian_10kto14k = "B19001D_003",
+                asian_15kto19k = "B19001D_004",
+                asian_20kto24k = "B19001D_005",
+                asian_25kto29k = "B19001D_006",
+                asian_30kto34k = "B19001D_007",
+                asian_35kto39k = "B19001D_008",
+                asian_40kto44k = "B19001D_009",
+                asian_45kto49k = "B19001D_010",
+                asian_50kto59k = "B19001D_011",
+                asian_60kto74k = "B19001D_012", 
+                asian_75kto99k = "B19001D_013",
+                asian_100kto124k = "B19001D_014",
+                asian_125kto149k = "B19001D_015",
+                asian_150kto199k = "B19001D_016",
                 asian_200ktomore = "B19001D_017"),
   #table = "B19001D", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_asian <- censuscounty_income_asian %>% select(-contains("B19001"))
 
 
 censuscounty_income_nhpi = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(nhpi_less10k = "B19001E_002", 
-                nhpi_10kto14nk = "B19001E_003",
-                nhpi_15kto19nk = "B19001E_004",
-                nhpi_20kto24nk = "B19001E_005",
-                nhpi_25kto29nk = "B19001E_006",
-                nhpi_30kto34nk = "B19001E_007",
-                nhpi_35kto39nk = "B19001E_008",
-                nhpi_40kto44nk = "B19001E_009",
-                nhpi_45kto49nk = "B19001E_010",
-                nhpi_50kto59nk = "B19001E_011",
-                nhpi_60kto74nk = "B19001E_012", 
-                nhpi_75kto99nk = "B19001E_013",
-                nhpi_100kto124nk = "B19001E_014",
-                nhpi_125kto149nk = "B19001E_015",
-                nhpi_150kto199nk = "B19001E_016",
+  variables = c(nhpi_total = "B19001E_001",
+                nhpi_less10k = "B19001E_002", 
+                nhpi_10kto14k = "B19001E_003",
+                nhpi_15kto19k = "B19001E_004",
+                nhpi_20kto24k = "B19001E_005",
+                nhpi_25kto29k = "B19001E_006",
+                nhpi_30kto34k = "B19001E_007",
+                nhpi_35kto39k = "B19001E_008",
+                nhpi_40kto44k = "B19001E_009",
+                nhpi_45kto49k = "B19001E_010",
+                nhpi_50kto59k = "B19001E_011",
+                nhpi_60kto74k = "B19001E_012", 
+                nhpi_75kto99k = "B19001E_013",
+                nhpi_100kto124k = "B19001E_014",
+                nhpi_125kto149k = "B19001E_015",
+                nhpi_150kto199k = "B19001E_016",
                 nhpi_200ktomore = "B19001E_017"),
   #table = "B19001E", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_nhpi <- censuscounty_income_nhpi %>% select(-contains("B19001"))
 
 
 censuscounty_income_other = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(other_less10k = "B19001F_002", 
-                other_10kto14nk = "B19001F_003",
-                other_15kto19nk = "B19001F_004",
-                other_20kto24nk = "B19001F_005",
-                other_25kto29nk = "B19001F_006",
-                other_30kto34nk = "B19001F_007",
-                other_35kto39nk = "B19001F_008",
-                other_40kto44nk = "B19001F_009",
-                other_45kto49nk = "B19001F_010",
-                other_50kto59nk = "B19001F_011",
-                other_60kto74nk = "B19001F_012", 
-                other_75kto99nk = "B19001F_013",
-                other_100kto124nk = "B19001F_014",
-                other_125kto149nk = "B19001F_015",
-                other_150kto199nk = "B19001F_016",
+  variables = c(other_total = "B19001F_001",
+                other_less10k = "B19001F_002", 
+                other_10kto14k = "B19001F_003",
+                other_15kto19k = "B19001F_004",
+                other_20kto24k = "B19001F_005",
+                other_25kto29k = "B19001F_006",
+                other_30kto34k = "B19001F_007",
+                other_35kto39k = "B19001F_008",
+                other_40kto44k = "B19001F_009",
+                other_45kto49k = "B19001F_010",
+                other_50kto59k = "B19001F_011",
+                other_60kto74k = "B19001F_012", 
+                other_75kto99k = "B19001F_013",
+                other_100kto124k = "B19001F_014",
+                other_125kto149k = "B19001F_015",
+                other_150kto199k = "B19001F_016",
                 other_200ktomore = "B19001F_017"),
   #table = "B19001F", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_other <- censuscounty_income_other %>% select(-contains("B19001"))
 
 
 censuscounty_income_mixed = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(mixed_less10k = "B19001G_002", 
-                mixed_10kto14nk = "B19001G_003",
-                mixed_15kto19nk = "B19001G_004",
-                mixed_20kto24nk = "B19001G_005",
-                mixed_25kto29nk = "B19001G_006",
-                mixed_30kto34nk = "B19001G_007",
-                mixed_35kto39nk = "B19001G_008",
-                mixed_40kto44nk = "B19001G_009",
-                mixed_45kto49nk = "B19001G_010",
-                mixed_50kto59nk = "B19001G_011",
-                mixed_60kto74nk = "B19001G_012", 
-                mixed_75kto99nk = "B19001G_013",
-                mixed_100kto124nk = "B19001G_014",
-                mixed_125kto149nk = "B19001G_015",
-                mixed_150kto199nk = "B19001G_016",
+  variables = c(mixed_total = "B19001G_001",
+                mixed_less10k = "B19001G_002", 
+                mixed_10kto14k = "B19001G_003",
+                mixed_15kto19k = "B19001G_004",
+                mixed_20kto24k = "B19001G_005",
+                mixed_25kto29k = "B19001G_006",
+                mixed_30kto34k = "B19001G_007",
+                mixed_35kto39k = "B19001G_008",
+                mixed_40kto44k = "B19001G_009",
+                mixed_45kto49k = "B19001G_010",
+                mixed_50kto59k = "B19001G_011",
+                mixed_60kto74k = "B19001G_012", 
+                mixed_75kto99k = "B19001G_013",
+                mixed_100kto124k = "B19001G_014",
+                mixed_125kto149k = "B19001G_015",
+                mixed_150kto199k = "B19001G_016",
                 mixed_200ktomore = "B19001G_017"),
   #table = "B19001G", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_mixed <- censuscounty_income_mixed %>% select(-contains("B19001"))
 
 
 censuscounty_income_white_nothispanic = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(w_nothisp_less10k = "B19001H_002", 
-                w_nothisp_10kto14nk = "B19001H_003",
-                w_nothisp_15kto19nk = "B19001H_004",
-                w_nothisp_20kto24nk = "B19001H_005",
-                w_nothisp_25kto29nk = "B19001H_006",
-                w_nothisp_30kto34nk = "B19001H_007",
-                w_nothisp_35kto39nk = "B19001H_008",
-                w_nothisp_40kto44nk = "B19001H_009",
-                w_nothisp_45kto49nk = "B19001H_010",
-                w_nothisp_50kto59nk = "B19001H_011",
-                w_nothisp_60kto74nk = "B19001H_012", 
-                w_nothisp_75kto99nk = "B19001H_013",
-                w_nothisp_100kto124nk = "B19001H_014",
-                w_nothisp_125kto149nk = "B19001H_015",
-                w_nothisp_150kto199nk = "B19001H_016",
+  variables = c(w_nothisp_total = "B19001H_001",
+                w_nothisp_less10k = "B19001H_002", 
+                w_nothisp_10kto14k = "B19001H_003",
+                w_nothisp_15kto19k = "B19001H_004",
+                w_nothisp_20kto24k = "B19001H_005",
+                w_nothisp_25kto29k = "B19001H_006",
+                w_nothisp_30kto34k = "B19001H_007",
+                w_nothisp_35kto39k = "B19001H_008",
+                w_nothisp_40kto44k = "B19001H_009",
+                w_nothisp_45kto49k = "B19001H_010",
+                w_nothisp_50kto59k = "B19001H_011",
+                w_nothisp_60kto74k = "B19001H_012", 
+                w_nothisp_75kto99k = "B19001H_013",
+                w_nothisp_100kto124k = "B19001H_014",
+                w_nothisp_125kto149k = "B19001H_015",
+                w_nothisp_150kto199k = "B19001H_016",
                 w_nothisp_200ktomore = "B19001H_017"),
   #table = "B19001H", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_white_nothispanic <- censuscounty_income_white_nothispanic %>% select(-contains("B19001"))
 
 censuscounty_income_hispanic = get_acs(
   geography = "county",
   state = "WI",
-  variables = c(w_nothisp_less10k = "B19001I_002", 
-                w_nothisp_10kto14nk = "B19001I_003",
-                w_nothisp_15kto19nk = "B19001I_004",
-                w_nothisp_20kto24nk = "B19001I_005",
-                w_nothisp_25kto29nk = "B19001I_006",
-                w_nothisp_30kto34nk = "B19001I_007",
-                w_nothisp_35kto39nk = "B19001I_008",
-                w_nothisp_40kto44nk = "B19001I_009",
-                w_nothisp_45kto49nk = "B19001I_010",
-                w_nothisp_50kto59nk = "B19001I_011",
-                w_nothisp_60kto74nk = "B19001I_012", 
-                w_nothisp_75kto99nk = "B19001I_013",
-                w_nothisp_100kto124nk = "B19001I_014",
-                w_nothisp_125kto149nk = "B19001I_015",
-                w_nothisp_150kto199nk = "B19001I_016",
-                w_nothisp_200ktomore = "B19001I_017"),
+  variables = c(hisp_total = "B19001I_001",
+                hisp_less10k = "B19001I_002", 
+                hisp_10kto14k = "B19001I_003",
+                hisp_15kto19k = "B19001I_004",
+                hisp_20kto24k = "B19001I_005",
+                hisp_25kto29k = "B19001I_006",
+                hisp_30kto34k = "B19001I_007",
+                hisp_35kto39k = "B19001I_008",
+                hisp_40kto44k = "B19001I_009",
+                hisp_45kto49k = "B19001I_010",
+                hisp_50kto59k = "B19001I_011",
+                hisp_60kto74k = "B19001I_012", 
+                hisp_75kto99k = "B19001I_013",
+                hisp_100kto124k = "B19001I_014",
+                hisp_125kto149k = "B19001I_015",
+                hisp_150kto199k = "B19001I_016",
+                hisp_200ktomore = "B19001I_017"),
   #table = "B19001I", 
   cache_table = TRUE,
   #variables = c(male =),  
   output = 'wide'
-)
+) %>% 
+  select(-ends_with("M"))
 censuscounty_income_hispanic <- censuscounty_income_hispanic %>% select(-contains("B19001"))
+
 
 censuscounty_income <- censuscounty_income_white %>%
   left_join(censuscounty_income_black, by='GEOID') %>%
@@ -2420,6 +2765,41 @@ censuscounty_income <- censuscounty_income_white %>%
 names(censuscounty_income)[2] <- "full_geoid"  
 
 censuscounty_income <- censuscounty_income %>% select(-contains("NAME"))
+
+censuscounty_income <- censuscounty_income %>%
+  group_by(GEOID,full_geoid) %>%
+  mutate(
+    BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
+    BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
+    BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
+    BLACK_50_to_74 = sum(black_50kto59kE+black_60kto74kE),
+    BLACK_75_to_99 = black_75kto99kE,
+    BLACK_100_to_149 =  sum(black_100kto124kE+black_125kto149kE),
+    BLACK_150_to_199 =  black_150kto199kE,
+    BLACK_200_more =  black_200ktomoreE,
+    BLACK_TOTAL = black_totalE,
+    
+    HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
+    HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
+    HISP_35_to_49 = sum(hisp_35kto39kE+hisp_40kto44kE+hisp_45kto49kE),
+    HISP_50_to_74 = sum(hisp_50kto59kE+hisp_60kto74kE),
+    HISP_75_to_99 = hisp_75kto99kE,
+    HISP_100_to_149 =  sum(hisp_100kto124kE+hisp_125kto149kE),
+    HISP_150_to_199 =  hisp_150kto199kE,
+    HISP_200_more =  hisp_200ktomoreE,
+    HISP_TOTAL = hisp_totalE,
+    
+    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    
+  )
 
 # export
 write.csv(censuscounty_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_income.csv")
