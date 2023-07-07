@@ -1,0 +1,10 @@
+query1:
+  type: "race"
+  survey_query:
+    query:
+      hisp_recode: "Hispanic"
+  surveillance_query:
+    query:
+    subpop: 
+    target_pop:
+    
