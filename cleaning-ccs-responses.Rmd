@@ -1,0 +1,132 @@
+---
+title: "CCS Analysis Template"
+author: "Corey Jackson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Import example data
+library(readr)
+library(reshape2)
+library(dplyr)
+library(tidygeocoder)
+library(tidycensus)
+library(tidyverse)
+library(googleLanguageR)
+library(cld2)
+library(datasets)
+
+
+gl_auth("/Volumes/cbjackson2/ccs-knowledge/translate-ccs-ac3757553e16.json")
+gl_auto_auth()
+###########################################################
+####### IMPORT/COMBINE DATASETS FROM RESEARCH DRIVE #######
+###########################################################
+
+########## URBAN HEAT ########## 
+
+
+# Import file survey and map files from Research Drive. Ignore the first 7 lines that have metadata for the element
+heat_survey <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv") # move to Zoonvierse Datasets folder
+heat_survey <- heat_survey[,-1]
+
+heat_translate <- heat_survey %>% 
+  select(c(4,8,11))%>%
+  mutate(across(everything(), ~ gl_translate(.x, target = "en") )
+  ) 
+
+# TRANSLATIONS
+heat_survey <- heat_survey %>%
+  mutate(
+    `Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences.` = NULL,
+    `Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences.`=
+      heat_translate[[1]]$translatedText,.after=3) %>%
+  mutate(  
+    `What can local government do to help mitigate urban heat in your community?` = NULL,
+    `What can local government do to help mitigate urban heat in your community?`=
+      heat_translate[[2]]$translatedText,.after=7) %>%
+  mutate(
+    `In order to become more informed about urban heat and mitigation strategies, what specific information would you require?` = NULL,
+    `In order to become more informed about urban heat and mitigation strategies, what specific information would you require?`=
+      heat_translate[[3]]$translatedText,.after=10
+  )
+
+```
+
+There are four types of questions, we asked in the CCS surveys, the Knowledge Map will need to detect the question type and conduct analysis based on the type of question present
+
+#### Short/long Text Responses
+
+These questions are open ended and include text responses. The set of questions will be cleaned using text mining procedures and then analyzed using bag of words and sentiment. The presentation of responses will be word clouds and sentiment by the demographic factors. Example question is Heat Survey Q1 "Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences."
+
+##### Clean the Text 
+
+```{r cleaning-text}
+library(textstem)
+library(tidytext)
+# https://www.tidytextmining.com/index.html 
+# https://paldhous.github.io/NICAR/2019/r-text-analysis.html 
+
+# Import stoplist 
+malletwords <- scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt", character(), quote = "")
+
+# Extract example question and demographic data
+
+example_response <- heat_survey[,c(5,11:25)]
+names(example_response)[1] <- "response" 
+
+example_response$response_cleaned <- tolower(gsub('[[:punct:]]', ' ', example_response$response))
+#response$cleaned <- removeWords(response$cleaned, c(stopwords("english"),malletwords))
+#response$cleaned <- lemmatize_words(response$cleaned)
+
+# Tokenize response_cleaned to create word cloud and summary responses by demographic groups
+unigram_response <- example_response %>% 
+  unnest_tokens(unigram, 
+                response_cleaned, token = "ngrams", n = 1)
+
+
+# Melt data
+unigram_response.m <- unigram_response %>%
+  select(unigram) %>%
+  pivot_longer(!religion, names_to = "tokens", values_to = "count")
+
+# Summarize data by demographic factors - Gender, Hipanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth, Annual Household Income level, Education Level
+
+demo_response <- unigram_response %>% 
+  group_by(user_id, variable) %>% 
+  mutate(pettit_statistics = pettitt.test(value)$statistic,
+         pettit_estimate = max(pettitt.test(value)$estimate),
+         pettit_p = pettitt.test(value)$p.value,
+         user_comment_week = contribution_stats_weekly.m[['user_comment_week']][max(pettitt.test(value)$estimate)]) %>% 
+  distinct(variable,pettit_statistics,pettit_estimate,user_comment_week,pettit_p)
+
+
+
+```
+
+
+##### Analyzing the Response 
+
+#### Matrix 
+
+Example question is Heat Survey Q2 "Please rate how frequently you have done each of the following during summer months and during extreme heat."
+
+##### Clearning Multi Choice Data 
+
+Detection might involve extracting the first four words of every response, if they all match, then the response is a multi-choice data object. 
+
+#### Multi Choice 
+
+##### Clearning Matrix Data 
+##### Analyzing the Response 
+
+
+##### Analyzing the Response 
+
+#### Select Box
+
+##### Clearning Select Box Data 
+##### Analyzing the Response 
