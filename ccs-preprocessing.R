@@ -11,7 +11,7 @@ library(cld2)
 library(datasets)
 
 
-gl_auth("/Volumes/cbjackson2/ccs-knowledge/ccs-data/translate-ccs-ac3757553e16.json")
+gl_auth("/Volumes/cbjackson2/ccs-knowledge/translate-ccs-ac3757553e16.json")
 gl_auto_auth()
 ###########################################################
 ####### IMPORT/COMBINE DATASETS FROM RESEARCH DRIVE #######
