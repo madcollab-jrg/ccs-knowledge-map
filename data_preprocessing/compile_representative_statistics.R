@@ -7,14 +7,11 @@
 
 library(yaml)
 library(methods)
-source("log_disparity.R")
+source("data_preprocessing/log_disparity.R")
 
 # query methods for creating calls to the csv files
 surv_query_generator = setRefClass("surveillance_query", fields = list(query = "list", subpop = "character", target_pop = "character"))
 survey_query_generator = setRefClass("survey_query", fields = list(query = "list"))
-
-# given a race what is the associates subpopulation 
-race_recode = c(""="")
 
 generate_queries = function(query, census_codes, tp){
   survey_query_data = query$survey_query
@@ -39,7 +36,7 @@ get_yaml = function(loc){
   return(queries_to_compile)
 }
 
-get_survey_statistics = function(survey, surveillance_level, queries, census_code, target_pop, save = T, fname = ""){
+get_survey_statistics = function(survey, census_level, queries, census_code, target_pop, save = T, fname = ""){
   # Get the log disparity metric for the survey and corresponding surveillance dataset.
   #
   # Parameters:
@@ -60,8 +57,9 @@ get_survey_statistics = function(survey, surveillance_level, queries, census_cod
   for(i in 1:n){
     query = generate_queries(queries[i], census_code, target_pop)
     query_type = query$surveyq$type 
-    surveillance = 
-    statistics = log_disparity(survey, surveillance, query$surveyq, surveillance_queries$surveillanceq)
+    surveillance_data_loc = paste(CENSUS_MAP[[census_level]], QUERY_TYPE_MAP[[query_type]], sep = "")
+    surveillance = read.csv(surveillance_data_loc)
+    statistics = log_disparity(survey, surveillance, query$surveyq, query$surveillanceq)
     to_return[["metric"]][i] = statistics[["log_disparity"]]
   }
   
@@ -72,20 +70,30 @@ get_survey_statistics = function(survey, surveillance_level, queries, census_cod
   return(to_return)
 }
 
+QUERY_TYPE_MAP = c("race" = "_raceeth.csv", 
+                   "age" = "_age.csv", 
+                   "income" = "_income.csv", 
+                   "education" = "_genderedu.csv")
+CENSUS_MAP = c("tract" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract",
+               "state" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate",
+               "county" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty")
 
 
 # Main
 # ----------------------------------------------------------------------------------------------------------
 demographic_data = "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
-surveys = c("air-quality", "tree-canopy", "urban-heat", "ej-report", "ej-storytile", "ej-survey")
+surveys = c("air-quality-map", "air-quality-survey", 
+            "tree-canopy-map", "tree-canopy-survey", 
+            "urban-heat-map", "urban-heat-survey", 
+            "ej-report", "ej-storytile", "ej-survey")
 census_codes = get_yaml("data_preprocessing/rosetta/stone.yaml")
-queries_to_compile = get_yaml("data_proprocessing/queries/queries_survey.yaml")
-target_pops = get_yaml("data_proprocessing/queries/target_populations.yaml")
+queries_to_compile = get_yaml("data_preprocessing/queries/queries_survey.yaml")
+target_pops = get_yaml("data_preprocessing/queries/target_populations.yaml")
 
 for(survey in surveys){
   survey_dataset = paste(demographic_data,survey,"/","demographic_data.csv",sep="")
   for(rep_level in names(census_codes)){
-    for(census_code in census_codes$level){
+    for(census_code in census_codes$rep_level){
       name = paste(surveys, "-", level, "-", census_code, ".RData", sep = "")
       get_survey_statistics(survey_dataset, rep_level, queries_to_compile, census_code, target_pops, save = T, fname = name)
     }

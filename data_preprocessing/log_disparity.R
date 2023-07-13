@@ -85,12 +85,9 @@ surveillance_characteristic_odds = function(df, x, log = T){
   
   # get sum of target sub-population and subpopulation counts
   count_x = 0
-  n = 0
-  for(t in x[['target_pop']]){
-    if(t %in% subpop){
-      count_x = count_x + temp[[t]]
-    }
-    n = n + temp[[t]]
+  n = temp[[ x[['target_pop']] ]]
+  for(t in subpop){
+    count_x = count_x + temp[[t]]
   }
   
   prob_x = count_x/n

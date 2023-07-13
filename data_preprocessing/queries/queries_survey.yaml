@@ -4,7 +4,7 @@ query1:
     query:
       hisp_recode: "Hispanic"
   surveillance_query:
-    query:
-    subpop: 
-    target_pop:
-    
+    query: # will be filled out by program
+    subpop: # needs to be filled out
+    target_pop: # will be filled out by program
+

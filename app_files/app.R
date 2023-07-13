@@ -3,6 +3,7 @@ library(shinydashboard)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(stringr)
 
 source("selection_box.R")
 source("data_description_box.R")
