@@ -3,9 +3,21 @@ import yaml
 import os
 
 def make_query(type_query:str, query_values:dict, subpop:str):
+    """
+    Make one query that will be used to calculate the log disparity metric
+
+    params:
+        type_query - type of query, should income, education, gender, or age
+        query_values - dictionary where keys are columns in the survey files 
+                        and values are of such columns (selection of subpopulation in survey)
+        subpop - string that is the column of the subpopulation in the census data
+
+    return:
+        dictionary that represents the query, the specific form is used by downstream application so don't change
+    """
     query = {
         "type":type_query,
-        "survey_query":{"query":query_values},
+        "survey_query":{"query":query_values}, 
         "surveillance_query":{"query":None, "subpop":subpop, "target_pop":None}
         }
     return query
@@ -57,55 +69,57 @@ def get_school_levels(race):
 
     return school_levels, subpop_school_levels
 
-# black african american
+# Generate the queries
 
-type_queries = ["income", "gender", "age", "education"]
-income_levels, subpop_income_levels = get_income_levels("BLACK")
-gender, subpop_gender_levels = get_gender_levels("BLACK")
-age, subpop_age_levels = get_age_levels("BLACK")
-edu, subpop_edu = get_school_levels("BLACK")
-type_query_column_map = {"income":"income_recode",
-                         "age":"Year.of.Birth",
-                         "gender":"Gender",
-                         "education":"edu_recode"}
+if __name__ == "__main__":
+    # black african american
+    type_queries = ["income", "gender", "age", "education"]
+    income_levels, subpop_income_levels = get_income_levels("BLACK")
+    gender, subpop_gender_levels = get_gender_levels("BLACK")
+    age, subpop_age_levels = get_age_levels("BLACK")
+    edu, subpop_edu = get_school_levels("BLACK")
+    type_query_column_map = {"income":"income_recode",
+                            "age":"Year.of.Birth",
+                            "gender":"Gender",
+                            "education":"edu_recode"}
 
-query_info = {"income":income_levels, 
-              "gender":gender, "age":age,
-              "education":edu}
-subpop_info = {"income":subpop_income_levels, 
-               "gender":subpop_gender_levels, "age":subpop_age_levels,
-               "education":subpop_edu}
+    query_info = {"income":income_levels, 
+                "gender":gender, "age":age,
+                "education":edu}
+    subpop_info = {"income":subpop_income_levels, 
+                "gender":subpop_gender_levels, "age":subpop_age_levels,
+                "education":subpop_edu}
 
-query_num = 0
-all_queries = {}
-for tq in type_queries:
+    query_num = 0
+    all_queries = {}
+    for tq in type_queries:
 
-    for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
-        survey_query = {type_query_column_map[tq]:query_values, "race_recode":"Black or African American"}
-        all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values)
-        query_num += 1
+        for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
+            survey_query = {type_query_column_map[tq]:query_values, "race_recode":"Black or African American"}
+            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values)
+            query_num += 1
 
-# hispanic
-race = "HISP"
-income_levels, subpop_income_levels = get_income_levels(race)
-gender, subpop_gender_levels = get_gender_levels(race)
-age, subpop_age_levels = get_age_levels(race)
-edu, subpop_edu = get_school_levels(race)
-query_info = {"income":income_levels, 
-              "gender":gender, "age":age,
-              "education":edu}
-subpop_info = {"income":subpop_income_levels, 
-               "gender":subpop_gender_levels, "age":subpop_age_levels,
-               "education":subpop_edu}
+    # hispanic
+    race = "HISP"
+    income_levels, subpop_income_levels = get_income_levels(race)
+    gender, subpop_gender_levels = get_gender_levels(race)
+    age, subpop_age_levels = get_age_levels(race)
+    edu, subpop_edu = get_school_levels(race)
+    query_info = {"income":income_levels, 
+                "gender":gender, "age":age,
+                "education":edu}
+    subpop_info = {"income":subpop_income_levels, 
+                "gender":subpop_gender_levels, "age":subpop_age_levels,
+                "education":subpop_edu}
 
-for tq in type_queries:
-    for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
-        survey_query = {type_query_column_map[tq]:query_values, "hisp_code":"Hispanic"}
-        all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values)
-        query_num += 1
+    for tq in type_queries:
+        for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
+            survey_query = {type_query_column_map[tq]:query_values, "hisp_code":"Hispanic"}
+            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values)
+            query_num += 1
 
-assert query_num == 20*2
+    assert query_num == 20*2
 
-to_save = os.path.join(os.getcwd(), "data_preprocessing", "queries", "generated_queries.yaml")
-with open(to_save, "w") as f:
-    yaml.dump(all_queries, f)
+    to_save = os.path.join(os.getcwd(), "data_preprocessing", "queries", "generated_queries.yaml")
+    with open(to_save, "w") as f:
+        yaml.dump(all_queries, f)
