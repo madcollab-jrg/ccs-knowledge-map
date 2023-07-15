@@ -56,7 +56,7 @@ survey_characteristic_odds = function(df, x, log = T){
   }else{
     metric = log(prob_x/prob_not_x)
   }
-  to_return = list("metric":metric, "data":temp)
+  to_return = list("metric"=metric, "data"=temp)
   if(!log){
     return(to_return)
   }else{
@@ -120,10 +120,8 @@ log_disparity = function(survey_df,surv_df,x_survey,x_surv){
   survey_odds = survey_characteristic_odds(survey_df, x_survey[['query']], log = T)
   surveillance_odds = surveillance_characteristic_odds(surv_df, x_surv, log = T)
   
-  log_disparity = survey_odds[["metric"]] - surveillance_odds[["metric"]]
-  to_return = list("log_disparity" = log_disparity, 
-                   "survey_data" = survey_odds[["data"]], 
-                   "surv_data" = surveillance_odds[["data"]])
+  log_disparity = survey_odds[["metric"]] - surveillance_odds
+  to_return = list("log_disparity" = log_disparity)
   return(to_return)
 }
 

@@ -1,7 +1,9 @@
 library(stringr)
+library(dplyr)
+library(tidyr)
 
 combine_files = function( head, filelist, type = "demo"){
-  n=32 # get the laste 32 rows
+  n=35 # get the laste 32 rows
   if(!type %in% c("demo", "questions", "all")){
     stop("type is not one of 'demo', 'questions', or 'all'")
   }
@@ -12,6 +14,29 @@ combine_files = function( head, filelist, type = "demo"){
     
     if(type == "demo"){
       dataset = dataset[,(ncol(dataset)-n+1):ncol(dataset)]
+      dataset = dataset %>% mutate(Year.of.Birth = 2023-Year.of.Birth)
+      
+      # age recode
+      dataset = dataset %>% 
+        mutate(Year.of.Birth = case_when( 
+          Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
+          Year.of.Birth >= 25 & Year.of.Birth <=34 ~ "25_to_34",
+          Year.of.Birth >= 35 & Year.of.Birth <=44 ~ "35_to_44",
+          Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45_to_54",
+          Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
+          Year.of.Birth >= 65 ~ "65_over"
+          ) )
+      
+      # education recode
+      dataset = dataset %>% 
+        mutate( edu_recode = case_when(
+          edu_recode == "Bachelor’s degree" ~ "COLLEGE",
+          edu_recode == "Bachelor's and higher" ~ "COLLEGE",
+          edu_recode == "Some college credit" ~ "SOME_COLLEGE",
+          edu_recode == "High school graduate" ~ "HS",
+          edu_recode == "Diploma or the equivalent (for example GED)" ~ "HS",
+          edu_recode == "Associate degree" ~ "COLLEGE"
+        ) )
     }else if(type == "questions"){
       dataset = dataset[,1:(ncol(dataset)-n)]
     }

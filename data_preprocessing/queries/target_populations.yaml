@@ -1,9 +1,9 @@
-race:
+race: "UNDERREP_TOTAL"
   
-age:
+age: "UNDERREP_TOTAL"
 
-income:
+income: "UNDERREP_TOTAL"
 
-education:
+education: "UNDERREP_TOTAL"
 
-
+gender: "UNDERREP_TOTAL"
