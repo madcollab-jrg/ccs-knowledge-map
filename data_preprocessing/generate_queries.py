@@ -1,7 +1,6 @@
 # generate queries that I want
 import yaml
-
-#UNDERREP_less25	UNDERREP_25_to_34	UNDERREP_35_to_49	UNDERREP_50_to_74	UNDERREP_75_to_99	UNDERREP_100_to_149	UNDERREP_150_to_199	UNDERREP_200_more
+import os
 
 def make_query(type_query:str, query_values:dict, subpop:str):
     query = {
@@ -107,6 +106,6 @@ for tq in type_queries:
 
 assert query_num == 20*2
 
-to_save = "/Users/christianvarner/Research/ccs-knowledge-map/data_preprocessing/queries/generated_queries.yaml"
+to_save = os.path.join(os.getcwd(), "data_preprocessing", "queries", "generated_queries.yaml")
 with open(to_save, "w") as f:
     yaml.dump(all_queries, f)
