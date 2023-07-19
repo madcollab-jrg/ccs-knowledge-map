@@ -280,10 +280,18 @@ participant_geo <- participant_geo %>%
                               ))
 # There are fewer categories in census data, need to reduce 
 participant_geo <- participant_geo %>% 
-  mutate(edu_recode=recode(edu, 
-                              'Master’s degree' ='Bachelor\'s and higher',
-                              'Professional degree' ='Bachelor\'s and higher',
-                              'Doctorate' ='Bachelor\'s and higher'
+  mutate(edu_recode=recode(edu,
+                              'Associate degree' = 'Some College or Associates Degree',
+                              'Some college credit' = 'Some College or Associates Degree', 
+                              'Bachelor’s degree' = 'Bachelors Degree or Higher',
+                              'Master’s degree' ='Bachelors Degree or Higher',
+                              'Professional degree' ='Bachelors Degree or Higher',
+                              'Doctorate' ='Bachelors Degree or Higher',
+                              'Diploma or the equivalent (for example GED)' = 'High School Graduate (Includes Equivalency)',
+                              'High school graduate' = 'High School Graduate (Includes Equivalency)',
+                              'Less than high school graduate' = 'Less than High School Diploma',
+                              'No degree' = 'Less than High School Diploma',
+                              'Trade/technical/vocational training' = 'Some College or Associates Degree'
                               
   ))
   

@@ -18,6 +18,9 @@ library(tidyverse)
 library(googleLanguageR)
 library(cld2)
 library(datasets)
+library(textstem)
+library(tidytext)
+library(DT)
 
 
 gl_auth("/Volumes/cbjackson2/ccs-knowledge/translate-ccs-ac3757553e16.json")
@@ -58,15 +61,14 @@ heat_survey <- heat_survey %>%
 
 There are four types of questions, we asked in the CCS surveys, the Knowledge Map will need to detect the question type and conduct analysis based on the type of question present
 
-#### Short/long Text Responses
+#### Short/long Text Questions
 
 These questions are open ended and include text responses. The set of questions will be cleaned using text mining procedures and then analyzed using bag of words and sentiment. The presentation of responses will be word clouds and sentiment by the demographic factors. Example question is Heat Survey Q1 "Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences."
 
-##### Clean the Text 
+##### Cleaning Open-ended Response Data 
 
-```{r cleaning-text}
-library(textstem)
-library(tidytext)
+```{r cleaning-openended-response}
+
 # https://www.tidytextmining.com/index.html 
 # https://paldhous.github.io/NICAR/2019/r-text-analysis.html 
 
@@ -75,58 +77,119 @@ malletwords <- scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mall
 
 # Extract example question and demographic data
 
-example_response <- heat_survey[,c(5,11:25)]
-names(example_response)[1] <- "response" 
+example_open <- heat_survey[,c(2,4,45:53,19)]
+names(example_open)[2] <- "response" 
 
-example_response$response_cleaned <- tolower(gsub('[[:punct:]]', ' ', example_response$response))
+example_open$response_cleaned <- tolower(gsub('[[:punct:]]', ' ', example_open$response))
 #response$cleaned <- removeWords(response$cleaned, c(stopwords("english"),malletwords))
 #response$cleaned <- lemmatize_words(response$cleaned)
 
 # Tokenize response_cleaned to create word cloud and summary responses by demographic groups
-unigram_response <- example_response %>% 
+unigram_response <- example_open %>% 
   unnest_tokens(unigram, 
                 response_cleaned, token = "ngrams", n = 1)
 
-
 # Melt data
 unigram_response.m <- unigram_response %>%
-  select(unigram) %>%
-  pivot_longer(!religion, names_to = "tokens", values_to = "count")
+  pivot_longer(!`Contribution ID`:Gender, names_to = "tokens", values_to = "words")
 
 # Summarize data by demographic factors - Gender, Hipanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth, Annual Household Income level, Education Level
 
-demo_response <- unigram_response %>% 
-  group_by(user_id, variable) %>% 
-  mutate(pettit_statistics = pettitt.test(value)$statistic,
-         pettit_estimate = max(pettitt.test(value)$estimate),
-         pettit_p = pettitt.test(value)$p.value,
-         user_comment_week = contribution_stats_weekly.m[['user_comment_week']][max(pettitt.test(value)$estimate)]) %>% 
-  distinct(variable,pettit_statistics,pettit_estimate,user_comment_week,pettit_p)
+unigram_summary <- unigram_response.m %>% 
+  group_by(Gender,words) %>% 
+  count()
 
+
+###### Bi-gram responses
+bigram_response <- example_response %>% 
+  unnest_tokens(unigram, 
+                response_cleaned, token = "ngrams", n = 2)
+
+bigram_response.m <- bigram_response %>%
+  pivot_longer(!response:Gender, names_to = "tokens", values_to = "words")
+
+bigram_summary <- bigram_response.m %>% 
+  group_by(Gender,words) %>% 
+  count()
+
+
+# Add sentiment to text ...  https://www.datacamp.com/tutorial/sentiment-analysis-R
+```
+
+##### Reporting Open Ended Responses
+
+```{r reporting-openended-response}
+
+datatable(unigram_summary)
+
+datatable(bigram_summary)
+
+```
+
+#### Matrix Questions
+
+Example question is Heat Survey Q2 "Please rate how frequently you have done each of the following during summer months and during extreme heat."
+
+##### Cleaning Matrix Responses  
+
+Detection might involve extracting the first four words of every response, if they all match, then the response is a multi-choice data object. 
+
+```{r cleaning-matrix-response}
+example_matrix <- heat_survey[,c(2,5,45:53,19)]
+names(example_matrix)[2] <- "response" 
+
+# Since the questions are in one column, we need to seperate them and then the question and respone variables
+example_matrix <- example_matrix %>% 
+  separate_rows(response, sep = "; ") %>%
+  separate(response, into = c("question", "answer"), sep = " - ")
+  
+matrix_summary <- example_matrix %>% 
+  group_by(Gender,question,answer) %>% 
+  count()
 
 
 ```
 
 
-##### Analyzing the Response 
-
-#### Matrix 
-
-Example question is Heat Survey Q2 "Please rate how frequently you have done each of the following during summer months and during extreme heat."
-
-##### Clearning Multi Choice Data 
-
-Detection might involve extracting the first four words of every response, if they all match, then the response is a multi-choice data object. 
-
-#### Multi Choice 
-
-##### Clearning Matrix Data 
-##### Analyzing the Response 
+##### Reporting Matrix Responses  
+```{r}
+datatable(matrix_summary)
+```
 
 
-##### Analyzing the Response 
+#### Multi-Choice Questions
 
-#### Select Box
+##### Cleaning Multi-Choice Responses 
+```{r}
+example_multi <- heat_survey[,c(2,7,45:53,19)]
+names(example_multi)[2] <- "response" 
 
-##### Clearning Select Box Data 
-##### Analyzing the Response 
+example_multi <- example_multi %>% 
+  separate_rows(response, sep = "; ")
+
+# Also extract other and run topic modeling? 
+  
+multi_summary <- example_multi %>% 
+  group_by(Gender,response) %>% 
+  count()
+
+```
+
+##### Reporting Multi-Choice Responses 
+```{r}
+datatable(multi_summary)
+```
+
+
+#### Select Box Questions
+
+##### Cleaning Select Box Responses 
+```{r}
+
+```
+
+##### Reporting Select Box Responses 
+```{r}
+
+```
+
