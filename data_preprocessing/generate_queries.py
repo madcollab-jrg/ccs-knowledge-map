@@ -2,7 +2,7 @@
 import yaml
 import os
 
-def make_query(type_query:str, query_values:dict, subpop:str):
+def make_query(type_query:str, query_values:dict, subpop:str, col:str, row:str):
     """
     Make one query that will be used to calculate the log disparity metric
 
@@ -18,7 +18,9 @@ def make_query(type_query:str, query_values:dict, subpop:str):
     query = {
         "type":type_query,
         "survey_query":{"query":query_values}, 
-        "surveillance_query":{"query":None, "subpop":subpop, "target_pop":None}
+        "surveillance_query":{"query":None, "subpop":subpop, "target_pop":None},
+        "col": col,
+        "row": row
         }
     return query
 
@@ -96,7 +98,7 @@ if __name__ == "__main__":
 
         for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
             survey_query = {type_query_column_map[tq]:query_values, "race_recode":"Black or African American"}
-            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values)
+            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values, "Black", query_values)
             query_num += 1
 
     # hispanic
@@ -115,7 +117,7 @@ if __name__ == "__main__":
     for tq in type_queries:
         for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
             survey_query = {type_query_column_map[tq]:query_values, "hisp_code":"Hispanic"}
-            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values)
+            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values, "Hispanice", query_values)
             query_num += 1
 
     assert query_num == 20*2
