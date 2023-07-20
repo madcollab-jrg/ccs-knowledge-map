@@ -46,7 +46,9 @@ get_dashboard_body = function(){
                             column(width = 2, survey_box_ui(surveys)),
                             column(width = 4, get_data_description_ui()),
                             column(width = 6, representative_ui() ),
-                            column(width = 12, box(title = "Survey Information Place Holder", width = 12) )
+                            column(width = 12, box(title = "Survey Information Place Holder", width = 12),
+                            tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }')))
+                                   )
     )
   return(dashboard_body)
 }
@@ -90,6 +92,7 @@ server <- function(input, output){
   get_data_description_reaction(input, output, surveyInputId, survey_data )
   
   # Representation 
+  get_representative_reactive(input, output)
   
 }
 
