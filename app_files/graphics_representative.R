@@ -21,7 +21,7 @@ get_representative_reactive = function(input, output){
                            
                             if(input[["survey"]] != "" && input$census_level != "" ){
                               
-                              tbl_data = data.frame(matrix(ncol=2, nrow = 20))
+                              tbl_data = data.frame(matrix(ncol=2, nrow = 20)) # TODO: Replace with load data
                               colnames(tbl_data) = c("Black", "Hispanic")
                               rownames(tbl_data) = c("Male", "Female", 
                                                      "18-24", "25-34", "35-44", "45-54", "55-64", "65 or over",
