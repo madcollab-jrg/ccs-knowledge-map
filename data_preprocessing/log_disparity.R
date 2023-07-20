@@ -29,6 +29,7 @@ survey_characteristic_odds = function(df, x, log = T){
     stop("No characteristics given!")
   }
   
+  df = df %>% filter( !is.na(state_fips) )
   n = nrow(df)
   
   if (n == 0){

@@ -7,6 +7,7 @@
 
 library(yaml)
 library(methods)
+library(dplyr)
 source("data_preprocessing/log_disparity.R")
 
 # query methods for creating calls to the csv files
@@ -56,6 +57,8 @@ get_survey_statistics = function(survey, census_level, queries, census_code, tar
   survey_df = read.csv(survey)
   for(i in 1:n){
     query_to_be_generated = queries[[i]]
+    
+    # add census code to the query
     if(census_level == "county"){
       if(census_code == 55025){
         query_to_be_generated$survey_query$query[[ CENSUS_TO_SURVEY_COL[[census_level]] ]] = 25
