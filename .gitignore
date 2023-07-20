@@ -7,3 +7,4 @@ questions.txt
 data_preprocessing/test/
 .R*
 ccs-knowledge-map.Rproj
+data_preprocessing/results/.
