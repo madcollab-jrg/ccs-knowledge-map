@@ -54,7 +54,7 @@ def get_age_levels(race):
     return  age_levels, subpop_age_levels
 
 def get_gender_levels(race):
-    gender = ["Male", "Female"]
+    gender = ["Female", "Male"]
     subpop_gender_levels = [race+"_FEMALE", race+"_MALE"]
     return gender, subpop_gender_levels
 
