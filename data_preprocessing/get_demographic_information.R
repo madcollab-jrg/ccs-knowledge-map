@@ -26,6 +26,15 @@ combine_files = function( head, filelist, type = "demo"){
           Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
           Year.of.Birth >= 65 ~ "65_over"
           ) )
+      # edu recode
+      dataset = dataset %>%
+        mutate(edu_recode = case_when(
+          edu_recode == "Less than High School Diploma" ~ "LESS_THAN_HS",
+          edu_recode == "High School Graduate (Includes Equivalency)" ~ "HS",
+          edu_recode == "Some College or Associates Degree" ~ "SOME_COLLEGE",
+          edu_recode == "Bachelors Degree or Higher" ~ "COLLEGE",
+          .default = edu_recode
+        ))
     }else if(type == "questions"){
       dataset = dataset[,1:(ncol(dataset)-n)]
     }

@@ -35,21 +35,16 @@ get_census_items = function(census_item){
     survey_questions = c() # place holder
     
     # TODO: probably save this locally or within app files
-    file_loc = "/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/census_values.csv"
-    possible_values = read.csv(file_loc)
-    if(census_item == "'Census Track'"){
-        values = unique(possible_values$Location)
-        survey_questions = values[!is.na(values)]
+    #file_loc = "/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/census_values.csv"
+    file_loc = paste(getwd(),"/census_items/census_items.yaml", sep="")
+    possible_values = read_yaml(file_loc)
+    if(census_item == "'Census Tract'"){
+        survey_questions = possible_values$tract
     }else if(census_item == "'Census State'"){
         # TODO: is there anything else to put here
         survey_questions = c("Wisconsin")
     }else if(census_item == "'Census County'"){
-        values = unique(possible_values$COUNTY)
-        survey_questions = values[!is.na(values)]
-    }else if(census_item == "'Census Block'"){
-        # TODO: what to do here
-        values = unique(possible_values$census_block_full_name)
-        survey_questions = values[!is.na(values)]
+        survey_questions = possible_values$county
     }
     return(survey_questions)
 }
@@ -125,7 +120,7 @@ survey_box_ui <- function(surveys){
                 # use to compute representation
                 selectizeInput(inputId = "census_level",
                                label = div(style = "font-size:10px", "Representativeness Comparison Level"),
-                               choices = c("Census Track", "Census State", "Census County"),
+                               choices = c("Census Tract", "Census State", "Census County"),
                                options = list(
                                    placeholder = 'Please select an option below',
                                    onInitialize = I('function() { this.setValue(""); }')
@@ -136,7 +131,7 @@ survey_box_ui <- function(surveys){
                                 label = div(style = "font-size:10px", "Census Item"),
                                 choices = c(""))
                 ),
-                make_conditional_panel_census("'Census Track'", "census_track_items"),
+                make_conditional_panel_census("'Census Tract'", "census_tract_items"),
                 make_conditional_panel_census("'Census State'", "census_state_items"),
                 make_conditional_panel_census("'Census County'", "census_county_items"),
                 actionButton(inputId = "run_report", label = "Run Report"),

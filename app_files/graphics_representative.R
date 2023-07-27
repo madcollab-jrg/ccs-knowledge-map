@@ -9,19 +9,15 @@ representative_ui = function(){
   return(ui)
 }
 
-get_representative_reactive = function(input, output){
+get_representative_reactive = function(input, output, file_loc = NA){
   reaction = observeEvent(input$run_report,
                           {
                             # code
                             
-                            #data = get(load(paste(getwd(),"data_preprocessing",
-                                        #"results","air-quality-survey",
-                                        #"air-quality-survey-state-55.RData",
-                                        #sep="/")))
-                           
                             if(input[["survey"]] != "" && input$census_level != "" ){
-                              
-                              tbl_data = data.frame(matrix(ncol=2, nrow = 20)) # TODO: Replace with load data
+                              data_loc = paste(getwd(),"/../data_preprocessing/results/", file_loc(), sep = "")
+                              tbl_data = get(load(data_loc))
+                              message(tbl_data)
                               colnames(tbl_data) = c("Black", "Hispanic")
                               rownames(tbl_data) = c("Male", "Female", 
                                                      "18-24", "25-34", "35-44", "45-54", "55-64", "65 or over",
@@ -35,47 +31,16 @@ get_representative_reactive = function(input, output){
                                                      )
                               gt_tbl = gt(tbl_data, rownames_to_stub = T)
                               
-                              
                               gt_tbl = 
                                 gt_tbl %>%
                                 tab_row_group(label = "Gender", rows = 1:2)%>%
                                 tab_row_group(label = "Age", rows = 3:8)%>%
                                 tab_row_group(label = "Education", rows = 9:12)%>%
                                 tab_row_group(label = "Income", rows = 13:20) %>%
-                                tab_header( title = "Survey Representativness" )
+                                tab_header( title = "Survey Representativness" ) %>%
+                                data_color( method = "numeric", rows = where(~ is.numeric(.x) & max(.x, na.rm = T) <= 1E6), 
+                                            columns = where(~ is.numeric( ) & max(.x, na.rm = T) <= 1E6), palette = c("red", "blue"))
                               output$rep_table = render_gt(expr = gt_tbl)
-                              
-                              
-                              #output$gender_title = renderText( "Gender" )
-                              #output$age_title = renderText( "Age" )
-                              #output$edu_title = renderText( "Education" )
-                              #output$income_title = renderText( "Income" )
-                              
-                              
-                              #gender = data.frame(matrix(ncol=2, nrow = 2))
-                              #colnames(gender) = c("Black", "Hispanic")
-                              #rownames(gender) = c("Male", "Female")
-                              
-                              
-                              #age = data.frame(matrix(ncol=2, nrow = 6))
-                              #colnames(age) = c("Black", "Hispanic")
-                              #rownames(age) = c("18-24", "25-34", "35-44", "45-54", "55-64", "65 or over")
-                              #output$age_rep_data_table = renderTable(age, rownames = T)
-                              
-                              #education = data.frame(matrix(ncol=2, nrow = 4))
-                              #colnames(education) = c("Black", "Hispanic")
-                              #rownames(education) = c("Less than high school", "High-school graduate",
-                                                      #"Some college/Technical school",
-                                                      #"Bachelor's and higher")
-                              
-                              
-                              #income = data.frame(matrix(ncol=2, nrow = 8))
-                              #colnames(income) = c("Black", "Hispanic")
-                              #rownames(income) = c("Less than $25,000", "$25,000 to $34,999",
-                              #                     "$35,000 to $49,999", "$50,000 to $74,999",
-                              #                     "$75,000 to $99,999", "$100,000 to $149,999",
-                              #                     "$150,000 to $199,999", "$200,000 or more")
-                              
                             }
                           })
   

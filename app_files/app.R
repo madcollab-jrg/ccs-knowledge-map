@@ -4,6 +4,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(stringr)
+library(yaml)
 
 source("selection_box.R")
 source("data_description_box.R")
@@ -22,15 +23,22 @@ surveyInputId = c("Air Quality Survey" = "air_quality_qs",
                   "Air Quality Map" = "air_quality_map_qs",
                   "Tree Canopy Map" = "tree_canopy_map_qs",
                   "Urban Heat Map" = "urban_heat_map_qs")
-input_to_data_demo = c("Air Quality Survey" = "air-quality-survey/demographic.csv",
-                   "Community Ideas Survey" = "ej-report/demographic.csv",
-                   "Story From the Community Survey" = "ej-storytile/demographic.csv",
-                   "Environmental Justice Survey" = "ej-survey/demographic.csv", 
-                   "Tree Canopy Survey" = "tree-canopy-survey/demographic.csv",
-                   "Urban Heat Survey" = "urban-heat-survey/demographic.csv", 
-                   "Urban Heat Map" = "urban-heat-map/demographic.csv",
-                   "Air Quality Map" = "air-quality-map/demographic.csv",
-                   "Tree Canopy Map" = "tree-canopy-map/demographic.csv") 
+censusInputId = c("Census Tract"="census_tract_items", 
+                  "Census State"="census_state_items", 
+                  "Census County"="census_county_items")
+input_to_data_demo = c("Air Quality Survey" = "air-quality-survey",
+                   "Community Ideas Survey" = "ej-report",
+                   "Story From the Community Survey" = "ej-storytile",
+                   "Environmental Justice Survey" = "ej-survey", 
+                   "Tree Canopy Survey" = "tree-canopy-survey",
+                   "Urban Heat Survey" = "urban-heat-survey", 
+                   "Urban Heat Map" = "urban-heat-map",
+                   "Air Quality Map" = "air-quality-map",
+                   "Tree Canopy Map" = "tree-canopy-map") 
+census_input_to_data = c("Census Tract"="tract", 
+                       "Census State"="state", 
+                       "Census County"="county")
+census_level_input_to_data = read_yaml("census_items/census_level_to_results.yaml")
 input_to_data_survey = c("Air Quality Survey" = "air-quality/air_survey.csv",
                         "Community Ideas Survey" = "ej-report/ej_report.csv",
                         "Story From the Community Survey" = "ej-storytile/ej_story.csv",
@@ -88,11 +96,29 @@ server <- function(input, output){
     # import census data
   })
   
+  file_to_get = reactive({
+    input$run_report
+    if(input$survey != "" & input$census_level != ""){
+      census_level = census_input_to_data[[input$census_level]]
+      census_id = censusInputId[input$census_level]
+      
+      print(census_id)
+      print(input[[census_id]])
+      
+      key = input[[census_id]]
+      
+      file = paste( input_to_data_demo[[input$survey]], census_level, census_level_input_to_data[["data"]][[census_level]][[ key ]], sep = "-")
+      file_loc = paste(input_to_data_demo[[input$survey]],"/",file,".RData",sep="")
+    }else{
+      file = ""
+    }
+  })
+  
   # middle panel data description
   get_data_description_reaction(input, output, surveyInputId, survey_data )
   
   # Representation 
-  get_representative_reactive(input, output)
+  get_representative_reactive(input, output, file_to_get)
   
 }
 

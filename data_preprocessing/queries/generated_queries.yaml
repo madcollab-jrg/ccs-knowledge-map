@@ -155,7 +155,7 @@ query2:
       race_recode: Black or African American
   type: income
 query20:
-  col: Hispanice
+  col: Hispanic
   row: Less than $25,000
   surveillance_query:
     query: null
@@ -167,7 +167,7 @@ query20:
       income_recode: Less than $25,000
   type: income
 query21:
-  col: Hispanice
+  col: Hispanic
   row: $25,000 to $34,999
   surveillance_query:
     query: null
@@ -179,7 +179,7 @@ query21:
       income_recode: $25,000 to $34,999
   type: income
 query22:
-  col: Hispanice
+  col: Hispanic
   row: $35,000 to $49,999
   surveillance_query:
     query: null
@@ -191,7 +191,7 @@ query22:
       income_recode: $35,000 to $49,999
   type: income
 query23:
-  col: Hispanice
+  col: Hispanic
   row: $50,000 to $74,999
   surveillance_query:
     query: null
@@ -203,7 +203,7 @@ query23:
       income_recode: $50,000 to $74,999
   type: income
 query24:
-  col: Hispanice
+  col: Hispanic
   row: $75,000 to $99,999
   surveillance_query:
     query: null
@@ -215,7 +215,7 @@ query24:
       income_recode: $75,000 to $99,999
   type: income
 query25:
-  col: Hispanice
+  col: Hispanic
   row: $100,000 to $149,999
   surveillance_query:
     query: null
@@ -227,7 +227,7 @@ query25:
       income_recode: $100,000 to $149,999
   type: income
 query26:
-  col: Hispanice
+  col: Hispanic
   row: $150,000 to $199,999
   surveillance_query:
     query: null
@@ -239,7 +239,7 @@ query26:
       income_recode: $150,000 to $199,999
   type: income
 query27:
-  col: Hispanice
+  col: Hispanic
   row: $200,000 or more
   surveillance_query:
     query: null
@@ -251,7 +251,7 @@ query27:
       income_recode: $200,000 or more
   type: income
 query28:
-  col: Hispanice
+  col: Hispanic
   row: Female
   surveillance_query:
     query: null
@@ -263,7 +263,7 @@ query28:
       hisp_code: Hispanic
   type: gender
 query29:
-  col: Hispanice
+  col: Hispanic
   row: Male
   surveillance_query:
     query: null
@@ -287,7 +287,7 @@ query3:
       race_recode: Black or African American
   type: income
 query30:
-  col: Hispanice
+  col: Hispanic
   row: 18_to_24
   surveillance_query:
     query: null
@@ -299,7 +299,7 @@ query30:
       hisp_code: Hispanic
   type: age
 query31:
-  col: Hispanice
+  col: Hispanic
   row: 25_to_34
   surveillance_query:
     query: null
@@ -311,7 +311,7 @@ query31:
       hisp_code: Hispanic
   type: age
 query32:
-  col: Hispanice
+  col: Hispanic
   row: 35_to_44
   surveillance_query:
     query: null
@@ -323,7 +323,7 @@ query32:
       hisp_code: Hispanic
   type: age
 query33:
-  col: Hispanice
+  col: Hispanic
   row: 45_to_54
   surveillance_query:
     query: null
@@ -335,7 +335,7 @@ query33:
       hisp_code: Hispanic
   type: age
 query34:
-  col: Hispanice
+  col: Hispanic
   row: 55_to_64
   surveillance_query:
     query: null
@@ -347,7 +347,7 @@ query34:
       hisp_code: Hispanic
   type: age
 query35:
-  col: Hispanice
+  col: Hispanic
   row: 65_over
   surveillance_query:
     query: null
@@ -359,7 +359,7 @@ query35:
       hisp_code: Hispanic
   type: age
 query36:
-  col: Hispanice
+  col: Hispanic
   row: LESS_THAN_HS
   surveillance_query:
     query: null
@@ -371,7 +371,7 @@ query36:
       hisp_code: Hispanic
   type: education
 query37:
-  col: Hispanice
+  col: Hispanic
   row: HS
   surveillance_query:
     query: null
@@ -383,7 +383,7 @@ query37:
       hisp_code: Hispanic
   type: education
 query38:
-  col: Hispanice
+  col: Hispanic
   row: SOME_COLLEGE
   surveillance_query:
     query: null
@@ -395,7 +395,7 @@ query38:
       hisp_code: Hispanic
   type: education
 query39:
-  col: Hispanice
+  col: Hispanic
   row: COLLEGE
   surveillance_query:
     query: null

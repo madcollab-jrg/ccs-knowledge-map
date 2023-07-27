@@ -117,7 +117,7 @@ if __name__ == "__main__":
     for tq in type_queries:
         for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
             survey_query = {type_query_column_map[tq]:query_values, "hisp_code":"Hispanic"}
-            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values, "Hispanice", query_values)
+            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values, "Hispanic", query_values)
             query_num += 1
 
     assert query_num == 20*2

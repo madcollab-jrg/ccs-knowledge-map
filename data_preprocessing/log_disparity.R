@@ -33,20 +33,15 @@ survey_characteristic_odds = function(df, x, log = T){
   n = nrow(df)
   
   if (n == 0){
-    stop("Dataframe has 0 rows!")
+    warning("n is 0")
   }
   
   count_x = 0
-  temp = df
   for(characteristic in names(x)){
-    temp = temp %>% 
+    df = df %>% 
       filter( !! sym(characteristic) == x[[characteristic]] )
   }
-  count_x = nrow(temp)
-  
-  if (count_x == 0){
-    warning("Number of records matching the characteristics given is 0, this could be a mistake!")
-  }
+  count_x = nrow(df)
   
   # calculation of odds
   prob_x = count_x/n
@@ -57,11 +52,10 @@ survey_characteristic_odds = function(df, x, log = T){
   }else{
     metric = log(prob_x/prob_not_x)
   }
-  to_return = list("metric"=metric)
   if(!log){
-    return(to_return)
+    return(metric)
   }else{
-    return(to_return)
+    return(metric)
   }
 }
 
@@ -76,19 +70,20 @@ surveillance_characteristic_odds = function(df, x, log = T){
   subpop = x[['subpop']] # column name where data is
   
   # get data from query and check that there is a unique record
-  temp = df
   for(c in names(query)){
-    temp = temp %>% filter( !! sym(c) == query[[c]] )
-  }
-  if(nrow(temp) > 1){
-    stop("Multiple records in surveillance dataset with this query!")
+    df = df %>% filter( !! sym(c) == query[[c]] )
   }
   
   # get sum of target sub-population and subpopulation counts
   count_x = 0
-  n = temp[[ x[['target_pop']] ]]
+  n = df[[ x[['target_pop']] ]]
+  
+  if(n == 0){
+    warning("n is 0")
+  }
+  
   for(t in subpop){
-    count_x = count_x + temp[[t]]
+    count_x = count_x + df[[t]]
   }
   
   prob_x = count_x/n
@@ -122,8 +117,9 @@ log_disparity = function(survey_df,surv_df,x_survey,x_surv){
   survey_odds = survey_characteristic_odds(survey_df, x_survey[['query']], log = T)
   surveillance_odds = surveillance_characteristic_odds(surv_df, x_surv, log = T)
   
-  log_disp = survey_odds[["metric"]] - surveillance_odds
+  log_disp = survey_odds - surveillance_odds
   to_return$log_disparity = log_disp
+
   return(to_return)
 }
 

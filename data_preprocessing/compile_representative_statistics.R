@@ -110,9 +110,10 @@ HEAD = "/Users/christianvarner/Research/ccs-knowledge-map/data_preprocessing/res
 # Main
 # ----------------------------------------------------------------------------------------------------------
 demographic_data = "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
-surveys = c("air-quality-map", "air-quality-survey", "tree-canopy-map", "tree-canopy-survey", "urban-heat-map", "urban-heat-survey", "ej-report", "ej-storytile", "ej-survey")
-
+surveys = c("air-quality-map", "air-quality-survey", "tree-canopy-map", "tree-canopy-survey", "urban-heat-map", 
+            "urban-heat-survey", "ej-report", "ej-storytile", "ej-survey")
 #surveys = c("air-quality-survey")
+#surveys = c("ej-survey")
 
 census_codes = get_yaml("data_preprocessing/rosetta/stone.yaml")
 queries_to_compile = get_yaml("data_preprocessing/queries/generated_queries.yaml") # all african american income
