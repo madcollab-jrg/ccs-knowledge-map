@@ -7,5 +7,5 @@ questions.txt
 data_preprocessing/test/
 .R*
 ccs-knowledge-map.Rproj
-data_preprocessing/results
+data_preprocessing/results_*
 data_preprocessing/results_old
