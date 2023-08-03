@@ -35,6 +35,11 @@ combine_files = function( head, filelist, type = "demo"){
           edu_recode == "Bachelors Degree or Higher" ~ "COLLEGE",
           .default = edu_recode
         ))
+      
+      dataset = dataset %>%
+        mutate(min = case_when( (hisp_code == "Hispanic" | race_recode == "Black or African American") ~ "yes",
+                                .default = "no") )
+      
     }else if(type == "questions"){
       dataset = dataset[,1:(ncol(dataset)-n)]
     }

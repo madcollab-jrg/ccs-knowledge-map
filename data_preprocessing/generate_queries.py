@@ -119,8 +119,25 @@ if __name__ == "__main__":
             survey_query = {type_query_column_map[tq]:query_values, "hisp_code":"Hispanic"}
             all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values, "Hispanic", query_values)
             query_num += 1
+    
+    race = "UNDERREP"
+    income_levels, subpop_income_levels = get_income_levels(race)
+    gender, subpop_gender_levels = get_gender_levels(race)
+    age, subpop_age_levels = get_age_levels(race)
+    edu, subpop_edu = get_school_levels(race)
+    query_info = {"income":income_levels, 
+                "gender":gender, "age":age,
+                "education":edu}
+    subpop_info = {"income":subpop_income_levels, 
+                "gender":subpop_gender_levels, "age":subpop_age_levels,
+                "education":subpop_edu}
+    for tq in type_queries:
+        for query_values, subpop_values in zip(query_info[tq], subpop_info[tq]):
+            survey_query = {type_query_column_map[tq]:query_values, "min":"yes"}
+            all_queries["query{}".format(query_num)] = make_query(tq, survey_query, subpop_values, "Total", query_values)
+            query_num += 1
 
-    assert query_num == 20*2
+    #assert query_num == 20*2
 
     to_save = os.path.join(os.getcwd(), "data_preprocessing", "queries", "generated_queries.yaml")
     with open(to_save, "w") as f:

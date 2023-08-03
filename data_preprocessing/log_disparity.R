@@ -7,7 +7,7 @@
 library(rlang)
 library(dplyr)
 
-survey_characteristic_odds = function(df, x, log = T){
+survey_characteristic_odds = function(df, x, census_level, log = T){
   # Given df that assumed to hold survey data 
   # calculate the probability of
   # being of type x (g(x) = 1) divided by probability
@@ -29,7 +29,10 @@ survey_characteristic_odds = function(df, x, log = T){
     stop("No characteristics given!")
   }
   
-  df = df %>% filter( !is.na(state_fips) )
+  # two questions: 
+  #   1) how representative is the survey using XX as a surveillance dataset
+  #   2) How representative is the subpopulation of our survey using XX as a surveillance dataset
+  df = df %>% filter( !is.na(state_fips) & !! sym(census_level) == x[[census_level]] ) # think I need to change this -- should filter on location first
   n = nrow(df)
   
   if (n == 0){
@@ -57,10 +60,6 @@ survey_characteristic_odds = function(df, x, log = T){
   }else{
     return(metric)
   }
-}
-
-compute_target_pop = function(df, x){
-  
 }
 
 surveillance_characteristic_odds = function(df, x, log = T){
@@ -96,7 +95,7 @@ surveillance_characteristic_odds = function(df, x, log = T){
   }
 }
 
-log_disparity = function(survey_df,surv_df,x_survey,x_surv){
+log_disparity = function(survey_df,surv_df,x_survey,x_surv,census_level){
   # Implementation of log difference between odds
   # of having characteristics x in the survey and 
   # odds of having characteristics x in the surveillance
@@ -114,7 +113,7 @@ log_disparity = function(survey_df,surv_df,x_survey,x_surv){
   #   Differences in odds and the filtered dataset
   
   to_return = list("log_disparity" = NA)
-  survey_odds = survey_characteristic_odds(survey_df, x_survey[['query']], log = T)
+  survey_odds = survey_characteristic_odds(survey_df, x_survey[['query']], census_level, log = T)
   surveillance_odds = surveillance_characteristic_odds(surv_df, x_surv, log = T)
   
   log_disp = survey_odds - surveillance_odds
