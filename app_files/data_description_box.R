@@ -1,3 +1,6 @@
+source("table.R")
+library(gt)
+
 get_data_description_ui = function(){
   # Data description UI. 
   #
@@ -6,7 +9,9 @@ get_data_description_ui = function(){
   #   the data description UI. See get_data_description_reaction()
   #   for the components.
   data_description = box( title = "Data Description", 
-                          p( textOutput(outputId = "survey_selection") ),
+                          #div(style = "margin-top: -30px"),
+                          #p( textOutput(outputId = "survey_selection") ),
+                          gt_output("summary_table"),
                           width = 12 )
   
   return(data_description)
@@ -29,14 +34,14 @@ print_questions = function(survey.selected, survey.selected.question, output, n)
     }
     
     #print output
-    output$survey_selection = renderText( sprintf("In the %s, for \"%s\" there was %d responses", 
+    output$survey_selection = renderText( sprintf("In the %s, for \"%s\" there was %d total responses", 
                                                   survey.selected, 
                                                   survey_q_to_print, 
                                                   n  ))
   }
 }
 
-get_data_description_reaction = function(input, output, surveyIds, survey_data = NA, census_data = NA){
+get_data_description_reaction = function(input, output, surveyIds, survey_data = NA, census_data = NA, file_loc = NA){
   # Reaction event when the button Run Report is pressed to populate the data description
   # box. What is printed is the survey selected, question selected (if there is one), and
   # the number of people that responded to the survey. Also there will be table as a data summary
@@ -68,6 +73,29 @@ get_data_description_reaction = function(input, output, surveyIds, survey_data =
                      n = nrow(survey_data())
                    }
                    print_questions( survey.selected, survey.selected.question, output, n )
+                   if(input$census_level != ""){
+                     data_loc = paste(getwd(),"/../data_preprocessing/results_summary/", file_loc(), sep = "")
+                     tbl_data = get_table(data_loc)[[1]]
+                     gt_tbl = gt(tbl_data, rownames_to_stub = T)
+                     
+                     gt_tbl = 
+                       gt_tbl %>%
+                       tab_row_group(label = "Gender", rows = 1:2)%>%
+                       tab_row_group(label = "Age", rows = 3:8)%>%
+                       tab_row_group(label = "Education", rows = 9:12)%>%
+                       tab_row_group(label = "Income", rows = 13:20) %>%
+                       tab_header( title = "Number of Survey Responses" ) %>%
+                       tab_footnote(footnote = paste("Counts are from minority participates in ", input[[census_data()]]),
+                                    location = cells_title())%>%
+                       tab_style(
+                         style = cell_text(size = pct(80)),
+                         locations = list(cells_body(), cells_title(), cells_stub(), cells_column_labels(), cells_row_groups() )
+                       ) %>%
+                       tab_options(data_row.padding = px(2), footnotes.font.size = pct(65))
+                     
+                     output$summary_table = render_gt(gt_tbl)
+                       
+                   }
                  }
                })
   return(reaction)

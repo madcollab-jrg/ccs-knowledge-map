@@ -89,7 +89,6 @@ get_survey_statistics = function(survey, census_level, queries, census_code, tar
     surveillance_data_loc = paste(CENSUS_MAP[[census_level]], QUERY_TYPE_MAP[[query_type]], sep = "")
     surveillance = read.csv(surveillance_data_loc)
     statistics = log_disparity(survey_df, surveillance, query$surveyq, query$surveillanceq, CENSUS_TO_SURVEY_COL[[census_level]])
-    #to_return[[paste(query_type,"_",query$surveillanceq$subpop, sep = "")]] = statistics[["log_disparity"]]
     data = statistics[["log_disparity"]]
     if(is.na(data) | is.infinite(data)){
       data = NA
@@ -109,14 +108,14 @@ CENSUS_MAP = c("tract" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/t
 CENSUS_TO_SURVEY_COL = c("tract" = "census_tract_full", 
                          "state" = "state_fips",
                          "county" = "county_fips")
-HEAD = "/Users/christianvarner/Research/ccs-knowledge-map/data_preprocessing/results/"
+HEAD = "/Users/christianvarner/Research/ccs-knowledge-map/data_preprocessing/results_representativeness/"
 
 # Main
 # ----------------------------------------------------------------------------------------------------------
 demographic_data = "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
-#surveys = c("air-quality-map", "air-quality-survey", "tree-canopy-map", "tree-canopy-survey", "urban-heat-map", 
-#            "urban-heat-survey", "ej-report", "ej-storytile", "ej-survey")
-surveys = c("air-quality-survey")
+SURVEYS = c("ej-report", "ej-storytile", "ej-survey")
+#SURVEYS = c("urban-heat-map", "urban-heat-survey", "ej-report", "ej-storytile", "ej-survey")
+#surveys = c("air-quality-survey")
 #surveys = c("ej-survey")
 
 census_codes = get_yaml("data_preprocessing/rosetta/stone.yaml")
@@ -125,13 +124,14 @@ target_pops = get_yaml("data_preprocessing/queries/target_populations.yaml")
 
 start_time <- Sys.time()
 i = 0
-for(survey in surveys){
+for(survey in SURVEYS){
   survey_dataset = paste(demographic_data,survey,"/","demographic_data.csv",sep="")
   for(rep_level in names(census_codes)){
     for(census_code in census_codes[[rep_level]]){
       name = paste(HEAD,survey,"/",survey, "-", rep_level, "-", census_code, ".RData", sep = "")
+      print(paste("Starting:", name))
       get_survey_statistics(survey_dataset, rep_level, queries_to_compile, census_code, target_pops, save = T, fname = name)
-      print(name)
+      print(paste("Finished:", name))
     }
   }
 }

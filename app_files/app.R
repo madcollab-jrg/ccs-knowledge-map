@@ -52,8 +52,8 @@ input_to_data_survey = c("Air Quality Survey" = "air-quality/air_survey.csv",
 get_dashboard_body = function(){
   dashboard_body = tabItem(tabName = "rep",
                             column(width = 2, survey_box_ui(surveys)),
-                            column(width = 4, get_data_description_ui()),
-                            column(width = 6, representative_ui() ),
+                            column(width = 5, get_data_description_ui()),
+                            column(width = 5, representative_ui() ),
                             column(width = 12, box(title = "Survey Information Place Holder", width = 12),
                             tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }')))
                                    )
@@ -90,10 +90,8 @@ server <- function(input, output){
     })
   
   census_data = reactive({
-    input$run_report
-    req(input$rep_comp)
-    req(input$census_item)
-    # import census data
+    census_level = census_input_to_data[[input$census_level]]
+    census_id = censusInputId[input$census_level]
   })
   
   file_to_get = reactive({
@@ -115,7 +113,7 @@ server <- function(input, output){
   })
   
   # middle panel data description
-  get_data_description_reaction(input, output, surveyInputId, survey_data )
+  get_data_description_reaction(input, output, surveyInputId, survey_data, census_data, file_loc = file_to_get)
   
   # Representation 
   get_representative_reactive(input, output, file_to_get)
