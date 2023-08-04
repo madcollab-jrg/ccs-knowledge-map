@@ -21,41 +21,17 @@ library(datasets)
 library(textstem)
 library(tidytext)
 library(DT)
+library(ggraph)
+library(igraph)
 
-
-gl_auth("/Volumes/cbjackson2/ccs-knowledge/translate-ccs-ac3757553e16.json")
-gl_auto_auth()
 ###########################################################
 ####### IMPORT/COMBINE DATASETS FROM RESEARCH DRIVE #######
 ###########################################################
 
-########## URBAN HEAT ########## 
-
-
 # Import file survey and map files from Research Drive. Ignore the first 7 lines that have metadata for the element
-heat_survey <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv") # move to Zoonvierse Datasets folder
+heat_survey <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv") 
 heat_survey <- heat_survey[,-1]
 
-heat_translate <- heat_survey %>% 
-  select(c(4,8,11))%>%
-  mutate(across(everything(), ~ gl_translate(.x, target = "en") )
-  ) 
-
-# TRANSLATIONS
-heat_survey <- heat_survey %>%
-  mutate(
-    `Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences.` = NULL,
-    `Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences.`=
-      heat_translate[[1]]$translatedText,.after=3) %>%
-  mutate(  
-    `What can local government do to help mitigate urban heat in your community?` = NULL,
-    `What can local government do to help mitigate urban heat in your community?`=
-      heat_translate[[2]]$translatedText,.after=7) %>%
-  mutate(
-    `In order to become more informed about urban heat and mitigation strategies, what specific information would you require?` = NULL,
-    `In order to become more informed about urban heat and mitigation strategies, what specific information would you require?`=
-      heat_translate[[3]]$translatedText,.after=10
-  )
 
 ```
 
@@ -100,20 +76,62 @@ unigram_summary <- unigram_response.m %>%
   count()
 
 
+unigram_plot <- unigram_summary %>%
+        group_by(Gender) %>%
+        #head(10) %>%
+        ggplot(aes(color = Gender)) + 
+        geom_col(aes(y = n , x = reorder(words,n)),
+                 fill = "green") +
+        coord_flip() + 
+        facet_grid()
+        theme_linedraw() + 
+        xlab(label = "Bigrams") + 
+        ggtitle("Gender Bigrams")
+
+
+# https://chryswoods.com/text_analysis_r/ngrams.html 
+unigram_graph <- unigram_summary %>%
+                  select(words) %>%
+                  graph_from_data_frame()
+
+        
+ggraph(unigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+
 ###### Bi-gram responses
-bigram_response <- example_response %>% 
+bigram_response <- example_open %>% 
   unnest_tokens(unigram, 
                 response_cleaned, token = "ngrams", n = 2)
 
 bigram_response.m <- bigram_response %>%
-  pivot_longer(!response:Gender, names_to = "tokens", values_to = "words")
+  pivot_longer(!`Contribution ID`:Gender, names_to = "tokens", values_to = "words")
 
 bigram_summary <- bigram_response.m %>% 
   group_by(Gender,words) %>% 
   count()
 
 
-# Add sentiment to text ...  https://www.datacamp.com/tutorial/sentiment-analysis-R
+biigram_graph <- bigram_summary %>%
+                  select(words) %>%
+                  graph_from_data_frame()
+
+        
+ggraph(biigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+
+
+# Add sentiment to text ...  https://www.datacamp.com/tutorial/sentiment-analysis-R 
+
+
+# Create visualization
+
+
 ```
 
 ##### Reporting Open Ended Responses
@@ -137,23 +155,93 @@ Detection might involve extracting the first four words of every response, if th
 ```{r cleaning-matrix-response}
 example_matrix <- heat_survey[,c(2,5,45:53,19)]
 names(example_matrix)[2] <- "response" 
-
 # Since the questions are in one column, we need to seperate them and then the question and respone variables
 example_matrix <- example_matrix %>% 
   separate_rows(response, sep = "; ") %>%
   separate(response, into = c("question", "answer"), sep = " - ")
-  
+example_matrix$answer <- as.factor(example_matrix$answer)
+
 matrix_summary <- example_matrix %>% 
   group_by(Gender,question,answer) %>% 
-  count()
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n)) 
 
+# Recode likert to three responses 
+example_matrix <- example_matrix %>%
+  mutate(
+    likert_category = case_when(
+      answer %in% c("Never", "Rarely") ~ "Infrequent",
+      answer == "Sometimes" ~ "Moderate",
+      answer %in% c("Often", "Always") ~ "Frequent",
+      TRUE ~ NA_character_  # If there's any unexpected value, set it as NA
+    )
+  )
 
+# Cast out 
+cast.response <- example_matrix %>%
+  spread(question, likert_category) %>%
+  dplyr::select(12:19)
+
+response_levels <- c("Infrequent", "Moderate", "Frequent")
+cast.response <- cast.response %>%
+  mutate_at(vars(c(2:8)), ~fct_relevel(.x, response_levels))
+
+# All columns need to have the same number of responses 
+cast.response <- cast.response %>%
+      filter(!is.na(Gender))  %>%
+      filter(!Gender == "Non-binary")
+
+cast.response <- cast.response[which(!is.na(cast.response$Gender)),]
+cast.response <- data.frame(cast.response)
+names(cast.response) <- gsub("\\.", " ", names(cast.response))
+
+# Visualization
+matrix_visualization <- plot(likert(cast.response[,c(2:8)], grouping = cast.response[,1])) +
+  scale_fill_brewer(palette="Blues") + 
+  theme_minimal() + 
+  theme(legend.position="bottom",legend.title  = element_blank())
+
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(unique(example_matrix$answer))
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+matrix_summary <- matrix_summary %>%
+      filter(!is.na(Gender))  %>%
+      filter(!Gender == "Non-binary")
+
+color_set <- data.frame (answer  = c("Always","Often","Sometimes","Rarely","Never"),
+                  col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")
+                  )
+matrix_summary <- merge(matrix_summary,color_set, by="answer")
+# merge colors
+
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Always","Often")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Never", "Rarely")),]
+mylevels <- c("Always","Often","Sometimes","Rarely","Never")
+
+matrix_visualization2 <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent", labels = mylevels, breaks=legend.pal, guide="legend") + 
+  theme_fivethirtyeight() + 
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
 ```
 
 
 ##### Reporting Matrix Responses  
 ```{r}
 datatable(matrix_summary)
+
+matrix_visualization
 ```
 
 
@@ -168,16 +256,32 @@ example_multi <- example_multi %>%
   separate_rows(response, sep = "; ")
 
 # Also extract other and run topic modeling? 
-  
 multi_summary <- example_multi %>% 
   group_by(Gender,response) %>% 
-  count()
+  summarise(count = n()) %>%
+  mutate(freq = count / sum(count))
 
+# Remove other responses
+multi_summary <- multi_summary %>%
+    filter(!grepl("^Other \\(please specify\\)", response)) %>%
+    filter(!is.na(Gender))
+
+# Visualization (HORIZONTAL BAR CHART)
+multi_summary_visualization <- ggplot(data=multi_summary, aes(x=response, y=freq, fill=Gender)) +
+geom_bar(stat="identity", color="black", position=position_dodge(width = 0.9, preserve = "single"))+
+  labs(y="Percentage") +
+  theme_minimal() + 
+  coord_flip() + 
+  scale_fill_brewer(palette="Blues") + 
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  theme(legend.position="bottom",axis.title.y = element_blank())
 ```
 
 ##### Reporting Multi-Choice Responses 
 ```{r}
 datatable(multi_summary)
+
+multi_summary_visualization
 ```
 
 

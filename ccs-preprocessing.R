@@ -87,7 +87,7 @@ tree_survey <- tree_survey %>%
 remove(tree_survey_MAIN,tree_survey_SECONDARY,tree_map_MAIN,tree_map_SECONDARY,tree_translate)
 
 # Import EJ items 
-ej_survey <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-survey/Form-ID-31_wisconsin-community.csv", skip=9)
+ej_survey <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-survey/Form-ID-31_wisconsin-community-.csv", skip=9)
 ej_report <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-report/Visioner-ID-29_wisconsin-community-.csv",skip=9)
 ej_story <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-storytile/Gather-ID-6_wisconsin-community-.csv", skip=9)
 
