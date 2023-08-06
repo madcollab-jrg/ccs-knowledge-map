@@ -2,7 +2,21 @@
 title: "CCS Analysis Template"
 author: "Corey Jackson"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    fig_caption: yes
+    highlight: pygments
+    number_sections: yes
+    theme: spacelab
+    toc: yes
+    toc_float:
+      smooth_scroll: no
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
+always_allow_html: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -46,13 +60,15 @@ col_pal<-brewer.pal(length(gender_options),"PuOr")
 gender_color_mapping <- data.frame(Gender = gender_options, col = col_pal) # Formerly gender_color_mapping
 ```
 
+# CCS Knowledge Map Response Analysis Template
+
 There are four types of questions, we asked in the CCS surveys, the Knowledge Map will need to detect the question type and conduct analysis based on the type of question present
 
-#### Short/long Text Questions
+## Short/long Text Questions
 
 These questions are open ended and include text responses. The set of questions will be cleaned using text mining procedures and then analyzed using bag of words and sentiment. The presentation of responses will be word clouds and sentiment by the demographic factors. Example question is Heat Survey Q1 "Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences."
 
-##### Cleaning Open-ended Response Data 
+### Cleaning Open-ended Response Data 
 
 ```{r cleaning-openended-response}
 
@@ -274,9 +290,9 @@ topic_viz <- tm_top_terms %>%
 
 ```
 
-##### Reporting Open Ended Responses
+### Reporting Open Ended Responses
 
-###### Option 1: Graph Based
+#### Option 1: Graph Based
 ```{r reporting-openended-response-graph}
 datatable(unigram_summary)
 
@@ -287,7 +303,7 @@ datatable(bigram_summary)
 bigram_graph
 ```
 
-###### Option 2: Sentiment Analysis
+#### Option 2: Sentiment Analysis
 ```{r reporting-openended-response-sentiment}
 datatable(unigram_sentiment_summary[, c(1:4), drop=FALSE]) %>%
   formatStyle('Gender',
@@ -299,7 +315,7 @@ unigram_sentiment_plot
 unigram_sentiment_plot2
 ```
 
-###### Option 3: Topic Modeling
+#### Option 3: Topic Modeling
 ```{r reporting-openended-response-topic}
 datatable(tm_top_terms)
 
@@ -307,11 +323,11 @@ topic_viz
 ```
 
 
-#### Matrix Questions
+## Matrix Questions
 
 Example question is Heat Survey Q2 "Please rate how frequently you have done each of the following during summer months and during extreme heat."
 
-##### Cleaning Matrix Responses  
+### Cleaning Matrix Responses  
 
 Detection might involve extracting the first four words of every response, if they all match, then the response is a multi-choice data object. 
 
@@ -378,7 +394,7 @@ matrix_visualization <- ggplot() +
 ```
 
 
-##### Reporting Matrix Responses  
+### Reporting Matrix Responses  
 ```{r}
 datatable(matrix_summary)
 
@@ -386,9 +402,9 @@ matrix_visualization
 ```
 
 
-#### Multi-Choice Questions
+## Multi-Choice Questions
 
-##### Cleaning Multi-Choice Responses 
+### Cleaning Multi-Choice Responses 
 ```{r}
 example_multi <- heat_survey[,c(2,7,45:53,19)]
 names(example_multi)[2] <- "response" 
@@ -425,7 +441,7 @@ multi_visualization <-
      axis.text = element_text(size = 8))
 ```
 
-##### Reporting Multi-Choice Responses 
+### Reporting Multi-Choice Responses 
 ```{r}
 datatable(multi_summary[, c(1:4), drop=FALSE]) %>%
   formatStyle('Gender',
@@ -436,11 +452,11 @@ multi_visualization
 ```
 
 
-#### Select Box Questions
+## Select Box Questions
 
 Trees question #4 has select box question
 
-##### Cleaning Select Box Responses 
+### Cleaning Select Box Responses 
 ```{r}
 example_select <- tree_survey[,c(2,7,22,48:56)]
 names(example_select)[2] <- "response" 
@@ -473,7 +489,7 @@ select_visualization <-
 
 ```
 
-##### Reporting Select Box Responses 
+### Reporting Select Box Responses 
 ```{r}
 datatable(select_summary[, c(1:4), drop=FALSE]) %>%
   formatStyle('Gender',
