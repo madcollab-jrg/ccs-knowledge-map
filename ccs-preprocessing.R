@@ -250,6 +250,74 @@ write.csv(ccs_actions_NA,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/
 ####### CLEAN CCS DATA FOR CCS-KM #########
 ###########################################
 
+# GET DEMOGRAPHICS FROM URBAN TRIAGE AND MERGE 
+ut_demographics <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ut_demo/demographicsUT.csv") # move to Zoonvierse Datasets folder
+colnames(ut_demographics) <- gsub("Contact - ", "", colnames(ut_demographics))
+
+# Concatenate Home address for lookup
+# UT DATA NEEDS TO BE CLEANED TO MATCH CCS KM
+ut_demographics$address <- paste(ut_demographics$`Primary Address - Address Line 1`, 
+                                 ut_demographics$`Primary Address - City`, 
+                                 ut_demographics$`Primary Address - State/Province`, 
+                                 ut_demographics$`Primary Address - Postal/Zip`, sep = ", ")
+
+ut_demographics$org <- "Urban Triage"
+
+ut_demographics <- ut_demographics %>% 
+  mutate(income_recode=recode(`How much money do you make in a year?`, 
+                              'Between $36,001 and $42,000' ='$35,000 to $49,999',
+                              'Over 62K' ='$50,000 to $74,999', # MAY NEED TO LOOK UP JOB ROLES AND ADD AVERAGE SALARY
+                              'Between $58,001 and $62,000' ='$50,000 to $74,999',
+                              'Between $50,001 and $58,000' ='$50,000 to $74,999',
+                              'Between $18,001 and $26,000' ='Less than $25,000',# OFF
+                              'Between $10,001 and $18,000' ='Less than $25,000',
+                              'Under $10,000' = 'Less than $25,000',
+                              'Between $42,001 and $50,000' = '$35,000 to $49,999',
+                              'Between $10,001 and $18,000; Between $18,001 and $26,000; Under $10,000' = 'Less than $25,000',
+                              'Between $10,001 and $18,000; Between $36,001 and $42,000' = 'Less than $25,000',
+                              'Between $10,001 and $18,000; Under $10,000' = 'Less than $25,000'
+                              
+  ))
+
+ut_demographics <- ut_demographics %>% 
+  mutate(edu_recode=recode(`What's your education level?`,
+                           'GED/HSED' = 'Some College or Associates Degree',
+                           'High School' = 'High School Graduate (Includes Equivalency)',
+                           'Bachelor Degree/Four Year' = 'Bachelors Degree or Higher',
+                           'Associate Degree/Two Year' = 'Some College or Associates Degree', 
+                           'Did Not Complete High School' = 'Less than High School Diploma',
+                           'Graduate/Master\'s' ='Bachelors Degree or Higher',
+                           'Doctorate/PHD' ='Bachelors Degree or Higher'
+  ))
+
+ut_demographics$hisp <- ifelse(ut_demographics$`What is your race?`=="Latinx","Yes","No")
+
+ut_demographics <- ut_demographics %>% 
+  mutate(race=recode(`What is your race?`,
+                     'A person known as Black' = 'Black or African American',
+                     'White' = 'White', 
+                     'A person known as Black; White' = 'Black or African American',
+                     'White; Asian' = 'White'
+  ))
+
+ut_demographics$yob <- ut_demographics$`What year were you born?`
+
+ut_ccs_participants <- data.frame(email = ut_demographics$Email,ut_demographics$org,ut_demographics$address,ut_demographics$hisp,ut_demographics$race,
+                                    ut_demographics$yob,income_level =ut_demographics$income_recode,edu =ut_demographics$edu_recode)
+colnames(ut_ccs_participants) <- gsub("ut_demographics.", "", colnames(ut_ccs_participants))
+
+ccs_participants <- ccs_participants %>%
+  left_join(ut_ccs_participants, by = "email", suffix = c("", ".ut_ccs_participants")) %>%
+  mutate(
+    income_level = ifelse(is.na(income_level), income_level.ut_ccs_participants, income_level),
+    yob = ifelse(is.na(yob), yob.ut_ccs_participants, yob),
+    address = ifelse(is.na(address), address.ut_ccs_participants, address),
+    hisp = ifelse(is.na(hisp), hisp.ut_ccs_participants, hisp),
+    race = ifelse(is.na(race), race.ut_ccs_participants, race),
+    edu = ifelse(is.na(edu), edu.ut_ccs_participants, edu)
+  ) %>%
+  select(-ends_with(".ut_ccs_participants"))
+
 # Create a dataframe of all users and their home addresses with census information
 
 participant_geo <- ccs_participants %>% 
