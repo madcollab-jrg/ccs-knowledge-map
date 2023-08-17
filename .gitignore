@@ -9,3 +9,5 @@ data_preprocessing/test/
 ccs-knowledge-map.Rproj
 data_preprocessing/results_*
 data_preprocessing/results_old
+cleaning-ccs-responses.html
+.Rhistory
