@@ -1,0 +1,10 @@
+Q1: Do you feel you are experiencing air quality problems in your neighborhood? If so, what are the specific air quality problems, and how are they impacting you, your family, or your neighbors?
+Q2: Have you or anyone you know experienced the following health issues related to poor air quality?
+Q3: What do you think are the sources of air pollution in your community?
+Q4: Have you noticed any changes in air quality in your community over the past 5 years?
+Q5: Do you feel that vulnerable populations (e.g., low-income individuals, children, elderly individuals) are disproportionately affected by air pollution in your community?
+Q6: Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?
+Q7: If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?
+Q8: Have you done anything to improve the air quality in your home or neighborhood? If so, what did you do? If not, what prevents you from taking action?
+Q9: If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?
+Q10: If there will be opportunities for you to participate in deciding where to deploy the air quality monitoring sensors. How would you like to be part of it? What roles would you like to take?

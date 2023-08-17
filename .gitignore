@@ -1,3 +1,11 @@
-
-.Rhistory
-cleaning-ccs-responses.html
+.DS_Store
+app_files/.DS_Store
+app_files/.RData
+app_files/.Rhistory
+questions.txt
+.Rproj.user
+data_preprocessing/test/
+.R*
+ccs-knowledge-map.Rproj
+data_preprocessing/results_*
+data_preprocessing/results_old
