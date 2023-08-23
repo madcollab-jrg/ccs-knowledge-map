@@ -9,6 +9,7 @@ library(yaml)
 source("selection_box.R")
 source("data_description_box.R")
 source("graphics_representative.R")
+source("survey_results.R")
 
 surveys = c("Air Quality Survey", "Community Ideas Survey", 
             "Story From the Community Survey", "Environmental Justice Survey", 
@@ -48,13 +49,14 @@ input_to_data_survey = c("Air Quality Survey" = "air-quality/air_survey.csv",
                         "Urban Heat Map" = "urban-heat/heat_map.csv",
                         "Air Quality Map" = "air-quality/air_map.csv",
                         "Tree Canopy Map" = "tree-canopy/tree_map.csv")
+question_type_map = c()
 
 get_dashboard_body = function(){
   dashboard_body = tabItem(tabName = "rep",
                             column(width = 2, survey_box_ui(surveys)),
                             column(width = 5, get_data_description_ui()),
                             column(width = 5, representative_ui() ),
-                            column(width = 12, box(title = "Survey Information Place Holder", width = 12),
+                            column(width = 12, survey_results_ui(),
                             tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }')))
                                    )
     )
@@ -79,21 +81,24 @@ server <- function(input, output){
   demographic_data_loc = "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
   survey_data_loc = "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
   
-  # place holder for survey data loading - might need to change this to reactive to run report
+  # import survey data
   survey_data = eventReactive(
       list(input$run_report),
     { 
     req(input$survey)
     # import data here - reactive to input$survey
     name = input$survey
-    read.csv(paste(survey_data_loc,input_to_data_survey[[input$survey]],sep=''))
+    survey_data = read.csv(paste(survey_data_loc,input_to_data_survey[[input$survey]],sep=''))
+    survey_data[,-1]
     })
   
+  # import census data
   census_data = reactive({
     census_level = census_input_to_data[[input$census_level]]
     census_id = censusInputId[input$census_level]
   })
   
+  # file for representativeness scores
   file_to_get = reactive({
     input$run_report
     if(input$survey != "" & input$census_level != ""){
@@ -112,12 +117,35 @@ server <- function(input, output){
     }
   })
   
+  # get question column number + question type for survey results
+  question_number = eventReactive(
+    list(input$run_report),
+    { 
+      req(input$survey)
+      surveyQid = surveyInputId[[input$survey]]
+      question = input[[surveyQid]]
+      as.integer(str_extract(question, regex("[0-9]+")))+3
+    })
+  question_type = eventReactive(
+    list(input$run_report),
+    { 
+      req(input$survey)
+      col_num = question_number()
+      question_type_map[[col_name]]
+    })
+  
   # middle panel data description
   get_data_description_reaction(input, output, surveyInputId, survey_data, census_data, file_loc = file_to_get)
   
   # Representation 
   get_representative_reactive(input, output, file_to_get)
   
+  # results graphics
+  resulting_graphics(input, output, survey_data)
+  
 }
 
+# run app
 shinyApp(ui = ui, server = server)
+
+
