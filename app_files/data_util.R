@@ -1,5 +1,7 @@
 # get information about the data
-
-get_num_survey_reponses = function(survey_selection){
-  
+library(dplyr)
+get_question_type = function(survey, number){
+  q_to_type = read.csv("survey_questions/allquestion_types.csv")
+  q = q_to_type %>% filter(Survey == str_sub(survey, 1, -8) & Question == number)
+  return( tolower(as.character(q[1,"Type"]) ))
 }

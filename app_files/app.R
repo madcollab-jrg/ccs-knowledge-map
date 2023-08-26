@@ -10,6 +10,7 @@ source("selection_box.R")
 source("data_description_box.R")
 source("graphics_representative.R")
 source("survey_results.R")
+source("data_util.R")
 
 surveys = c("Air Quality Survey", "Community Ideas Survey", 
             "Story From the Community Survey", "Environmental Justice Survey", 
@@ -24,6 +25,17 @@ surveyInputId = c("Air Quality Survey" = "air_quality_qs",
                   "Air Quality Map" = "air_quality_map_qs",
                   "Tree Canopy Map" = "tree_canopy_map_qs",
                   "Urban Heat Map" = "urban_heat_map_qs")
+
+has_results = c("Air Quality Survey" = T, 
+                "Community Ideas Survey"=F, 
+                "Story From the Community Survey"=F,
+                "Environmental Justice Survey"=T, 
+                "Tree Canopy Survey"=T, 
+                "Urban Heat Survey"=T,
+                "Air Quality Map" = F,
+                "Tree Canopy Map" = F,
+                "Urban Heat Map" = F)
+
 censusInputId = c("Census Tract"="census_tract_items", 
                   "Census State"="census_state_items", 
                   "Census County"="census_county_items")
@@ -124,15 +136,20 @@ server <- function(input, output){
       req(input$survey)
       surveyQid = surveyInputId[[input$survey]]
       question = input[[surveyQid]]
-      as.integer(str_extract(question, regex("[0-9]+")))+3
+      as.integer(str_extract(question, regex("[0-9]+")))#+3
     })
   question_type = eventReactive(
     list(input$run_report),
     { 
       req(input$survey)
-      col_num = question_number()
-      question_type_map[[col_name]]
+      q_num = question_number()
+      get_question_type(input$survey, q_num)
     })
+  is_survey = eventReactive(list(input$run_report),
+                            {
+                              req(input$survey)
+                              has_results[[input$survey]]
+                            })
   
   # middle panel data description
   get_data_description_reaction(input, output, surveyInputId, survey_data, census_data, file_loc = file_to_get)
@@ -141,7 +158,7 @@ server <- function(input, output){
   get_representative_reactive(input, output, file_to_get)
   
   # results graphics
-  resulting_graphics(input, output, survey_data)
+  resulting_graphics(input, output, survey_data, is_survey, question_number, question_type)
   
 }
 

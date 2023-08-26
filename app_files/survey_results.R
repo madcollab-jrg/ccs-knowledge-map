@@ -22,7 +22,15 @@ library(textdata)
 survey_results_ui = function(){
   ui = box(title = "Survey Results", 
            fluidRow(box(title = "sub box", plotOutput("survey_results1"), width=6), box(title = "sub box 2", plotOutput("survey_results2"),width=6)),
-           fluidRow(box(title = "sub box3",plotOutput("survey_results3"), width=6), box(title = "sub box 4",plotOutput("survey_results4"),width=6)),
+           fluidRow(box(title = "sub box3",plotOutput("survey_results3"), width=6), box(title = "sub box 4", plotOutput("survey_results4"),width=6)),
+           fluidRow(box(title = "sub box", plotOutput("survey_results5"), width=6), box(title = "sub box 2", plotOutput("survey_results6"),width=6)),
+           fluidRow(box(title = "sub box3",plotOutput("survey_results7"), width=6), box(title = "sub box 4", plotOutput("survey_results8"),width=6)),
+           fluidRow(box(title = "sub box", plotOutput("survey_results9"), width=6), box(title = "sub box 2", plotOutput("survey_results10"),width=6)),
+           fluidRow(box(title = "sub box3",plotOutput("survey_results11"), width=6), box(title = "sub box 4", plotOutput("survey_results12"),width=6)),
+           fluidRow(box(title = "sub box", plotOutput("survey_results13"), width=6), box(title = "sub box 2", plotOutput("survey_results14"),width=6)),
+           fluidRow(box(title = "sub box3",plotOutput("survey_results15"), width=6), box(title = "sub box 4", plotOutput("survey_results16"),width=6)),
+           fluidRow(box(title = "sub box", plotOutput("survey_results17"), width=6), box(title = "sub box 2", plotOutput("survey_results18"),width=6)),
+           fluidRow(box(title = "sub box3",plotOutput("survey_results19"), width=6), box(title = "sub box 4", plotOutput("survey_results20"),width=6)),
            width = 12
     )
   return(ui)
@@ -251,17 +259,34 @@ text_questions = function(survey_data, question){
     scale_y_reordered()
 }
 
-matrix_questions = function(survey_data, question=5){
-  example_matrix <- survey_data[,c(2,question,45:53,19)]
+matrix_questions = function(survey_data, col_num, demographic_variable, filter_input){
+  
+  example_matrix <- survey_data[,c(2,col_num,45:53,19,22)]
+  
+  if(demographic_variable == "Year.of.Birth"){
+    example_matrix=example_matrix %>% 
+      mutate(Year.of.Birth = 2023-Year.of.Birth)%>%
+      mutate(Year.of.Birth = case_when( 
+        Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
+        Year.of.Birth >= 25 & Year.of.Birth <=34 ~ "25_to_34",
+        Year.of.Birth >= 35 & Year.of.Birth <=44 ~ "35_to_44",
+        Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45_to_54",
+        Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
+        Year.of.Birth >= 65 ~ "65_over"
+      ) )
+  }
+  
   names(example_matrix)[2] <- "response" 
   # Since the questions are in one column, we need to seperate them and then the question and respone variables
   example_matrix <- example_matrix %>% 
     separate_rows(response, sep = "; ") %>%
     separate(response, into = c("question", "answer"), sep = " - ")
   example_matrix$answer <- as.factor(example_matrix$answer)
-  
+  if(!is.na(filter_input)){
+    example_matrix = example_matrix %>% filter(!!sym(demographic_variable) == !!filter_input)
+  }
   matrix_summary <- example_matrix %>% 
-    group_by(Gender,question,answer) %>% 
+    group_by(!!sym(demographic_variable), question,answer) %>% 
     summarise(n = n()) %>%
     mutate(freq = n / sum(n)) 
   
@@ -277,13 +302,17 @@ matrix_questions = function(survey_data, question=5){
     )
   
   # Create high and lows tables with question, group, outcome (question), variable, value, and color
-  numlevels<-length(unique(example_matrix$answer))
-  pal<-brewer.pal((numlevels),"PuOr")
-  legend.pal<-pal
+  #numlevels<-length(unique(example_matrix$answer))
+  #pal<-brewer.pal((numlevels),"PuOr")
+  #legend.pal<-pal
   
   matrix_summary <- matrix_summary %>%
-    filter(!is.na(Gender))  %>%
-    filter(!Gender == "Non-binary")
+    filter(!is.na(!!sym(demographic_variable)))  #%>%
+    #filter(!Gender == "Non-binary")
+  # additionally filtering
+  if(demographic_variable == "Gender"){
+    matrix_summary = matrix_summary %>% filter(!Gender == "Non-binary")
+  }
   
   color_set_frequency <- data.frame (answer  = c("Always","Often","Sometimes","Rarely","Never"),
                                      col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")) # https://color.adobe.com/create/color-wheel 
@@ -293,29 +322,39 @@ matrix_questions = function(survey_data, question=5){
   highs <- matrix_summary[which(matrix_summary$answer %in% c("Always","Often")),]
   lows <- matrix_summary[which(matrix_summary$answer %in% c("Never", "Rarely")),]
   mylevels <- c("Always","Often","Sometimes","Rarely","Never")
+  mylevels <- c("Always","Often","Sometimes","Rarely","Never")
+  pal<-brewer.pal((5),"PuOr")
+  legend.pal<-pal
   
-  matrix_visualization <- ggplot() + 
-    geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
-    geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
-    facet_grid(. ~Gender)  +
-    geom_hline(yintercept = 0, color =c("white")) +
-    scale_fill_identity("Percent of Respondents", 
-                        labels = mylevels, 
-                        breaks=legend.pal, 
-                        guide="legend") + 
-    theme_classic() +
-    coord_flip() +
-    scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
-    labs(y="",x="") +
-    theme(
-      legend.position = "bottom"
-    ) 
-  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
-  
-  return(matrix_visualization)
+  if(nrow(matrix_summary) > 0){
+    matrix_visualization <- ggplot() + 
+      geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity",width = .75) +
+      geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity",width = .75) +
+      facet_grid(cols = vars(!!sym(demographic_variable)))  +
+      geom_hline(yintercept = 0, color =c("white")) +
+      scale_fill_identity("Percent of Respondents", 
+                          labels = mylevels, 
+                          breaks=legend.pal, 
+                          guide="legend") + 
+      theme_classic() +
+      coord_flip() +
+      scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+      labs(y="",x="") +
+      theme(
+        legend.position = "bottom"
+      ) 
+    scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+    
+    return(matrix_visualization)
+  }else{
+    matrix_visualization <- ggplot() + 
+      geom_blank()
+    message("here")
+    return(matrix_visualization)
+  }
 }
 
-multi_choice_questions = function(survey_data, question=7){
+multi_choice_questions = function(survey_data, question){
   example_multi <- survey_data[,c(2,question,45:53,19)]
   names(example_multi)[2] <- "response" 
   
@@ -352,7 +391,7 @@ multi_choice_questions = function(survey_data, question=7){
   return(multi_visualization)
 }
 
-select_box_questions = function(survey_data, question=7){
+select_box_questions = function(survey_data, question){
   example_select <- survey_data[,c(2,question,22,48:56)]
   names(example_select)[2] <- "response" 
   
@@ -384,27 +423,70 @@ select_box_questions = function(survey_data, question=7){
   return(select_visualization)
 }
 
-resulting_graphics = function(input, output, survey_data, question = NA, question_type = NA){
+resulting_graphics = function(input, output, survey_data, is_survey, question = NA, question_type = NA){
   reaction = observeEvent(input$run_report,
                           {
-                            gender_options <- c(NA,"Non-binary","Male","Female") # Called multi-options in previous
-                            col_pal<-brewer.pal(length(gender_options),"PuOr")
-                            gender_color_mapping <- data.frame(Gender = gender_options, col = col_pal)
-                            
-                            # change based on question type
-                            if(question_type == "text"){
-                              #do something
-                            }else if(question_type == "matrix"){
-                              #do something
-                            }else if(question_type == "multi"){
-                              #do something
-                            }else if(question_type == "select"){
-                              #do something
+                            req(input$survey)
+                            q_type = question_type()
+                            survey_flag = is_survey()
+                            if(question_type()!= "Ranking" & survey_flag){
+                              question_num = question()+3
+                              
+                              gender_options <- c(NA,"Non-binary","Male","Female") # Called multi-options in previous
+                              col_pal<-brewer.pal(length(gender_options),"PuOr")
+                              gender_color_mapping <- data.frame(Gender = gender_options, col = col_pal)
+                              
+                              display_func = NA
+                              if(q_type == "matrix"){
+                                display_func = matrix_questions
+                              }else if(q_type == "open-ended"){
+                                display_func = text_questions
+                              }else if(q_type == "multi-choice"){
+                                display_func = multi_choice_questions
+                              }else if(q_type == "select box"){
+                                display_func = select_box_questions
+                              }
+                              
+                              data = survey_data()
+
+                              # income graphs
+                              income_var = "income_recode"
+                              output$survey_results1 = renderPlot( display_func(data, question_num, income_var, "Less than $25,000")  )
+                              output$survey_results2 = renderPlot( display_func(data, question_num, income_var, "$25,000 to $34,999")  )
+                              output$survey_results3 = renderPlot( display_func(data, question_num, income_var, "$35,000 to $49,999")  )
+                              output$survey_results4 = renderPlot( display_func(data, question_num, income_var, "$50,000 to $74,999")  )
+                              output$survey_results5 = renderPlot( display_func(data, question_num, income_var, "$75,000 to $99,999")  )
+                              output$survey_results6 = renderPlot( display_func(data, question_num, income_var, "$100,000 to $149,999")  )
+                              output$survey_results7 = renderPlot( display_func(data, question_num, income_var, "$150,000 to $199,999")  )
+                              output$survey_results8 = renderPlot( display_func(data, question_num, income_var, "$200,000 or more")  )
+                              
+                              # education graphs
+                              edu_var = "edu_recode"
+                              output$survey_results9 = renderPlot( display_func(data, question_num, edu_var, "Less than High School Diploma") )
+                              output$survey_results10 = renderPlot( display_func(data, question_num, edu_var, "High School Graduate (Includes Equivalency)") )
+                              output$survey_results11 = renderPlot( display_func(data, question_num, edu_var, "Some College or Associates Degree") )
+                              output$survey_results12 = renderPlot( display_func(data, question_num, edu_var, "Bachelors Degree or Higher") )
+                              
+                              # age graphs
+                              age_var = "Year.of.Birth"
+                              output$survey_results13 = renderPlot(  display_func(data, question_num, age_var, "18_to_24")  )
+                              output$survey_results14 = renderPlot(  display_func(data, question_num, age_var, "25_to_34") )
+                              output$survey_results15 = renderPlot(  display_func(data, question_num, age_var, "35_to_44") )
+                              output$survey_results16 = renderPlot(  display_func(data, question_num, age_var, "45_to_54") )
+                              output$survey_results17 = renderPlot(  display_func(data, question_num, age_var, "55_to_64") )
+                              output$survey_results18 = renderPlot(  display_func(data, question_num, age_var, "65_over") )
+                              
+                              # gender
+                              output$survey_results19 = renderPlot( display_func(data, question_num, "Gender", "Male" ) )
+                              output$survey_results20 = renderPlot( display_func(data, question_num, "Gender", "Female" ) )
+                            }else{
+                              message("no")
                             }
-                            
-                            output$survey_results1 = renderPlot(matrix_questions(survey_data(), question))
-                            output$survey_results2 = renderPlot(matrix_questions(survey_data(), question))
-                            output$survey_results3 = renderPlot(matrix_questions(survey_data(), question))
-                            output$survey_results4 = renderPlot(matrix_questions(survey_data(), question))
                           })
 }
+
+
+
+
+
+
