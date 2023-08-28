@@ -45,7 +45,7 @@ get_representative_reactive = function(input, output, file_loc = NA){
                             # code
                             
                             if(input[["survey"]] != "" && input$census_level != "" ){
-                              data_loc = paste(getwd(),"/../data_preprocessing/results_representativeness/", file_loc(), sep = "")
+                              data_loc = paste("/Volumes/cbjackson2/ccs-knowledge/results_representativeness/", file_loc(), sep = "") # change
                               #loaded = safe_load(data_loc) 
                               #tbl_data = loaded[[1]]
                               #message(loaded[[2]])

@@ -19,18 +19,12 @@ library(tidytext)
 library(textdata)
 
 
-survey_results_ui = function(){
+survey_results_ui = function(input){
   ui = box(title = "Survey Results", 
-           fluidRow(box(title = "sub box", plotOutput("survey_results1"), width=6), box(title = "sub box 2", plotOutput("survey_results2"),width=6)),
-           fluidRow(box(title = "sub box3",plotOutput("survey_results3"), width=6), box(title = "sub box 4", plotOutput("survey_results4"),width=6)),
-           fluidRow(box(title = "sub box", plotOutput("survey_results5"), width=6), box(title = "sub box 2", plotOutput("survey_results6"),width=6)),
-           fluidRow(box(title = "sub box3",plotOutput("survey_results7"), width=6), box(title = "sub box 4", plotOutput("survey_results8"),width=6)),
-           fluidRow(box(title = "sub box", plotOutput("survey_results9"), width=6), box(title = "sub box 2", plotOutput("survey_results10"),width=6)),
-           fluidRow(box(title = "sub box3",plotOutput("survey_results11"), width=6), box(title = "sub box 4", plotOutput("survey_results12"),width=6)),
-           fluidRow(box(title = "sub box", plotOutput("survey_results13"), width=6), box(title = "sub box 2", plotOutput("survey_results14"),width=6)),
-           fluidRow(box(title = "sub box3",plotOutput("survey_results15"), width=6), box(title = "sub box 4", plotOutput("survey_results16"),width=6)),
-           fluidRow(box(title = "sub box", plotOutput("survey_results17"), width=6), box(title = "sub box 2", plotOutput("survey_results18"),width=6)),
-           fluidRow(box(title = "sub box3",plotOutput("survey_results19"), width=6), box(title = "sub box 4", plotOutput("survey_results20"),width=6)),
+           box(title = "Income", plotOutput("survey_results1"), width=12), 
+           box(title = "Education", plotOutput("survey_results2"),width=12),
+           box(title = "Age",plotOutput("survey_results3"),width=12), 
+           box(title = "Gender", plotOutput("survey_results4"),width=12),
            width = 12
     )
   return(ui)
@@ -41,8 +35,12 @@ survey_results_ui = function(){
 #Multi-Choice Questions
 #Select Box Questions
 
-# how many graphics are we going to output
-# what else do i need to filter
+# todo: text question and select box question graphic integration
+make_color_mapping = function(column, options){
+  col_pal = brewer.pal(length(options), "PuOr")
+  color_mapping = tibble(!!column := options, col = col_pal)
+  return(color_mapping)
+}
 
 text_questions = function(survey_data, question){
   # Import stoplist 
@@ -259,22 +257,9 @@ text_questions = function(survey_data, question){
     scale_y_reordered()
 }
 
-matrix_questions = function(survey_data, col_num, demographic_variable, filter_input){
+matrix_questions = function(example_matrix, demographic_variable, filter_input, coloring, options){
   
-  example_matrix <- survey_data[,c(2,col_num,45:53,19,22)]
-  
-  if(demographic_variable == "Year.of.Birth"){
-    example_matrix=example_matrix %>% 
-      mutate(Year.of.Birth = 2023-Year.of.Birth)%>%
-      mutate(Year.of.Birth = case_when( 
-        Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
-        Year.of.Birth >= 25 & Year.of.Birth <=34 ~ "25_to_34",
-        Year.of.Birth >= 35 & Year.of.Birth <=44 ~ "35_to_44",
-        Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45_to_54",
-        Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
-        Year.of.Birth >= 65 ~ "65_over"
-      ) )
-  }
+  #ONLY WORKS FOR HEAT SURVEY + AIR QUALITY SURVEY
   
   names(example_matrix)[2] <- "response" 
   # Since the questions are in one column, we need to seperate them and then the question and respone variables
@@ -307,11 +292,9 @@ matrix_questions = function(survey_data, col_num, demographic_variable, filter_i
   #legend.pal<-pal
   
   matrix_summary <- matrix_summary %>%
-    filter(!is.na(!!sym(demographic_variable)))  #%>%
-    #filter(!Gender == "Non-binary")
-  # additionally filtering
+    filter(!is.na(!!sym(demographic_variable)))
   if(demographic_variable == "Gender"){
-    matrix_summary = matrix_summary %>% filter(!Gender == "Non-binary")
+    matrix_summary = matrix_summary %>% filter(Gender != "Non-binary")
   }
   
   color_set_frequency <- data.frame (answer  = c("Always","Often","Sometimes","Rarely","Never"),
@@ -321,7 +304,6 @@ matrix_questions = function(survey_data, col_num, demographic_variable, filter_i
   
   highs <- matrix_summary[which(matrix_summary$answer %in% c("Always","Often")),]
   lows <- matrix_summary[which(matrix_summary$answer %in% c("Never", "Rarely")),]
-  mylevels <- c("Always","Often","Sometimes","Rarely","Never")
   mylevels <- c("Always","Often","Sometimes","Rarely","Never")
   pal<-brewer.pal((5),"PuOr")
   legend.pal<-pal
@@ -354,26 +336,33 @@ matrix_questions = function(survey_data, col_num, demographic_variable, filter_i
   }
 }
 
-multi_choice_questions = function(survey_data, question){
-  example_multi <- survey_data[,c(2,question,45:53,19)]
+multi_choice_questions = function(example_multi, demographic_variable, filter_input, coloring, options){
+  #example_multi <- survey_data[,c(2,col_num,45:53,19,22)]
   names(example_multi)[2] <- "response" 
   
   example_multi <- example_multi %>% 
     separate_rows(response, sep = "; ")
   
+  if(!is.na(filter_input)){
+    example_multi = example_multi %>% filter(!!sym(demographic_variable) == !!filter_input)
+  }
+  
   # Also extract other and run topic modeling? 
   multi_summary <- example_multi %>% 
-    group_by(Gender,response) %>% 
+    group_by(!!sym(demographic_variable),response) %>% 
     summarise(count = n()) %>%
     mutate(freq = round(count / sum(count),digits=2))
   
   # Remove other responses
   multi_summary <- multi_summary %>%
     filter(!grepl("^Other \\(please specify\\)", response)) %>%
-    filter(!is.na(Gender))  %>%
-    filter(!Gender == "Non-binary")
+    filter(!is.na(!!sym(demographic_variable)))  
   
-  multi_summary <- merge(multi_summary, gender_color_mapping, by = "Gender")
+  if(demographic_variable == "Gender"){
+    multi_summary = multi_summary %>% filter(!Gender == "Non-binary")
+  }
+  
+  multi_summary <- merge(multi_summary, coloring, by = demographic_variable)
   
   # Visualization (HORIZONTAL BAR CHART)
   multi_visualization <-
@@ -383,10 +372,10 @@ multi_choice_questions = function(survey_data, question){
     labs(y="Percent of Respondents") +
     coord_flip() + 
     theme_classic() +
-    scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
+    scale_fill_identity("Counts", labels = coloring[[demographic_variable]], breaks=coloring$col, guide="legend") + 
     scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
     theme(
-      legend.position="bottom",axis.title.y = element_blank(),
+      legend.position="bottom",
       axis.text = element_text(size = 8))
   return(multi_visualization)
 }
@@ -429,62 +418,80 @@ resulting_graphics = function(input, output, survey_data, is_survey, question = 
                             req(input$survey)
                             q_type = question_type()
                             survey_flag = is_survey()
-                            if(question_type()!= "Ranking" & survey_flag){
+                            message(q_type)
+                            if(q_type!= "Ranking" & survey_flag){
                               question_num = question()+3
+                              income_var = "income_recode"
+                              edu_var = "edu_recode"
+                              age_var = "Year.of.Birth"
+                              gender_var = "Gender"
+                              
+                              income_options = c(NA, "Less than $25,000", "$35,000 to $49,999", 
+                                                 "$50,000 to $74,999", "$75,000 to $99,999", 
+                                                 "$100,000 to $149,999", "$150,000 to $199,999", "$200,000 or more")
+                              income_color_mapping = make_color_mapping(income_var, income_options)
+                              
+                              edu_options = c(NA, "Less than High School Diploma", "High School Graduate (Includes Equivalency)", 
+                                              "Some College or Associates Degree", "Bachelors Degree or Higher")
+                              edu_color_mapping = make_color_mapping(edu_var, edu_options)
+                              
+                              age_options = c(NA, "18_to_24", "25_to_34", "35_to_44", "45_to_54", "55_to_64", "65_over")
+                              age_color_mapping = make_color_mapping(age_var, age_options)
                               
                               gender_options <- c(NA,"Non-binary","Male","Female") # Called multi-options in previous
-                              col_pal<-brewer.pal(length(gender_options),"PuOr")
-                              gender_color_mapping <- data.frame(Gender = gender_options, col = col_pal)
+                              gender_color_mapping = make_color_mapping(gender_var,gender_options)
                               
-                              display_func = NA
+                              data = survey_data()
+                              
+                              data=data %>% 
+                                mutate(Year.of.Birth = 2023-Year.of.Birth)%>%
+                                mutate(Year.of.Birth = case_when( 
+                                  Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
+                                  Year.of.Birth >= 25 & Year.of.Birth <=34 ~ "25_to_34",
+                                  Year.of.Birth >= 35 & Year.of.Birth <=44 ~ "35_to_44",
+                                  Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45_to_54",
+                                  Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
+                                  Year.of.Birth >= 65 ~ "65_over"
+                                ) )
+                              
+                    
+                              # survey_data[,c(2,col_num,45:53,19,22)]
+                              data_for_visualization = NA
+                              if(input$survey == "Urban Heat Survey"){
+                                data_for_visualization = data[,c(2,question_num,45:53,19,22)]
+                              }else if(input$survey == "Tree Canopy Survey"){
+                                data_for_visualization = data[,c(2,question_num,22,48:56,25)]
+                              }else if(input$survey == "Air Quality Survey"){
+                                data_for_visualization = data[,c(2,question_num,47:55,21,24)]
+                              }else if(input$survey == "Environmental Justice Survey"){
+                                data_for_visualization = data[,c(2,question_num,51:59,25,28)]
+                              }
+                              
+                              print(nrow(data_for_visualization))
+                              
+                              message("print graphs")
                               if(q_type == "matrix"){
-                                display_func = matrix_questions
+                                output$survey_results1 = renderPlot( matrix_questions(data_for_visualization, income_var, NA)  )
+                                output$survey_results2 = renderPlot( matrix_questions(data_for_visualization, edu_var, NA)  )
+                                output$survey_results3 = renderPlot( matrix_questions(data_for_visualization, age_var, NA)  )
+                                output$survey_results4 = renderPlot( matrix_questions(data_for_visualization, gender_var, NA)  )
                               }else if(q_type == "open-ended"){
                                 display_func = text_questions
                               }else if(q_type == "multi-choice"){
-                                display_func = multi_choice_questions
+                                output$survey_results1 = renderPlot( multi_choice_questions(data_for_visualization, income_var, NA, income_color_mapping, income_options)  )
+                                output$survey_results2 = renderPlot( multi_choice_questions(data_for_visualization, edu_var, NA, edu_color_mapping, edu_options)  )
+                                output$survey_results3 = renderPlot( multi_choice_questions(data_for_visualization, age_var, NA, age_color_mapping, age_options)  )
+                                output$survey_results4 = renderPlot( multi_choice_questions(data_for_visualization, gender_var, NA, gender_color_mapping, gender_options)  )
                               }else if(q_type == "select box"){
-                                display_func = select_box_questions
+                                display_func = text_questions
                               }
                               
-                              data = survey_data()
-
-                              # income graphs
-                              income_var = "income_recode"
-                              output$survey_results1 = renderPlot( display_func(data, question_num, income_var, "Less than $25,000")  )
-                              output$survey_results2 = renderPlot( display_func(data, question_num, income_var, "$25,000 to $34,999")  )
-                              output$survey_results3 = renderPlot( display_func(data, question_num, income_var, "$35,000 to $49,999")  )
-                              output$survey_results4 = renderPlot( display_func(data, question_num, income_var, "$50,000 to $74,999")  )
-                              output$survey_results5 = renderPlot( display_func(data, question_num, income_var, "$75,000 to $99,999")  )
-                              output$survey_results6 = renderPlot( display_func(data, question_num, income_var, "$100,000 to $149,999")  )
-                              output$survey_results7 = renderPlot( display_func(data, question_num, income_var, "$150,000 to $199,999")  )
-                              output$survey_results8 = renderPlot( display_func(data, question_num, income_var, "$200,000 or more")  )
-                              
-                              # education graphs
-                              edu_var = "edu_recode"
-                              output$survey_results9 = renderPlot( display_func(data, question_num, edu_var, "Less than High School Diploma") )
-                              output$survey_results10 = renderPlot( display_func(data, question_num, edu_var, "High School Graduate (Includes Equivalency)") )
-                              output$survey_results11 = renderPlot( display_func(data, question_num, edu_var, "Some College or Associates Degree") )
-                              output$survey_results12 = renderPlot( display_func(data, question_num, edu_var, "Bachelors Degree or Higher") )
-                              
-                              # age graphs
-                              age_var = "Year.of.Birth"
-                              output$survey_results13 = renderPlot(  display_func(data, question_num, age_var, "18_to_24")  )
-                              output$survey_results14 = renderPlot(  display_func(data, question_num, age_var, "25_to_34") )
-                              output$survey_results15 = renderPlot(  display_func(data, question_num, age_var, "35_to_44") )
-                              output$survey_results16 = renderPlot(  display_func(data, question_num, age_var, "45_to_54") )
-                              output$survey_results17 = renderPlot(  display_func(data, question_num, age_var, "55_to_64") )
-                              output$survey_results18 = renderPlot(  display_func(data, question_num, age_var, "65_over") )
-                              
-                              # gender
-                              output$survey_results19 = renderPlot( display_func(data, question_num, "Gender", "Male" ) )
-                              output$survey_results20 = renderPlot( display_func(data, question_num, "Gender", "Female" ) )
-                            }else{
+                            }
+                            else{
                               message("no")
                             }
                           })
 }
-
 
 
 

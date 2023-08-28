@@ -64,13 +64,13 @@ input_to_data_survey = c("Air Quality Survey" = "air-quality/air_survey.csv",
 question_type_map = c()
 
 get_dashboard_body = function(){
+  # reactivly display results box
   dashboard_body = tabItem(tabName = "rep",
                             column(width = 2, survey_box_ui(surveys)),
                             column(width = 5, get_data_description_ui()),
                             column(width = 5, representative_ui() ),
-                            column(width = 12, survey_results_ui(),
-                            tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }')))
-                                   )
+                            column(width = 12, survey_results_ui(),tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }'))))
+                            #column(width = 12, uiOutput("results"),tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }'))))
     )
   return(dashboard_body)
 }
@@ -100,7 +100,7 @@ server <- function(input, output){
     req(input$survey)
     # import data here - reactive to input$survey
     name = input$survey
-    survey_data = read.csv(paste(survey_data_loc,input_to_data_survey[[input$survey]],sep=''))
+    survey_data = read.csv(paste(survey_data_loc,input_to_data_survey[[name]],sep=''))
     survey_data[,-1]
     })
   
@@ -156,7 +156,7 @@ server <- function(input, output){
   
   # Representation 
   get_representative_reactive(input, output, file_to_get)
-  
+
   # results graphics
   resulting_graphics(input, output, survey_data, is_survey, question_number, question_type)
   

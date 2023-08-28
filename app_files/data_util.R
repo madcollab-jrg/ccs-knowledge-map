@@ -5,3 +5,5 @@ get_question_type = function(survey, number){
   q = q_to_type %>% filter(Survey == str_sub(survey, 1, -8) & Question == number)
   return( tolower(as.character(q[1,"Type"]) ))
 }
+
+#print(get_question_type("Tree Canopy Survey", 1))

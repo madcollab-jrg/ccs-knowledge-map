@@ -74,7 +74,8 @@ get_data_description_reaction = function(input, output, surveyIds, survey_data =
                    }
                    print_questions( survey.selected, survey.selected.question, output, n )
                    if(input$census_level != ""){
-                     data_loc = paste(getwd(),"/../data_preprocessing/results_summary/", file_loc(), sep = "")
+                     
+                     data_loc = paste("/Volumes/cbjackson2/ccs-knowledge/results_summary/", file_loc(), sep = "") # change
                      tbl_data = get_table(data_loc)[[1]]
                      gt_tbl = gt(tbl_data, rownames_to_stub = T)
                      
