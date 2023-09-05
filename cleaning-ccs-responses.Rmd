@@ -42,6 +42,7 @@ library(ggthemes)
 library(tm)
 library(tidytext)
 library(textdata)
+library(topicmodels)
 ###########################################################
 ####### IMPORT/COMBINE DATASETS FROM RESEARCH DRIVE #######
 ###########################################################
@@ -241,7 +242,7 @@ unigram_sentiment_plot <- ggplot(unigram_sentiment_summary, aes(x = reorder(sent
   scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
   coord_flip() +
   facet_wrap(~Gender, scales = "free_y") +
-  ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
+  ggtitle(paste0("Sentiment By ",names(unigram_summary)[1])) + 
   labs(x = "Emotion",y = "Frequency") 
 
 # WORDS FACETED BY SENTIMENT 
@@ -265,28 +266,61 @@ unigram_sentiment_plot2 <- unigram_summary %>%
 
 # EACH COMMENT IS A DOCUMENT. EXTRACT WORD AND CONTRIBUTION ID
 doc_summary <- unigram_response.m %>% 
-  group_by(`Contribution ID`, word) %>% 
+  group_by(`Contribution ID`,Gender, word) %>% 
   #group_by(Gender,word) %>% 
-  summarise(count = n()) 
+  summarise(count = n()) %>%
+  filter_at(vars(Gender, word), all_vars(!is.na(.)))
 
-doc.dtm <- doc_summary %>%
+# FOR EACH DEMOGRAPHIC VARIABLE RUN TOPIC MODELS
+topic_models =  data.frame()
+
+for (i in unique(doc_summary$Gender)) {
+  
+  doc_summary_loop <- doc_summary[which(doc_summary$Gender == i),]
+  
+  doc.dtm <- doc_summary_loop %>%
   cast_dtm(`Contribution ID`, word, count)
+  
+  tm_lda <- LDA(doc.dtm, k = 3)
+  tm_topics <- tidy(tm_lda, matrix = "beta")
 
-tm_lda <- LDA(doc.dtm, k = 3)
-tm_topics <- tidy(tm_lda, matrix = "beta")
-
-tm_top_terms <- tm_topics %>%
+  tm_top_terms <- tm_topics %>%
   group_by(topic) %>%
   slice_max(beta, n = 5) %>% 
   ungroup() %>%
   arrange(topic, -beta)
+  tm_top_terms$Gender  <- i 
+  ## APPEND ALL TO SINGLE DATAFRAME
+  topic_models <- rbind(topic_models,tm_top_terms)
+}
 
-topic_viz <- tm_top_terms %>%
-  mutate(term = reorder_within(term, beta, topic)) %>%
-  ggplot(aes(beta, term, fill = factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  scale_y_reordered()
+topic_models <- merge(topic_models,gender_color_mapping, by ="Gender")
+
+
+  # ggplot(topic_models, aes(beta, term, fill = factor(topic))) +
+  # geom_col(show.legend = FALSE) +
+  # facet_wrap(~ topic, scales = "free") +
+  # scale_y_reordered()
+
+
+# doc.dtm <- doc_summary %>%
+# cast_dtm(`Contribution ID`, word, count)
+# 
+# tm_lda <- LDA(doc.dtm, k = 3)
+# tm_topics <- tidy(tm_lda, matrix = "beta")
+# 
+# tm_top_terms <- tm_topics %>%
+#   group_by(topic) %>%
+#   slice_max(beta, n = 5) %>% 
+#   ungroup() %>%
+#   arrange(topic, -beta)
+# 
+# topic_viz <- tm_top_terms %>%
+#   mutate(term = reorder_within(term, beta, topic)) %>%
+#   ggplot(aes(beta, term, fill = factor(topic))) +
+#   geom_col(show.legend = FALSE) +
+#   facet_wrap(~ topic, scales = "free") +
+#   scale_y_reordered()
 
 ```
 
@@ -317,9 +351,11 @@ unigram_sentiment_plot2
 
 #### Option 3: Topic Modeling
 ```{r reporting-openended-response-topic}
-datatable(tm_top_terms)
+plot_Female
 
-topic_viz
+plot_Male
+
+`plot_Non-binary`
 ```
 
 
