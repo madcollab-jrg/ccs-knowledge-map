@@ -59,6 +59,15 @@ tree_survey <- tree_survey[,-1]
 gender_options <- c(NA,"Non-binary","Male","Female") # Called multi-options in previous
 col_pal<-brewer.pal(length(gender_options),"PuOr")
 gender_color_mapping <- data.frame(Gender = gender_options, col = col_pal) # Formerly gender_color_mapping
+
+
+## MAPPING NEEDED FOR OTHER OUTPUTS OF CATEGORIES
+
+#### AGE
+
+#### CHOICES
+
+
 ```
 
 # CCS Knowledge Map Response Analysis Template
@@ -176,12 +185,20 @@ bigram_plot <- ggplot(top_bigram_words, aes(x = reorder(word, freq), y = freq, f
 ###################################
 # POTENTIAL ANALYSES OF RESPONSES #
 ###################################
+```
 
+```{r cleaning-openended-response-graph}
 ## 1. GRAPH
    #### https://chryswoods.com/text_analysis_r/ngrams.html 
    #### https://www.data-imaginist.com/2017/ggraph-introduction-layouts/
    #### https://cran.r-project.org/web/packages/ggraph/vignettes/Layouts.html 
    #### CAN BE USED TO SHOW OVERLAPPING AND UNIQUE RESPONSES BY GROUP. HOW TO CREATE NARRATIVE AND HELP USERS READ AND INTERPRET CHART
+
+
+# OTHER TUTORIALS 
+### https://rpubs.com/neloe/ggraph_intro 
+### https://ggraph.data-imaginist.com/ 
+### http://users.dimi.uniud.it/~massimo.franceschet/ns/syllabus/make/ggraph/ggraph.html 
 
 ### UNIGRAM
 unigram_graph <- unigram_summary %>%
@@ -193,8 +210,11 @@ unigram_graph <- unigram_summary %>%
 
 ggraph(unigram_graph, layout = 'fr') +
   geom_edge_link() +
-  geom_node_point() +
+  geom_node_point(aes(size = size)) +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+
+# What we should highlight - items common among the populations and text that are unique within the population. 
 
 ### BIGRAM
 bigram_graph <- bigram_summary %>%
@@ -209,6 +229,10 @@ ggraph(bigram_graph, layout = "fr") +
   geom_node_point() +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
 
+```
+
+
+```{r cleaning-openended-response-sentiment, eval=FALSE, render=FALSE}
 
 # 2. SENTIMENT ANALYSIS
 
@@ -261,7 +285,9 @@ unigram_sentiment_plot2 <- unigram_summary %>%
        y = NULL) + 
   theme(
      axis.text = element_text(size = 8))
+```
 
+```{r cleaning-openended-response-topic, eval=FALSE, render=FALSE}
 # 3. TOPIC MODELING
 
 # EACH COMMENT IS A DOCUMENT. EXTRACT WORD AND CONTRIBUTION ID
@@ -326,7 +352,7 @@ topic_models <- merge(topic_models,gender_color_mapping, by ="Gender")
 
 ### Reporting Open Ended Responses
 
-#### Option 1: Graph Based
+#### Graph Based 
 ```{r reporting-openended-response-graph}
 datatable(unigram_summary)
 
@@ -337,8 +363,9 @@ datatable(bigram_summary)
 bigram_graph
 ```
 
+```{r reporting-openended-response-sentiment, render=FALSE, eval=FALSE}
 #### Option 2: Sentiment Analysis
-```{r reporting-openended-response-sentiment}
+
 datatable(unigram_sentiment_summary[, c(1:4), drop=FALSE]) %>%
   formatStyle('Gender',
   backgroundColor = styleEqual(gender_color_mapping$Gender, gender_color_mapping$col)
@@ -349,8 +376,8 @@ unigram_sentiment_plot
 unigram_sentiment_plot2
 ```
 
+```{r reporting-openended-response-topic, render=FALSE, eval=FALSE}
 #### Option 3: Topic Modeling
-```{r reporting-openended-response-topic}
 plot_Female
 
 plot_Male
