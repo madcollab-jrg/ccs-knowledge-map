@@ -210,11 +210,22 @@ unigram_graph <- unigram_summary %>%
 
 ggraph(unigram_graph, layout = 'fr') +
   geom_edge_link() +
-  geom_node_point(aes(size = size)) +
+  geom_node_point() +
   geom_node_text(aes(label = name), vjust = 1, hjust = 1)
 
 
 # What we should highlight - items common among the populations and text that are unique within the population. 
+
+#########
+library(widyr)
+
+
+title_word_pairs <- unigram_response %>% 
+  pairwise_count(unigram, Gender, sort = TRUE, upper = FALSE)
+
+
+#########
+
 
 ### BIGRAM
 bigram_graph <- bigram_summary %>%
@@ -408,31 +419,22 @@ matrix_summary <- example_matrix %>%
   summarise(n = n()) %>%
   mutate(freq = n / sum(n)) 
 
-# Recode likert to three responses 
-example_matrix <- example_matrix %>%
-  mutate(
-    likert_category = case_when(
-      answer %in% c("Never", "Rarely") ~ "Infrequent",
-      answer == "Sometimes" ~ "Moderate",
-      answer %in% c("Often", "Always") ~ "Frequent",
-      TRUE ~ NA_character_  # If there's any unexpected value, set it as NA
-    )
-  )
-
 # Create high and lows tables with question, group, outcome (question), variable, value, and color
 numlevels<-length(unique(example_matrix$answer))
 pal<-brewer.pal((numlevels),"PuOr")
 legend.pal<-pal
 
 matrix_summary <- matrix_summary %>%
-      filter(!is.na(Gender))  %>%
-      filter(!Gender == "Non-binary")
+      filter(!is.na(Gender)) # SHOULD BE FOR ALL DATAFRAMES IF THE VARIABLE IS NA
 
+############## FREQUENCY ##############
 color_set_frequency <- data.frame (answer  = c("Always","Often","Sometimes","Rarely","Never"),
-                  col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")) # https://color.adobe.com/create/color-wheel 
-matrix_summary <- merge(matrix_summary,color_set_frequency, by="answer")
-# merge colors
+                   col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")) 
 
+matrix_summary <- merge(matrix_summary,color_set_frequency, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
 highs <- matrix_summary[which(matrix_summary$answer %in% c("Always","Often")),]
 lows <- matrix_summary[which(matrix_summary$answer %in% c("Never", "Rarely")),]
 mylevels <- c("Always","Often","Sometimes","Rarely","Never")
@@ -454,6 +456,233 @@ matrix_visualization <- ggplot() +
         legend.position = "bottom"
         ) 
   scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+  
+
+############## AGREE ##############
+  
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(unique(example_matrix$answer))
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+ color_set_frequency_agree <- data.frame (answer  = c("Agree Strongly","Agree Somewhat","Neutral","Disagree Somewhat","Disagree Strongly"),
+                   col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")) 
+
+matrix_summary <- merge(matrix_summary,color_set_frequency_agree, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Agree Strongly","Agree Somewhat")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Disagree Somewhat","Disagree Strongly")),]
+mylevels <- c("Agree Strongly","Agree Somewhat","Neutral","Disagree Somewhat","Disagree Strongly")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+  
+
+  ############## AWARENESS ##############
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(unique(example_matrix$answer))
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+color_set_frequency_awareness <- data.frame (answer  = c("Aware","Not Aware"),
+                   col = c("#E66101","#5E3C99"))
+
+matrix_summary <- merge(matrix_summary,color_set_frequency_awareness, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Aware")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Not Aware")),]
+mylevels <- c("Aware","Not Aware")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+  
+ ############## INFORMED ##############
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(unique(example_matrix$answer))
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+color_set_frequency_informed <- data.frame (answer  = c("Very Informed","Informed","Moderately Informed","Slightly Informed","Not at all Informed"),
+                   col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99"))
+
+matrix_summary <- merge(matrix_summary,color_set_frequency_informed, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Very Informed","Informed")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Slightly Informed","Not at all Informed")),]
+mylevels <- c("Very Informed","Informed","Moderately Informed","Slightly Informed","Not at all Informed")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+ 
+ ############## AMOUNT ##############
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(unique(example_matrix$answer))
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+color_set_frequency_amount <- data.frame (answer  = c("A lot","A Good Amount","Some","A Little","Nothing"),
+                   col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99"))
+
+matrix_summary <- merge(matrix_summary,color_set_frequency_amount, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("A lot","A Good Amount")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("A Little","Nothing")),]
+mylevels <- c("A lot","A Good Amount","Some","A Little","Nothing")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+ 
+ ############## BINARY ##############
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(unique(example_matrix$answer))
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+color_set_frequency_binary <- data.frame (answer  = c("Yes","No"),
+                   col = c("#E66101","#5E3C99"))
+
+matrix_summary <- merge(matrix_summary,color_set_frequency_binary, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Yes")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("No")),]
+mylevels <- c("Yes","No")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+ 
+ ############## IMPORTANCE ##############
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(unique(example_matrix$answer))
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+ color_set_frequency_importance <- data.frame (answer  = c("Extremely Unimportant","Very Unimportant","Somewhat Unimportant","Neither Important nor Unimportant","Somewhat 
+                                                           Important","Very Important","Extremely Important"),col = 
+                                               c("#E66101","#FDB863","#FAE9D6","#F7F7F7","#B2ABD2","#6753D7","#3F009E")) 
+
+matrix_summary <- merge(matrix_summary,color_set_frequency_importance, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Extremely Unimportant","Very Unimportant","Somewhat Unimportant")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Somewhat Important","Very Important","Extremely Important")),]
+mylevels <- c(("Extremely Unimportant","Very Unimportant","Somewhat Unimportant","Neither Important nor Unimportant","Somewhat Important","Very Important","Extremely Important")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+ 
+
+
+
+
+# 
+
+
+  
+  
+  
+  
+  
 ```
 
 
