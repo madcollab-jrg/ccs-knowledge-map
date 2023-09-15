@@ -495,7 +495,7 @@ matrix_visualization <- ggplot() +
   scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
   
 
-  ############## AWARENESS ##############
+############## AWARENESS ##############
 # Create high and lows tables with question, group, outcome (question), variable, value, and color
 numlevels<-length(unique(example_matrix$answer))
 pal<-brewer.pal((numlevels),"PuOr")
@@ -530,7 +530,7 @@ matrix_visualization <- ggplot() +
         ) 
   scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
   
- ############## INFORMED ##############
+############## INFORMED ##############
 # Create high and lows tables with question, group, outcome (question), variable, value, and color
 numlevels<-length(unique(example_matrix$answer))
 pal<-brewer.pal((numlevels),"PuOr")
@@ -565,7 +565,7 @@ matrix_visualization <- ggplot() +
         ) 
   scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
  
- ############## AMOUNT ##############
+############## AMOUNT ##############
 # Create high and lows tables with question, group, outcome (question), variable, value, and color
 numlevels<-length(unique(example_matrix$answer))
 pal<-brewer.pal((numlevels),"PuOr")
@@ -600,7 +600,7 @@ matrix_visualization <- ggplot() +
         ) 
   scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
  
- ############## BINARY ##############
+############## BINARY ##############
 # Create high and lows tables with question, group, outcome (question), variable, value, and color
 numlevels<-length(unique(example_matrix$answer))
 pal<-brewer.pal((numlevels),"PuOr")
@@ -635,7 +635,7 @@ matrix_visualization <- ggplot() +
         ) 
   scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
  
- ############## IMPORTANCE ##############
+############## IMPORTANCE ##############
 # Create high and lows tables with question, group, outcome (question), variable, value, and color
 numlevels<-length(unique(example_matrix$answer))
 pal<-brewer.pal((numlevels),"PuOr")
@@ -651,7 +651,7 @@ matrix_summary <- merge(matrix_summary,color_set_frequency_importance, by="answe
 # TRANSFORM HIGH/LOWS
 highs <- matrix_summary[which(matrix_summary$answer %in% c("Extremely Unimportant","Very Unimportant","Somewhat Unimportant")),]
 lows <- matrix_summary[which(matrix_summary$answer %in% c("Somewhat Important","Very Important","Extremely Important")),]
-mylevels <- c(("Extremely Unimportant","Very Unimportant","Somewhat Unimportant","Neither Important nor Unimportant","Somewhat Important","Very Important","Extremely Important")
+mylevels <- c("Extremely Unimportant","Very Unimportant","Somewhat Unimportant","Neither Important nor Unimportant","Somewhat Important","Very Important","Extremely Important")
 
 matrix_visualization <- ggplot() + 
   geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
@@ -670,19 +670,7 @@ matrix_visualization <- ggplot() +
         legend.position = "bottom"
         ) 
   scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
- 
 
-
-
-
-# 
-
-
-  
-  
-  
-  
-  
 ```
 
 
