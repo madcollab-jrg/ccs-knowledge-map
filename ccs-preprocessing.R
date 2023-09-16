@@ -318,6 +318,11 @@ ccs_participants <- ccs_participants %>%
   ) %>%
   select(-ends_with(".ut_ccs_participants"))
 
+### GET DATA FROM IN-PERSON DELIBERATION
+
+
+
+
 # Create a dataframe of all users and their home addresses with census information
 
 participant_geo <- ccs_participants %>% 
