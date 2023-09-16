@@ -55,21 +55,6 @@ tree_survey <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/
 tree_survey <- tree_survey[,-1]
 
 oct_general <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/deliberation/oct_general.csv") 
-
-
-#### GENDER SETUP
-gender_options <- c(NA,"Non-binary","Male","Female") # Called multi-options in previous
-col_pal<-brewer.pal(length(gender_options),"PuOr")
-gender_color_mapping <- data.frame(Gender = gender_options, col = col_pal) # Formerly gender_color_mapping
-
-
-## MAPPING NEEDED FOR OTHER OUTPUTS OF CATEGORIES
-
-#### AGE
-
-#### CHOICES
-
-
 ```
 
 # CCS Knowledge Map Response Analysis Template
@@ -85,7 +70,6 @@ These questions are open ended and include text responses. The set of questions 
 ```{r cleaning-openended-response}
 
 # https://www.tidytextmining.com/index.html 
-# https://paldhous.github.io/NICAR/2019/r-text-analysis.html 
 
 # Import stoplist 
 malletwords <- scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt", character(), quote = "")
@@ -109,39 +93,44 @@ unigram_response.m <- unigram_response %>%
 
 # Summarize data by demographic factors - Gender, Hipanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth, Annual Household Income level, Education Level
 unigram_summary <- unigram_response.m %>% 
-  group_by(Gender,word) %>% 
+  group_by(income_recode,word) %>% 
   summarise(count = n()) %>%
   mutate(freq = round(count / sum(count),digits=2))
 
 # Remove infrequent categories. IF category has smaller than +/- 2 SDs remove from response data 
-unigram_constraint <- unigram_summary %>% 
-  group_by(Gender) %>% 
-  summarise(count = n()) %>%
-  mutate(freq = round(count / sum(count),digits=2))
-
-# REMOVE RESPONSES WITH LESS THAN 10 percent of total or NA
-unigram_summary <- unigram_summary %>%
-      filter(!is.na(Gender))  %>%
-      filter(!Gender %in% unigram_constraint$Gender[which(unigram_constraint$freq <= .10 | is.na(unigram_constraint$Gender))])
-
-top_unigram_words <- unigram_summary %>%
-  group_by(Gender) %>%
-  arrange(-freq) %>%
-  slice_head(n=20) %>%
-  ungroup()
-
-top_unigram_words <- merge(top_unigram_words, gender_color_mapping, by = "Gender")
-
-unigram_plot <- ggplot(top_unigram_words, aes(x = reorder(word, freq), y = freq, fill=col)) +
-  geom_bar(stat="identity", color="black", 
-           position=position_dodge(width = 0.7, preserve = "single")) +
-  scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
-  coord_flip() +
-  facet_wrap(~Gender, scales = "free_y") +
-  ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
-  labs(x = "Unigram",y = "Frequency") 
-
-      
+# unigram_constraint <- unigram_summary %>% 
+#   group_by(Gender) %>% 
+#   summarise(count = n()) %>%
+#   mutate(freq = round(count / sum(count),digits=2))
+# 
+# # REMOVE RESPONSES WITH LESS THAN 10 percent of total or NA
+# unigram_summary <- unigram_summary %>%
+#       filter(!is.na(Gender))  %>%
+#       filter(!Gender %in% unigram_constraint$Gender[which(unigram_constraint$freq <= .10 | is.na(unigram_constraint$Gender))])
+# 
+# top_unigram_words <- unigram_summary %>%
+#   group_by(Gender) %>%
+#   arrange(-freq) %>%
+#   slice_head(n=20) %>%
+#   ungroup()
+# 
+# # GET COLORS FOR ALL DEMOGRAPHIC VARIABLES
+# gender_options <- c(NA,"Non-binary","Male","Female") # Called multi-options in previous
+# col_pal<-brewer.pal(length(gender_options),"PuOr")
+# gender_color_mapping <- data.frame(Gender = gender_options, col = col_pal) # Formerly gender_color_mapping
+# 
+# top_unigram_words <- merge(top_unigram_words, gender_color_mapping, by = "Gender")
+# 
+# unigram_plot <- ggplot(top_unigram_words, aes(x = reorder(word, freq), y = freq, fill=col)) +
+#   geom_bar(stat="identity", color="black", 
+#            position=position_dodge(width = 0.7, preserve = "single")) +
+#   scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
+#   coord_flip() +
+#   facet_wrap(~Gender, scales = "free_y") +
+#   ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
+#   labs(x = "Unigram",y = "Frequency") 
+# 
+#       
 ###### BIGRAMS
 bigram_response <- example_open %>% 
   unnest_tokens(unigram, 
@@ -152,37 +141,37 @@ bigram_response.m <- bigram_response %>%
 
 # Summarize data by demographic factors - Gender, Hipanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth, Annual Household Income level, Education Level
 bigram_summary <- bigram_response.m %>% 
-  group_by(Gender,word) %>% 
+  group_by(income_recode,word) %>% 
   summarise(count = n()) %>%
   mutate(freq = round(count / sum(count),digits=2))
 
 # Remove infrequent categories. IF category has smaller than +/- 2 SDs remove from response data 
-bigram_constraint <- bigram_summary %>% 
-  group_by(Gender) %>% 
-  summarise(count = n()) %>%
-  mutate(freq = round(count / sum(count),digits=2))
-
-# REMOVE RESPONSES WITH LESS THAN 10 percent of total or NA
-bigram_summary <- bigram_summary %>%
-      filter(!is.na(Gender))  %>%
-      filter(!Gender %in% bigram_constraint$Gender[which(bigram_constraint$freq <= .10 | is.na(bigram_constraint$Gender))])
-
-top_bigram_words <- bigram_summary %>%
-  group_by(Gender) %>%
-  arrange(-freq) %>%
-  slice_head(n=20) %>%
-  ungroup()
-
-top_bigram_words <- merge(top_bigram_words, gender_color_mapping, by = "Gender")
-
-bigram_plot <- ggplot(top_bigram_words, aes(x = reorder(word, freq), y = freq, fill=col)) +
-  geom_bar(stat="identity", color="black", 
-           position=position_dodge(width = 0.7, preserve = "single")) +
-  scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
-  coord_flip() +
-  facet_wrap(~Gender, scales = "free_y") +
-  ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
-  labs(x = "Bi-gram",y = "Frequency") 
+# bigram_constraint <- bigram_summary %>% 
+#   group_by(Gender) %>% 
+#   summarise(count = n()) %>%
+#   mutate(freq = round(count / sum(count),digits=2))
+# 
+# # REMOVE RESPONSES WITH LESS THAN 10 percent of total or NA
+# bigram_summary <- bigram_summary %>%
+#       filter(!is.na(Gender))  %>%
+#       filter(!Gender %in% bigram_constraint$Gender[which(bigram_constraint$freq <= .10 | is.na(bigram_constraint$Gender))])
+# 
+# top_bigram_words <- bigram_summary %>%
+#   group_by(Gender) %>%
+#   arrange(-freq) %>%
+#   slice_head(n=20) %>%
+#   ungroup()
+# 
+# top_bigram_words <- merge(top_bigram_words, gender_color_mapping, by = "Gender")
+# 
+# bigram_plot <- ggplot(top_bigram_words, aes(x = reorder(word, freq), y = freq, fill=col)) +
+#   geom_bar(stat="identity", color="black", 
+#            position=position_dodge(width = 0.7, preserve = "single")) +
+#   scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
+#   coord_flip() +
+#   facet_wrap(~Gender, scales = "free_y") +
+#   ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
+#   labs(x = "Bi-gram",y = "Frequency") 
 
 ###################################
 # POTENTIAL ANALYSES OF RESPONSES #
@@ -203,44 +192,28 @@ bigram_plot <- ggplot(top_bigram_words, aes(x = reorder(word, freq), y = freq, f
 ### http://users.dimi.uniud.it/~massimo.franceschet/ns/syllabus/make/ggraph/ggraph.html 
 
 ### UNIGRAM
+unigram_summary <- unigram_summary[which(!is.na(unigram_summary$word)),]
+
 unigram_graph <- unigram_summary %>%
-                  group_by(Gender) %>%
-                  arrange(-freq) %>%
-                  slice_head(n=50) %>%
-                  select(word) %>%
-                  graph_from_data_frame()
-
-ggraph(unigram_graph, layout = 'fr') +
-  geom_edge_link() +
-  geom_node_point() +
-  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
-
-
-# What we should highlight - items common among the populations and text that are unique within the population. 
-
-#########
-library(widyr)
-
-
-title_word_pairs <- unigram_response %>% 
-  pairwise_count(unigram, Gender, sort = TRUE, upper = FALSE)
-
-
-#########
-
-
+  filter(freq >= .02) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = freq, edge_width = freq), edge_colour = "darkred") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE,
+                 point.padding = unit(0.2, "lines")) + 
+  theme_void() 
+   
 ### BIGRAM
 bigram_graph <- bigram_summary %>%
-                  group_by(Gender) %>%
-                  arrange(-freq) %>%
-                  slice_head(n=50) %>%
-                  select(word) %>%
-                  graph_from_data_frame()
-
-ggraph(bigram_graph, layout = "fr") +
-  geom_edge_link() +
-  geom_node_point() +
-  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+  filter(freq >= .02) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = count, edge_width = count), edge_colour = "darkred") +
+  geom_node_point(size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE,
+                 point.padding = unit(0.2, "lines")) +
+  theme_void()
 
 ```
 
