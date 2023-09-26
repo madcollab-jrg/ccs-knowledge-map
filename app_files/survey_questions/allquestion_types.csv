@@ -1,44 +1,82 @@
-Survey,Question,Type,
-Air Quality,1,Open-ended,
-Air Quality,2,Multi-Choice,
-Air Quality,3,Multi-Choice,
-Air Quality,4,Select Box,
-Air Quality,5,Open-ended,
-Air Quality,6,Multi-Choice,
-Air Quality,7,Multi-Choice,
-Air Quality,8,Open-ended,
-Air Quality,9,Multi-Choice,
-Air Quality,10,Select Box,
-Urban Heat,1,Open-ended,
-Urban Heat,2,Matrix,
-Urban Heat,3,Open-ended,
-Urban Heat,4,Multi-Choice,
-Urban Heat,5,Open-ended,
-Urban Heat,6,Multi-Choice,
-Urban Heat,7,Multi-Choice,
-Urban Heat,8,Open-ended,
-Tree Canopy,1,Matrix,
-Tree Canopy,2,Matrix,
-Tree Canopy,3,Matrix,
-Tree Canopy,4,Select Box,
-Tree Canopy,5,Multi-Choice,
-Tree Canopy,6,Open-ended,
-Tree Canopy,7,Multi-Choice,
-Tree Canopy,8,Multi-Choice,
-Tree Canopy,9,Multi-Choice,
-Tree Canopy,10,Multi-Choice,
-Tree Canopy,11,Multi-Choice,
-Tree Canopy,12,Multi-Choice,
-Environmental Justice,1,Multi-Choice,
-Environmental Justice,2,Multi-Choice,
-Environmental Justice,3,Ranking,R
-Environmental Justice,4,Matrix,
-Environmental Justice,5,Matrix,
-Environmental Justice,6,Multi-Choice,
-Environmental Justice,7,Matrix,
-Environmental Justice,8,Ranking,R
-Environmental Justice,9,Multi-Choice,
-Environmental Justice,10,Multi-Choice,
-Environmental Justice,11,Multi-Choice,
-Environmental Justice,12,Open-ended,
-Environmental Justice,13,Open-ended,
+Survey,Question,Type,SubType,CCS
+Air Quality,1,Open-ended,,1
+Air Quality,2,Multi-Choice,,1
+Air Quality,3,Multi-Choice,,1
+Air Quality,4,Select Box,,1
+Air Quality,5,Open-ended,,1
+Air Quality,6,Multi-Choice,,1
+Air Quality,7,Multi-Choice,,1
+Air Quality,8,Open-ended,,1
+Air Quality,9,Multi-Choice,,1
+Air Quality,10,Select Box,,1
+Urban Heat,11,Open-ended,,1
+Urban Heat,12,Matrix,frequency,1
+Urban Heat,1,Open-ended,,1
+Urban Heat,2,Multi-Choice,,1
+Urban Heat,3,Open-ended,,1
+Urban Heat,4,Multi-Choice,,1
+Urban Heat,5,Multi-Choice,,1
+Urban Heat,6,Open-ended,,1
+Tree Canopy,1,Matrix,change,1
+Tree Canopy,2,Matrix,importance,1
+Tree Canopy,3,Matrix,agree,1
+Tree Canopy,4,Select Box,,1
+Tree Canopy,5,Multi-Choice,,1
+Tree Canopy,6,Open-ended,,1
+Tree Canopy,7,Multi-Choice,,1
+Tree Canopy,8,Multi-Choice,,1
+Tree Canopy,9,Multi-Choice,,1
+Tree Canopy,10,Multi-Choice,,1
+Tree Canopy,11,Multi-Choice,,1
+Tree Canopy,12,Multi-Choice,,1
+Environmental Justice,1,Multi-Choice,,1
+Environmental Justice,2,Multi-Choice,,1
+Environmental Justice,3,Ranking,R,1
+Environmental Justice,4,Matrix,agree,1
+Environmental Justice,5,Matrix,agree,1
+Environmental Justice,6,Multi-Choice,,1
+Environmental Justice,7,Matrix,,1
+Environmental Justice,8,Ranking,R,1
+Environmental Justice,9,Multi-Choice,,1
+Environmental Justice,10,Multi-Choice,,1
+Environmental Justice,11,Multi-Choice,,1
+Environmental Justice,12,Open-ended,,1
+Environmental Justice,13,Open-ended,,1
+oct_treesgreenery,How important are trees to your everyday life,Matrix,importance,0
+oct_treesgreenery,Do you agree/disagree that having green spaces and trees has impacted your health and quality of life?,Matrix,agree,0
+oct_treesgreenery,Trees capture carbon from the atmosphere.,Matrix,aware,0
+oct_treesgreenery,Trees can reduce flooding during summer.,Matrix,aware,0
+oct_carbon,Climate pollutants come from transportation and buildings that burn lots of fossil fuels etc.,Matrix,aware,0
+oct_carbon,Carbon dioxide can be removed by growing more trees.,Matrix,aware,0
+oct_carbon,Carbon dioxide can be removed by new technologies.,Matrix,aware,0
+oct_energy,How important is energy saving at home to your everyday life,Matrix,importance,0
+oct_energy,Do you agree/disagree that energy saving has impacted your quality of life?,Matrix,agree,0
+oct_general,What do you think are the most urgent environmental issues facting your community?,Open-ended,,0
+oct_general,I would like to learn more about how environmental issues impact my community.,Matrix,agree,0
+oct_general,"When I have questions about climate change or environmental issues, I know where to go for the information.",Matrix,agree,0
+oct_general,How informed would you now say you are about environmental issues in your community?,Matrix,informed,0
+oct_general,How much do you now feel like you know about climate change?,Matrix,amount,0
+oct_general,People like me can have a say in the environment justice issues related to my community.,Matrix,agree,0
+oct_general,People like me can have an impact on the environment policymaking process in my community. ,Matrix,agree,0
+oct_general,I have the knowledge and skills I need to improve environment in my community. ,Matrix,agree,0
+oct_general,I have the knowledge and skills I need to respond to the collective problems facing my community. ,Matrix,agree,0
+oct_general,I want to work with other community members to take actions to improve environment in my community. ,Matrix,agree,0
+oct_general,I can create positive changes in my life. ,Matrix,agree,0
+oct_general,I have the ownership over environment problems facing my community. ,Matrix,agree,0
+oct_general,What are your goals to improve the quality of environment?,Open-ended,agree,0
+oct_general,Do you agree/disagree that new technology can slow down climate change?,Matrix,agree,0
+oct_general,"If there is new technology to slow down climate change, how likely are you willing to use it in your community?",Matrix,agree,0
+oct_general,Who do you think should be responsible for ensuring that new technology is developed to slow down climate change?,Multi-Choice,,0
+oct_general,Who do you think should be responsible for ensuring that new technology is deployed equitably in our community?,Multi-Choice,,0
+oct_general,What are your concerns of deploying new technologies such as the carbon dioxide removal storage in your neighborhood?,Open-ended,,0
+oct_general,Climate change affects my health.,Matrix,aware,0
+oct_general,"In the future, what is the most convenient way for you to share your opinions about environmental issues and other social issues?",Multi-Choice,,0
+oct_general,Do you agree or disagree with the statement that climate change is happening?,Matrix,agree,0
+oct_general,Do you agree or disagree with the statement that climate change is caused by human activities?,Matrix,agree,0
+oct_health,How important is extreme heat to your everyday life ,Matrix,importance,0
+oct_health,Do you agree/disagree that extreme heat has impacted your life?,Matrix,agree,0
+oct_health,Insulation and weatherization are ways to reduce energy consumption at my home.,Matrix,aware,0
+oct_health,Electrification is one way to reduce carbon emissions at my home.,Matrix,aware,0
+oct_health,I can go to a cooling center during extreme heat weather to stay cool.,Matrix,aware,0
+oct_health,"In Dane County, days over 100F will double in the next 30 years.",Matrix,aware,0
+oct_health,Extreme heat is dangerous to my health.,Matrix,aware,0

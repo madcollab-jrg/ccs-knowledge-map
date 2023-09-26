@@ -17,6 +17,7 @@ library(ggthemes)
 library(tm)
 library(tidytext)
 library(textdata)
+library(topicmodels)
 
 
 survey_results_ui = function(input){
@@ -42,61 +43,18 @@ make_color_mapping = function(column, options){
   return(color_mapping)
 }
 
-text_questions = function(survey_data, question){
+text_questions = function(survey_data, demographic_variable){
   # Import stoplist 
   malletwords <- scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt", character(), quote = "")
   
   # Extract example question and demographic data
-  example_open <- heat_survey[,c(2,4,45:53,19)]
+  print(names(survey_data))
+  example_open <- survey_data
   names(example_open)[2] <- "response" 
   
   example_open$response_cleaned <- tolower(gsub('[[:punct:]]', ' ', example_open$response))
   example_open$response_cleaned <- removeWords(example_open$response_cleaned, c(stopwords("english"),malletwords))
   example_open$response_cleaned <- lemmatize_words(example_open$response_cleaned)
-  
-  # Tokenize response_cleaned to create word cloud and summary responses by demographic groups
-  unigram_response <- example_open %>% 
-    unnest_tokens(unigram, 
-                  response_cleaned, token = "ngrams", n = 1)
-  
-  # Melt data
-  unigram_response.m <- unigram_response %>%
-    pivot_longer(!`Contribution ID`:Gender, names_to = "tokens", values_to = "word")
-  
-  # Summarize data by demographic factors - Gender, Hipanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth, Annual Household Income level, Education Level
-  unigram_summary <- unigram_response.m %>% 
-    group_by(Gender,word) %>% 
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count),digits=2))
-  
-  # Remove infrequent categories. IF category has smaller than +/- 2 SDs remove from response data 
-  unigram_constraint <- unigram_summary %>% 
-    group_by(Gender) %>% 
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count),digits=2))
-  
-  # REMOVE RESPONSES WITH LESS THAN 10 percent of total or NA
-  unigram_summary <- unigram_summary %>%
-    filter(!is.na(Gender))  %>%
-    filter(!Gender %in% unigram_constraint$Gender[which(unigram_constraint$freq <= .10 | is.na(unigram_constraint$Gender))])
-  
-  top_unigram_words <- unigram_summary %>%
-    group_by(Gender) %>%
-    arrange(-freq) %>%
-    slice_head(n=20) %>%
-    ungroup()
-  
-  top_unigram_words <- merge(top_unigram_words, gender_color_mapping, by = "Gender")
-  
-  unigram_plot <- ggplot(top_unigram_words, aes(x = reorder(word, freq), y = freq, fill=col)) +
-    geom_bar(stat="identity", color="black", 
-             position=position_dodge(width = 0.7, preserve = "single")) +
-    scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
-    coord_flip() +
-    facet_wrap(~Gender, scales = "free_y") +
-    ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
-    labs(x = "Unigram",y = "Frequency") 
-  
   
   ###### BIGRAMS
   bigram_response <- example_open %>% 
@@ -104,160 +62,28 @@ text_questions = function(survey_data, question){
                   response_cleaned, token = "ngrams", n = 2)
   
   bigram_response.m <- bigram_response %>%
-    pivot_longer(!`Contribution ID`:Gender, names_to = "tokens", values_to = "word")
+    pivot_longer(!`Contribution.ID`:Gender, names_to = "tokens", values_to = "word")
   
   # Summarize data by demographic factors - Gender, Hipanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth, Annual Household Income level, Education Level
   bigram_summary <- bigram_response.m %>% 
-    group_by(Gender,word) %>% 
+    group_by(!!sym(demographic_variable),word) %>% 
     summarise(count = n()) %>%
     mutate(freq = round(count / sum(count),digits=2))
   
-  # Remove infrequent categories. IF category has smaller than +/- 2 SDs remove from response data 
-  bigram_constraint <- bigram_summary %>% 
-    group_by(Gender) %>% 
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count),digits=2))
-  
-  # REMOVE RESPONSES WITH LESS THAN 10 percent of total or NA
-  bigram_summary <- bigram_summary %>%
-    filter(!is.na(Gender))  %>%
-    filter(!Gender %in% bigram_constraint$Gender[which(bigram_constraint$freq <= .10 | is.na(bigram_constraint$Gender))])
-  
-  top_bigram_words <- bigram_summary %>%
-    group_by(Gender) %>%
-    arrange(-freq) %>%
-    slice_head(n=20) %>%
-    ungroup()
-  
-  top_bigram_words <- merge(top_bigram_words, gender_color_mapping, by = "Gender")
-  
-  bigram_plot <- ggplot(top_bigram_words, aes(x = reorder(word, freq), y = freq, fill=col)) +
-    geom_bar(stat="identity", color="black", 
-             position=position_dodge(width = 0.7, preserve = "single")) +
-    scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
-    coord_flip() +
-    facet_wrap(~Gender, scales = "free_y") +
-    ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
-    labs(x = "Bi-gram",y = "Frequency") 
-  
-  ###################################
-  # POTENTIAL ANALYSES OF RESPONSES #
-  ###################################
-  
-  ## 1. GRAPH
-  #### https://chryswoods.com/text_analysis_r/ngrams.html 
-  #### https://www.data-imaginist.com/2017/ggraph-introduction-layouts/
-  #### https://cran.r-project.org/web/packages/ggraph/vignettes/Layouts.html 
-  #### CAN BE USED TO SHOW OVERLAPPING AND UNIQUE RESPONSES BY GROUP. HOW TO CREATE NARRATIVE AND HELP USERS READ AND INTERPRET CHART
-  
-  ### UNIGRAM
-  unigram_graph <- unigram_summary %>%
-    group_by(Gender) %>%
-    arrange(-freq) %>%
-    slice_head(n=50) %>%
-    select(word) %>%
-    graph_from_data_frame()
-  
-  ggraph(unigram_graph, layout = 'fr') +
-    geom_edge_link() +
-    geom_node_point() +
-    geom_node_text(aes(label = name), vjust = 1, hjust = 1)
-  
-  ### BIGRAM
   bigram_graph <- bigram_summary %>%
-    group_by(Gender) %>%
-    arrange(-freq) %>%
-    slice_head(n=50) %>%
-    select(word) %>%
-    graph_from_data_frame()
+    filter(freq >= .02) %>%
+    graph_from_data_frame() %>%
+    ggraph(layout = "fr") +
+    geom_edge_link(aes(edge_alpha = count, edge_width = count), edge_colour = "darkred") +
+    geom_node_point(size = 5) +
+    geom_node_text(aes(label = name), repel = TRUE,
+                   point.padding = unit(0.2, "lines")) +
+    theme_void()
   
-  ggraph(bigram_graph, layout = "fr") +
-    geom_edge_link() +
-    geom_node_point() +
-    geom_node_text(aes(label = name), vjust = 1, hjust = 1)
-  
-  
-  # 2. SENTIMENT ANALYSIS
-  
-  #### https://www.tidytextmining.com/sentiment
-  #### THERE ARE THREE DICTIONARIES FOR SENTIMENT AFFIN, NRC, AND BING. (NRC REPRESENTS MANY MORE EMPOTIONAL CATEGORIES)
-  
-  nrc_S <- get_sentiments("nrc") %>% 
-    filter(!sentiment %in% c("positive", "negative"))
-  
-  # UNIGRAM
-  unigram_summary <- unigram_summary %>%
-    inner_join(nrc_S)
-  
-  # PLOT SENTIMENT WITH PROPORTION OF WORDS
-  unigram_sentiment_summary <- unigram_summary %>% 
-    group_by(Gender,sentiment) %>% 
-    summarise(total_words = sum(count)) %>%
-    mutate(freq = round(total_words / sum(total_words),digits=2))
-  
-  color_sentiment <- data.frame (sentiment  = c("anger","anticipation","disgust",
-                                                "fear","joy","sadness","surprise", "trust"),
-                                 col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99",
-                                                  "#E6A1A1","#8A75E6","#B89EE6") #https://color.adobe.com/create/color-wheel
-  )
-  unigram_sentiment_summary <- merge(unigram_sentiment_summary,color_sentiment, by="sentiment")
-  
-  # SENTIMENT FACETED BY GENDER
-  unigram_sentiment_plot <- ggplot(unigram_sentiment_summary, aes(x = reorder(sentiment, freq), y = freq, fill=col)) +
-    geom_bar(stat="identity", color="black", 
-             position=position_dodge(width = 0.7, preserve = "single")) +
-    scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
-    coord_flip() +
-    facet_wrap(~Gender, scales = "free_y") +
-    ggtitle(paste0("Word Frequency By ",names(unigram_summary)[1])) + 
-    labs(x = "Emotion",y = "Frequency") 
-  
-  # WORDS FACETED BY SENTIMENT 
-  unigram_summary <- merge(unigram_summary, gender_color_mapping, by = "Gender")
-  
-  unigram_sentiment_plot2 <- unigram_summary %>%
-    group_by(Gender,sentiment) %>%
-    slice_max(count, n = 5) %>% 
-    ungroup() %>%
-    mutate(word = reorder(word, count)) %>%
-    ggplot(aes(count, word, fill = col)) +
-    geom_col(show.legend = FALSE,position=position_dodge(width = 0.7, preserve = "single")) +
-    scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
-    facet_wrap(~sentiment, scales = "free_y") +
-    labs(x = "Contribution to sentiment",
-         y = NULL) + 
-    theme(
-      axis.text = element_text(size = 8))
-  
-  # 3. TOPIC MODELING
-  
-  # EACH COMMENT IS A DOCUMENT. EXTRACT WORD AND CONTRIBUTION ID
-  doc_summary <- unigram_response.m %>% 
-    group_by(`Contribution ID`, word) %>% 
-    #group_by(Gender,word) %>% 
-    summarise(count = n()) 
-  
-  doc.dtm <- doc_summary %>%
-    cast_dtm(`Contribution ID`, word, count)
-  
-  tm_lda <- LDA(doc.dtm, k = 3)
-  tm_topics <- tidy(tm_lda, matrix = "beta")
-  
-  tm_top_terms <- tm_topics %>%
-    group_by(topic) %>%
-    slice_max(beta, n = 5) %>% 
-    ungroup() %>%
-    arrange(topic, -beta)
-  
-  topic_viz <- tm_top_terms %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free") +
-    scale_y_reordered()
+  return(bigram_graph)
 }
 
-matrix_questions = function(example_matrix, demographic_variable, filter_input, coloring, options){
+matrix_questions = function(example_matrix, demographic_variable, filter_input, coloring, options, q_subtype){
   
   #ONLY WORKS FOR HEAT SURVEY + AIR QUALITY SURVEY
   
@@ -380,22 +206,26 @@ multi_choice_questions = function(example_multi, demographic_variable, filter_in
   return(multi_visualization)
 }
 
-select_box_questions = function(survey_data, question){
-  example_select <- survey_data[,c(2,question,22,48:56)]
+select_box_questions = function(survey_data, demographic_variable, filter_input, coloring, options){
+  example_select <- survey_data
   names(example_select)[2] <- "response" 
   
   select_summary <- example_select %>% 
-    group_by(Gender,response) %>% 
+    group_by(!!sym(demographic_variable),response) %>% 
     summarise(count = n()) %>%
     mutate(freq = round(count / sum(count),digits=2))
   
   # Remove other responses
   select_summary <- select_summary %>%
     filter(!grepl("^Other \\(please specify\\)", response)) %>%
-    filter(!is.na(Gender))  %>%
-    filter(!Gender == "Non-binary")
+    filter(!is.na(!!sym(demographic_variable))) 
+    
+  if(demographic_variable == "Gender"){
+    select_summary = select_summary %>% filter(Gender != "Non-binary")
+  }
   
-  select_summary <- merge(select_summary, gender_color_mapping, by = "Gender") # USE SAME COLORS FROM OTHER
+  select_summary <- merge(select_summary, coloring, by = demographic_variable) # USE SAME COLORS FROM OTHER
+  print(select_summary$response)
   
   select_visualization <-
     ggplot(data=select_summary, aes(x=response, y=freq, fill=col)) +
@@ -403,16 +233,21 @@ select_box_questions = function(survey_data, question){
              position=position_dodge(width = 0.7, preserve = "single"))+
     labs(y="Count") +
     coord_flip() + 
-    scale_fill_identity("Counts", labels = gender_options, breaks=gender_color_mapping, guide="legend") + 
-    #facet_grid(. ~Gender)  +
+    scale_fill_identity("Counts", labels = options, breaks=coloring, guide="legend") + 
     scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
     theme(
       legend.position="bottom",axis.title.y = element_blank(),
       axis.text = element_text(size = 8))
+  
+  #datatable(select_summary[, c(1:4), drop=FALSE]) %>%
+    #formatStyle('Gender',
+    #            backgroundColor = styleEqual(gender_color_mapping$Gender, gender_color_mapping$col)
+    #)
+  
   return(select_visualization)
 }
 
-resulting_graphics = function(input, output, survey_data, is_survey, question = NA, question_type = NA){
+resulting_graphics = function(input, output, survey_data, is_survey, question = NA, question_type = NA, question_subtype = NA){
   reaction = observeEvent(input$run_report,
                           {
                             req(input$survey)
@@ -421,6 +256,7 @@ resulting_graphics = function(input, output, survey_data, is_survey, question = 
                             message(q_type)
                             if(q_type!= "Ranking" & survey_flag){
                               question_num = question()+3
+                              print(question_num)
                               income_var = "income_recode"
                               edu_var = "edu_recode"
                               age_var = "Year.of.Birth"
@@ -458,32 +294,37 @@ resulting_graphics = function(input, output, survey_data, is_survey, question = 
                               # survey_data[,c(2,col_num,45:53,19,22)]
                               data_for_visualization = NA
                               if(input$survey == "Urban Heat Survey"){
-                                data_for_visualization = data[,c(2,question_num,45:53,19,22)]
+                                data_for_visualization = data[,c(2,question_num,45:53,22,19)]
                               }else if(input$survey == "Tree Canopy Survey"){
-                                data_for_visualization = data[,c(2,question_num,22,48:56,25)]
+                                data_for_visualization = data[,c(2,question_num,48:56,25,22)]
                               }else if(input$survey == "Air Quality Survey"){
-                                data_for_visualization = data[,c(2,question_num,47:55,21,24)]
+                                data_for_visualization = data[,c(2,question_num,47:55,24,21)]
                               }else if(input$survey == "Environmental Justice Survey"){
-                                data_for_visualization = data[,c(2,question_num,51:59,25,28)]
+                                data_for_visualization = data[,c(2,question_num,28:58,27,24)]
                               }
                               
-                              print(nrow(data_for_visualization))
-                              
-                              message("print graphs")
+                              message(q_type)
                               if(q_type == "matrix"){
+                                q_subtype = question_subtype()
                                 output$survey_results1 = renderPlot( matrix_questions(data_for_visualization, income_var, NA)  )
                                 output$survey_results2 = renderPlot( matrix_questions(data_for_visualization, edu_var, NA)  )
                                 output$survey_results3 = renderPlot( matrix_questions(data_for_visualization, age_var, NA)  )
                                 output$survey_results4 = renderPlot( matrix_questions(data_for_visualization, gender_var, NA)  )
                               }else if(q_type == "open-ended"){
-                                display_func = text_questions
+                                output$survey_results1 = renderPlot( text_questions(data_for_visualization, income_var) )
+                                output$survey_results2 = renderPlot( text_questions(data_for_visualization, edu_var) )
+                                output$survey_results3 = renderPlot( text_questions(data_for_visualization, age_var) )
+                                output$survey_results4 = renderPlot( text_questions(data_for_visualization, gender_var) )
                               }else if(q_type == "multi-choice"){
                                 output$survey_results1 = renderPlot( multi_choice_questions(data_for_visualization, income_var, NA, income_color_mapping, income_options)  )
                                 output$survey_results2 = renderPlot( multi_choice_questions(data_for_visualization, edu_var, NA, edu_color_mapping, edu_options)  )
                                 output$survey_results3 = renderPlot( multi_choice_questions(data_for_visualization, age_var, NA, age_color_mapping, age_options)  )
                                 output$survey_results4 = renderPlot( multi_choice_questions(data_for_visualization, gender_var, NA, gender_color_mapping, gender_options)  )
                               }else if(q_type == "select box"){
-                                display_func = text_questions
+                                output$survey_results1 = renderPlot( select_box_questions(data_for_visualization, income_var, NA, income_color_mapping, income_options)  )
+                                output$survey_results2 = renderPlot( select_box_questions(data_for_visualization, edu_var, NA, edu_color_mapping, edu_options)  )
+                                output$survey_results3 = renderPlot( select_box_questions(data_for_visualization, age_var, NA, age_color_mapping, age_options)  )
+                                output$survey_results4 = renderPlot( select_box_questions(data_for_visualization, gender_var, NA, gender_color_mapping, gender_options)  )
                               }
                               
                             }

@@ -6,4 +6,10 @@ get_question_type = function(survey, number){
   return( tolower(as.character(q[1,"Type"]) ))
 }
 
+get_question_subtype = function(survey, number){
+  q_to_type = read.csv("survey_questions/allquestion_types.csv")
+  q = q_to_type %>% filter(Survey == str_sub(survey, 1, -8) & Question == number)
+  return( tolower(as.character(q[1,"SubType"]) ))
+}
+
 #print(get_question_type("Tree Canopy Survey", 1))

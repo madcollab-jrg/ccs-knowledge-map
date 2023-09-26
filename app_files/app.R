@@ -145,6 +145,13 @@ server <- function(input, output){
       q_num = question_number()
       get_question_type(input$survey, q_num)
     })
+  question_subtype = eventReactive(
+    list(input$run_report),
+    { 
+      req(input$survey)
+      q_num = question_number()
+      get_question_subtype(input$survey, q_num)
+    })
   is_survey = eventReactive(list(input$run_report),
                             {
                               req(input$survey)
@@ -158,7 +165,7 @@ server <- function(input, output){
   get_representative_reactive(input, output, file_to_get)
 
   # results graphics
-  resulting_graphics(input, output, survey_data, is_survey, question_number, question_type)
+  resulting_graphics(input, output, survey_data, is_survey, question_number, question_type, question_subtype)
   
 }
 
