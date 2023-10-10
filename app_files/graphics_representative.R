@@ -40,6 +40,7 @@ get_pal = function(min_val,max_val){
 }
 
 get_representative_reactive = function(input, output, file_loc = NA){
+  # Table for representativeness. Populate the representativeness box.
   reaction = observeEvent(input$run_report,
                           {
                             # code

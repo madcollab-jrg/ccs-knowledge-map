@@ -9,14 +9,14 @@ Air Quality,7,Multi-Choice,,1
 Air Quality,8,Open-ended,,1
 Air Quality,9,Multi-Choice,,1
 Air Quality,10,Select Box,,1
-Urban Heat,11,Open-ended,,1
-Urban Heat,12,Matrix,frequency,1
 Urban Heat,1,Open-ended,,1
-Urban Heat,2,Multi-Choice,,1
+Urban Heat,2,Matrix,frequency,1
 Urban Heat,3,Open-ended,,1
 Urban Heat,4,Multi-Choice,,1
-Urban Heat,5,Multi-Choice,,1
-Urban Heat,6,Open-ended,,1
+Urban Heat,5,Open-ended,,1
+Urban Heat,6,Multi-Choice,,1
+Urban Heat,7,Multi-Choice,,1
+Urban Heat,8,Open-ended,,1
 Tree Canopy,1,Matrix,change,1
 Tree Canopy,2,Matrix,importance,1
 Tree Canopy,3,Matrix,agree,1

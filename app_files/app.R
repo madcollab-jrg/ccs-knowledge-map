@@ -138,6 +138,8 @@ server <- function(input, output){
       question = input[[surveyQid]]
       as.integer(str_extract(question, regex("[0-9]+")))#+3
     })
+  
+  # get question type for graphics display
   question_type = eventReactive(
     list(input$run_report),
     { 
@@ -145,6 +147,8 @@ server <- function(input, output){
       q_num = question_number()
       get_question_type(input$survey, q_num)
     })
+  
+  # question subtype - needed for matrix type questions
   question_subtype = eventReactive(
     list(input$run_report),
     { 
@@ -152,6 +156,8 @@ server <- function(input, output){
       q_num = question_number()
       get_question_subtype(input$survey, q_num)
     })
+  
+  # is something a survey - For non-survey they haven't decided on graphical displays
   is_survey = eventReactive(list(input$run_report),
                             {
                               req(input$survey)

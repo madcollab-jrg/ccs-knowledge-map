@@ -19,6 +19,7 @@ survey_characteristic_odds = function(df, x, census_level, log = T){
   #   x: type list, contains characteristics you want to match on
   #       ex. x = list("race": ..., "education": ..., etc.). Should have
   #       the same columns names as the dataframe for each characteristic
+  #   census_level: 
   #
   # Return:
   #   list containing odds of having characteristic x and the filtered dataset

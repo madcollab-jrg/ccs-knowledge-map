@@ -42,20 +42,9 @@ print_questions = function(survey.selected, survey.selected.question, output, n)
 }
 
 get_data_description_reaction = function(input, output, surveyIds, survey_data = NA, census_data = NA, file_loc = NA){
-  # Reaction event when the button Run Report is pressed to populate the data description
-  # box. What is printed is the survey selected, question selected (if there is one), and
-  # the number of people that responded to the survey. Also there will be table as a data summary
-  #
-  # Args:
-  #   input: server input
-  #   output: server output
-  #   surveysIds: dictionary that maps survey -> surveyIds for conditionalPanel 
-  #   survey_data: the data from the survey 
-  #   census_data: the data from the census 
-  #
-  #
-  # Returns:
-  #   observeEvent object that reacts to the button push
+  # When run report is pressed populate the data description box with table.
+  # Table should have counts of people who answered the survey within wisconsin,
+  # and split up into sub categories.
   reaction = observeEvent(input$run_report,
                {
                  survey.selected = input[["survey"]] # survey selected

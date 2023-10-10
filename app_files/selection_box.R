@@ -41,7 +41,6 @@ get_census_items = function(census_item){
     if(census_item == "'Census Tract'"){
         survey_questions = possible_values$tract
     }else if(census_item == "'Census State'"){
-        # TODO: is there anything else to put here
         survey_questions = c("Wisconsin")
     }else if(census_item == "'Census County'"){
         survey_questions = possible_values$county
