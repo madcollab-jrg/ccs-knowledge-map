@@ -119,7 +119,7 @@ SURVEYS = c("ej-report", "ej-storytile", "ej-survey")
 #surveys = c("ej-survey")
 
 census_codes = get_yaml("data_preprocessing/rosetta/stone.yaml")
-queries_to_compile = get_yaml("data_preprocessing/queries/generated_queries.yaml") # all african american income
+queries_to_compile = get_yaml("data_preprocessing/queries/generated_queries.yaml")
 target_pops = get_yaml("data_preprocessing/queries/target_populations.yaml")
 
 start_time <- Sys.time()
