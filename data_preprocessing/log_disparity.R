@@ -33,7 +33,7 @@ survey_characteristic_odds = function(df, x, census_level, log = T){
   # two questions: 
   #   1) how representative is the survey using XX as a surveillance dataset
   #   2) How representative is the subpopulation of our survey using XX as a surveillance dataset
-  df = df %>% filter( !is.na(state_fips) & !! sym(census_level) == x[[census_level]] ) # think I need to change this -- should filter on location first
+  df = df %>% filter( !is.na(state_fips) & !! sym(census_level) == x[[census_level]] ) 
   n = nrow(df)
   
   if (n == 0){
