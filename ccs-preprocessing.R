@@ -17,8 +17,12 @@ gl_auto_auth()
 ####### IMPORT/COMBINE DATASETS FROM RESEARCH DRIVE #######
 ###########################################################
 
-########## URBAN HEAT ########## 
+#### LOG
+# REMOVE BAD RESPONSES 
+# EXTRACT ZIP CODES FROM ADDRESS
 
+
+########## URBAN HEAT ########## 
 
 # Import file survey and map files from Research Drive. Ignore the first 7 lines that have metadata for the element
 heat_survey_MAIN <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/Form-ID-33_wisconsin-community-.csv", skip=8) # move to Zoonvierse Datasets folder
@@ -321,15 +325,16 @@ ccs_participants <- ccs_participants %>%
 ### GET DATA FROM IN-PERSON DELIBERATION
 
 
-
-
 # Create a dataframe of all users and their home addresses with census information
-
 participant_geo <- ccs_participants %>% 
   geocode(
     address = address,
     method = "census", full_results = TRUE, api_options = list(census_return_type = 'geographies')
   )
+
+#GET ZIP CODES
+participant_geo$zip <- substr(participant_geo$matched_address, nchar(participant_geo$matched_address) - 4, nchar(participant_geo$matched_address))
+
 
 ########## CONVERT VARIABLES TO MAPPING WITH CENSUS DATA 
 
