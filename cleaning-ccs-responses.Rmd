@@ -374,7 +374,7 @@ plot_Female
 
 plot_Male
 
-`plot_Non-binary`
+plot_Non-binary
 ```
 
 
