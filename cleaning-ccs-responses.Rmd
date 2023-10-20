@@ -392,10 +392,6 @@ Detection might involve extracting the first four words of every response, if th
 example_matrix <- heat_survey[,c(2,5,45:53,19)] # ORIGINAL EXAMPLE
 names(example_matrix)[2] <- "response" 
 
-
-example_matrix <- ej_survey[,c(2,12,50:58,24)] # CHECKING
-names(example_matrix)[2] <- "response" 
-
 # Since the questions are in one column, we need to seperate them and then the question and respone variables. ONLY FOR CCS QUESTIONS. In the allquestions_types questions in the CCS column = 1
 example_matrix <- example_matrix %>% 
   separate_rows(response, sep = "; ") %>%
