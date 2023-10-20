@@ -393,7 +393,7 @@ example_matrix <- heat_survey[,c(2,5,45:53,19)] # ORIGINAL EXAMPLE
 names(example_matrix)[2] <- "response" 
 
 
-example_matrix <- ej_survey[,c(2,7,50:58,24)] # CHECKING
+example_matrix <- ej_survey[,c(2,12,50:58,24)] # CHECKING
 names(example_matrix)[2] <- "response" 
 
 # Since the questions are in one column, we need to seperate them and then the question and respone variables. ONLY FOR CCS QUESTIONS. In the allquestions_types questions in the CCS column = 1
@@ -769,6 +769,116 @@ matrix_visualization <- ggplot() +
         legend.position = "bottom"
         ) 
   scale_y_continuous(breaks=seq(-10,100,25))
+  
+  
+  
+############## RESPONSIBLE ##############
+color_set_fchange <- data.frame (answer  = c("Highly responsible","Moderately responsible","Somewhat responsible","Not responsible","Unsure"),col = c("#E66101","#FDB863","#FAE9D6","#B2ABD2","#F7F7F7")) 
+
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(color_set_fchange$answer)
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+matrix_summary <- merge(matrix_summary,color_set_fchange, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Highly responsible")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Not responsible")),]
+mylevels <- c("Highly responsible","Moderately responsible","Somewhat responsible","Not responsible","Unsure")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25))
+  
+  
+  
+  ############## AGREE 4 ##############
+color_set_fchange <- data.frame (answer  = c("Highly responsible","Moderately responsible","Somewhat responsible","Not responsible","Unsure"),col = c("#E66101","#FDB863","#FAE9D6","#B2ABD2","#F7F7F7")) 
+
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(color_set_fchange$answer)
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+matrix_summary <- merge(matrix_summary,color_set_fchange, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Highly responsible","Moderately responsible","Somewhat responsible")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Not responsible")),]
+mylevels <- c("Highly responsible","Moderately responsible","Somewhat responsible","Not responsible","Unsure")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25))
+  
+  
+
+############## AGREE 4 ##############
+color_set_agree <- data.frame (answer  = c("Agree Strongly","Agree Somewhat","Neither agree nor disagree","Disagree Somewhat","Disagree Strongly"), col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")) 
+
+# Create high and lows tables with question, group, outcome (question), variable, value, and color
+numlevels<-length(color_set_agree$answer)
+pal<-brewer.pal((numlevels),"PuOr")
+legend.pal<-pal
+
+matrix_summary <- merge(matrix_summary,color_set_agree, by="answer")
+# merge colors with dataframe
+
+# TRANSFORM HIGH/LOWS
+highs <- matrix_summary[which(matrix_summary$answer %in% c("Agree Strongly","Agree Somewhat")),]
+lows <- matrix_summary[which(matrix_summary$answer %in% c("Disagree Somewhat","Disagree Strongly")),]
+mylevels <- c("Agree Strongly","Agree Somewhat","Neither agree nor disagree","Disagree Somewhat","Disagree Strongly")
+
+matrix_visualization <- ggplot() + 
+  geom_bar(data=highs, aes(x = question, y=freq, fill=col), position="stack", stat="identity") +
+  geom_bar(data=lows, aes(x = question, y=-freq, fill=col), position="stack", stat="identity") +
+  facet_grid(. ~Gender)  +
+  geom_hline(yintercept = 0, color =c("white")) +
+  scale_fill_identity("Percent of Respondents", 
+                      labels = mylevels, 
+                      breaks=legend.pal, 
+                      guide="legend") + 
+  theme_classic() +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) str_wrap(str_replace_all(x, "foo" , " "),width = 40)) + 
+  labs(y="",x="") +
+  theme(
+        legend.position = "bottom"
+        ) 
+  scale_y_continuous(breaks=seq(-10,100,25), limits=c(20,100))
+  
+
 
 ```
 
