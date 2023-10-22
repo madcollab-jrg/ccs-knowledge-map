@@ -131,6 +131,52 @@ matrix_questions = function(example_matrix, demographic_variable, q_type){
     highs <- matrix_summary[which(matrix_summary$answer %in% c("Agree Strongly","Agree Somewhat")),]
     lows <- matrix_summary[which(matrix_summary$answer %in% c("Disagree Somewhat","Disagree Strongly")),]
     mylevels <- c("Agree Strongly","Agree Somewhat","Neutral","Disagree Somewhat","Disagree Strongly")
+  }else if(q_type == "agree 1"){
+    color_set_agree1 <- data.frame (answer  = c("Strongly agree","Agree","Neutral","Disagree","Strongly disagree"), col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")) 
+    
+    # Create high and lows tables with question, group, outcome (question), variable, value, and color
+    numlevels<-length(color_set_agree1$answer)
+    pal<-brewer.pal((numlevels),"PuOr")
+    legend.pal<-pal
+    
+    matrix_summary <- merge(matrix_summary,color_set_agree1, by="answer")
+    # merge colors with dataframe
+    
+    # TRANSFORM HIGH/LOWS
+    highs <- matrix_summary[which(matrix_summary$answer %in% c("Strongly agree","Agree")),]
+    lows <- matrix_summary[which(matrix_summary$answer %in% c("Disagree","Strongly disagree ")),]
+    mylevels <- c("Strongly agree","Agree","Neutral","Disagree","Strongly disagree")
+  }else if(q_type == "agree 2"){
+    color_set_agree2 <- data.frame (answer  = c("Strongly agree","Agree","Neither Agree nor disagree","Disagree","Strongly disagree"), col = c("#E66101","#FDB863","#F7F7F7","#B2ABD2","#5E3C99")) 
+    
+    # Create high and lows tables with question, group, outcome (question), variable, value, and color
+    numlevels<-length(color_set_agree2$answer)
+    pal<-brewer.pal((numlevels),"PuOr")
+    legend.pal<-pal
+    
+    matrix_summary <- merge(matrix_summary,color_set_agree2, by="answer")
+    # merge colors with dataframe
+    
+    # TRANSFORM HIGH/LOWS
+    highs <- matrix_summary[which(matrix_summary$answer %in% c("Strongly agree","Agree")),]
+    lows <- matrix_summary[which(matrix_summary$answer %in% c("Disagree","Strongly disagree ")),]
+    mylevels <- c("Strongly agree","Agree","Neither Agree nor disagree","Disagree","Strongly disagree")
+  }
+  else if(q_type == "responsible"){
+    color_set_fchange <- data.frame (answer  = c("Highly responsible","Moderately responsible","Somewhat responsible","Not responsible","Unsure"),col = c("#E66101","#FDB863","#FAE9D6","#B2ABD2","#F7F7F7")) 
+    
+    # Create high and lows tables with question, group, outcome (question), variable, value, and color
+    numlevels<-length(color_set_fchange$answer)
+    pal<-brewer.pal((numlevels),"PuOr")
+    legend.pal<-pal
+    
+    matrix_summary <- merge(matrix_summary,color_set_fchange, by="answer")
+    # merge colors with dataframe
+    
+    # TRANSFORM HIGH/LOWS
+    highs <- matrix_summary[which(matrix_summary$answer %in% c("Highly responsible","Moderately responsible")),]
+    lows <- matrix_summary[which(matrix_summary$answer %in% c("Not responsible","Unsure")),]
+    mylevels <- c("Highly responsible","Moderately responsible","Somewhat responsible","Not responsible","Unsure")
   }else if(q_type == "awareness"){
     color_set_awareness <- data.frame (answer  = c("Aware","Not Aware"),
                                        col = c("#E66101","#5E3C99"))
