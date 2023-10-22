@@ -161,6 +161,7 @@ matrix_questions = function(example_matrix, demographic_variable, q_type){
     highs <- matrix_summary[which(matrix_summary$answer %in% c("Strongly agree","Agree")),]
     lows <- matrix_summary[which(matrix_summary$answer %in% c("Disagree","Strongly disagree ")),]
     mylevels <- c("Strongly agree","Agree","Neither Agree nor disagree","Disagree","Strongly disagree")
+  }
   else if(q_type == "responsible"){
     color_set_fchange <- data.frame (answer  = c("Highly responsible","Moderately responsible","Somewhat responsible","Not responsible","Unsure"),col = c("#E66101","#FDB863","#FAE9D6","#B2ABD2","#F7F7F7")) 
     
