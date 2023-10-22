@@ -18,8 +18,7 @@ gl_auto_auth()
 ###########################################################
 
 #### LOG
-# REMOVE BAD RESPONSES 
-# EXTRACT ZIP CODES FROM ADDRESS
+# REMOVE BAD RESPONSES FROM WISC ECOLATINO
 
 
 ########## URBAN HEAT ########## 
