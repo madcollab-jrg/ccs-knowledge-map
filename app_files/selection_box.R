@@ -44,6 +44,8 @@ get_census_items = function(census_item){
         survey_questions = c("Wisconsin")
     }else if(census_item == "'Census County'"){
         survey_questions = possible_values$county
+    }else if(census_item == "'Zipcode'"){
+        survey_questions = possible_values$zip
     }
     return(survey_questions)
 }
@@ -119,7 +121,7 @@ survey_box_ui <- function(surveys){
                 # use to compute representation
                 selectizeInput(inputId = "census_level",
                                label = div(style = "font-size:10px", "Representativeness Comparison Level"),
-                               choices = c("Census Tract", "Census State", "Census County"),
+                               choices = c("Census Tract", "Census State", "Census County", "Zipcode"),
                                options = list(
                                    placeholder = 'Please select an option below',
                                    onInitialize = I('function() { this.setValue(""); }')
@@ -133,6 +135,7 @@ survey_box_ui <- function(surveys){
                 make_conditional_panel_census("'Census Tract'", "census_tract_items"),
                 make_conditional_panel_census("'Census State'", "census_state_items"),
                 make_conditional_panel_census("'Census County'", "census_county_items"),
+                make_conditional_panel_census("'Zipcode'", "census_zipcode_items"),
                 actionButton(inputId = "run_report", label = "Run Report"),
                 width = 12
             )

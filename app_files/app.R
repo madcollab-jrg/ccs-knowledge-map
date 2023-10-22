@@ -38,7 +38,8 @@ has_results = c("Air Quality Survey" = T,
 
 censusInputId = c("Census Tract"="census_tract_items", 
                   "Census State"="census_state_items", 
-                  "Census County"="census_county_items")
+                  "Census County"="census_county_items", 
+                  "Zipcode"="census_zipcode_items")
 input_to_data_demo = c("Air Quality Survey" = "air-quality-survey",
                    "Community Ideas Survey" = "ej-report",
                    "Story From the Community Survey" = "ej-storytile",
@@ -50,7 +51,8 @@ input_to_data_demo = c("Air Quality Survey" = "air-quality-survey",
                    "Tree Canopy Map" = "tree-canopy-map") 
 census_input_to_data = c("Census Tract"="tract", 
                        "Census State"="state", 
-                       "Census County"="county")
+                       "Census County"="county", 
+                       "Zipcode"="zip")
 census_level_input_to_data = read_yaml("census_items/census_level_to_results.yaml")
 input_to_data_survey = c("Air Quality Survey" = "air-quality/air_survey.csv",
                         "Community Ideas Survey" = "ej-report/ej_report.csv",
