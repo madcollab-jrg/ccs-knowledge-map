@@ -212,7 +212,14 @@ ccs_participants <- participant_actions %>%
 ccs_participants$type <- NULL
 
 # Remove records from research team
-ccs_participants <- ccs_participants[which(!ccs_participants$id %in% c(40,45,59,61,3940349)),]
+ccs_participants <- ccs_participants[which(!ccs_participants$id %in% c(40,45,59,61)),]
+
+# Remove records bad responses 
+potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
+                     330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
+                     346, 348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359, 360, 361, 
+                     362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 374, 376, 378, 379, 380,
+                     381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399)
 
 remove(participants_heat_survey,participants_heat_map,
        participants_tree_survey,participants_tree_map,
@@ -235,6 +242,7 @@ ccs_actions <- ccs_actions %>%
 
 ccs_actions_ecolatino <- ccs_actions[which(ccs_actions$org =="Wisconsin EcoLatinos"),]
 ccs_actions_ecolatino$pay_status <- ifelse(ccs_actions_ecolatino$local_gov_actions == 6, "Pay Required","Incomplete")
+ccs_actions_ecolatino$potential_fakes <- ifelse(ccs_actions_ecolatino$id %in% potential_fakes, "Potential Fake","") # Add which might be fakes in the data
 
 
 ccs_actions_urbantriage <- ccs_actions[which(ccs_actions$org =="Urban Triage"),]
@@ -324,6 +332,11 @@ ccs_participants <- ccs_participants %>%
 ### GET DATA FROM IN-PERSON DELIBERATION
 
 
+
+#### REMOVE POTENTIAL FAKES FROM DATA TO BE IMPORTED TO KNOWLEDGE MAP
+ccs_participants <- ccs_participants[which(!ccs_participants$id %in% potential_fakes),]
+
+
 # Create a dataframe of all users and their home addresses with census information
 participant_geo <- ccs_participants %>% 
   geocode(
@@ -375,6 +388,7 @@ participant_geo <- participant_geo %>%
 
 participant_geo$census_tract_full <- paste(participant_geo$state_fips, participant_geo$county_fips,participant_geo$census_tract, sep="")
 participant_geo$census_block_full <- paste(participant_geo$state_fips, participant_geo$county_fips,participant_geo$census_tract,participant_geo$census_block, sep="")
+
 
 tree_survey <- merge(tree_survey, participant_geo, by.x = "Member Username" , by.y = "username", all.x = TRUE)  
 tree_map <- merge(tree_map, participant_geo, by.x = "Member Username" , by.y = "username", all.x = TRUE)  
