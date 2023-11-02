@@ -11,6 +11,7 @@ source("data_description_box.R")
 source("graphics_representative.R")
 source("survey_results.R")
 source("data_util.R")
+source("information_pages.R")
 
 surveys = c("Air Quality Survey", "Community Ideas Survey", 
             "Story From the Community Survey", "Environmental Justice Survey", 
@@ -65,29 +66,37 @@ input_to_data_survey = c("Air Quality Survey" = "air-quality/air_survey.csv",
                         "Tree Canopy Map" = "tree-canopy/tree_map.csv")
 question_type_map = c()
 
-get_dashboard_body = function(){
-  # reactivly display results box
-  dashboard_body = tabItem(tabName = "rep",
-                            column(width = 2, survey_box_ui(surveys)),
-                            column(width = 5, get_data_description_ui()),
-                            column(width = 5, representative_ui() ),
-                            column(width = 12, survey_results_ui(),tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }'))))
-                            #column(width = 12, uiOutput("results"),tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }'))))
+reporting_tool_body = function(){
+  # reactively display results box
+  dashboard_body = fluidPage(
+    column(width = 2, survey_box_ui(surveys)),
+    column(width = 5, get_data_description_ui()),
+    column(width = 5, representative_ui() ),
+    column(width = 12, survey_results_ui(), tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }')))),
+    # column(width = 12, uiOutput("results"),tags$head(tags$style(HTML('.content-wrapper { overflow: auto; }'))))
     )
   return(dashboard_body)
 }
 
 ui <- dashboardPage(
   header = dashboardHeader(title = "CCS Knowledge Map Report", titleWidth = "calc(100% - 44px)"),
-  sidebar = dashboardSidebar(sidebarMenu(id = "tabs",
-                                         menuItem(
-                                           "Representative Summary",
-                                           tabName = "rep"),
-                                         menuItem(
-                                           "Result Summary",
-                                           tabName = "result_summary"
-                                         ) )),
-  body = dashboardBody( tabItems( get_dashboard_body(), tabItem(tabName = "result_summary") ) ),
+  sidebar = dashboardSidebar(sidebarMenu(
+      id = "tabs",
+      menuItem("Home", tabName = "home_page"),
+      menuItem("Description", tabName = "description_page"),
+      menuItem("Method", tabName = "method_page"),
+      menuItem("Reporting Tool", tabName = "reporting_tool"),
+      menuItem("Result Summary", tabName = "result_summary") , 
+      menuItem("Team", tabName = "team_page")
+     )),
+  body = dashboardBody( tabItems( 
+    tabItem( tabName = "home_page", home_tab_body() ),
+    tabItem(tabName = "description_page", description_tab_body()),
+    tabItem(tabName = "method_page", method_tab_body()),
+    tabItem(tabName = "reporting_tool", reporting_tool_body()), 
+    tabItem(tabName = "result_summary"), 
+    tabItem(tabName = "team_page", team_tab_body())
+    )),
   skin = "blue"
 )
 
