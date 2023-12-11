@@ -1,0 +1,114 @@
+---
+title: "STM for CCS KM"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Examples: https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-i-2da2b353d362
+# Examples: https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-ii-462e6e07328
+
+# Guide: https://warin.ca/shiny/stm/#section-ingest 
+library(stm)
+library(readr)
+library(DT)
+
+# Import a dataset with open-ended text
+df <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv") # move to Zoonvierse Datasets folder
+names(df)[5] <- "text_column"
+ 
+# Preprocess the text data
+processed_texts <- textProcessor(documents=df$text_column, metadata=df)
+out <- prepDocuments(processed_texts$documents, processed_texts$vocab, processed_texts$meta)
+docs <- out$documents
+vocab <- out$vocab
+meta <- out$meta
+
+
+```
+
+## General STM
+
+```{r generalstm-code}
+
+
+# Fit the topic model
+num_topics <- 5  # choose an appropriate number of topics
+topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=75, init.type="Spectral")
+
+# Visualize the model
+tm_viz <- plot(topic_model, type="summary", main="Topic Model Summary")
+
+# Find thoughts (common comments)
+thoughts_df <- findThoughts(topic_model, texts=df$text_column[which(df$...1 %in% out$meta$...1)], n=2)
+
+## EXTRACT FROM LIST
+extracted_df <- data.frame()
+
+# Loop through each item in the see$docs list
+for(topic_name in names(thoughts_df$docs)) {
+    # Extract the content of the topic
+    topic_content <- thoughts_df$docs[[topic_name]]
+
+    # Assuming the content is a vector or a single value, add it to the dataframe
+    # Here, topic_name is the name of the topic and topic_content is its content
+    extracted_df <- rbind(extracted_df, data.frame(Topic = topic_name, Content = topic_content))
+}
+```
+
+```{r}
+tm_viz
+```
+
+```{r generalstm-code-report}
+datatable(extracted_df)
+```
+
+
+## Demographic Secific STM
+
+```{r specificstm-code}
+perform_topic_modeling <- function(attribute, attribute_name) {
+  
+  thoughts_df <- data.frame()
+  
+  for (attr_val in unique(df[attribute_name])) {
+    # Filter dataset for each attribute value
+    sub_df <- df[which(df[attribute_name] == attr_val),]
+
+    # Repeat the preprocessing and topic modeling steps for sub_df
+    processed_texts <- textProcessor(documents=sub_df$text_column, metadata=sub_df)
+    out <- prepDocuments(processed_texts$documents, processed_texts$vocab, processed_texts$meta)
+    docs <- out$documents
+    vocab <- out$vocab
+    meta <- out$meta
+
+    # Fit the topic model for the subgroup
+    topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=75, init.type="Spectral")
+    
+    # Add model output to dataframe
+    plot_name <- paste0("Topic_Model_Summary_", attr_val, ".png")
+    png(plot_name)
+    plot(topic_model, type="summary", main=paste("Topic Model Summary -", attr_val))
+    dev.off()
+    
+    # Extract common comments for the subgroup
+    #thoughts <- find_thoughts(topic_model, texts=sub_df$text_column, n=10)
+    
+    thoughts <-  findThoughts(topic_model, texts=sub_df$text_column[which(sub_df$...1 %in% out$meta$...1)], n=5)
+    
+     # Create a dataframe for thoughts and add attribute information
+    thoughts_sub_df <- data.frame(Attribute = attr_val, Thoughts = I(list(thoughts)))
+
+    # Add to the main thoughts dataframe
+    thoughts_df <- rbind(thoughts_df, thoughts_sub_df)    
+   
+  }
+}
+
+```
+
+```{r specificstm-code-report}
+# Example of applying the function for 'race' and 'gender'
+perform_topic_modeling(df, "race_recode")
+```
+
