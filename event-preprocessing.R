@@ -13,18 +13,18 @@ gl_auth("/Volumes/cbjackson2/ccs-knowledge/translate-ccs-ac3757553e16.json")
 gl_auto_auth()
 
 ### IMPORT DATA FROM OCTOBER DELIBERATION
-oct_black_closed <- read_csv("/Users/coreyjackson/Desktop/CCS - Clean Survey/oct_black/oct_black_closed.csv") # move to Zoonvierse Datasets folder
-oct_black_forum <- read_csv("/Users/coreyjackson/Desktop/CCS - Clean Survey/oct_black/oct_black_forum.csv") # move to Zoonvierse Datasets folder
+oct_black_closed <- read_csv("/Volumes/cbjackson2/ccs-knowledge/deliberation-data/oct_black/oct_black_closed.csv") # move to Zoonvierse Datasets folder
+oct_black_forum <- read_csv("/Volumes/cbjackson2/ccs-knowledge/deliberation-data/oct_black/oct_black_forum.csv") # move to Zoonvierse Datasets folder
 
-oct_latino_closed <- read_csv("/Users/coreyjackson/Desktop/CCS - Clean Survey/oct_latino/oct_latino_closed.csv") # move to Zoonvierse Datasets folder
-oct_latino_forum <- read_csv("/Users/coreyjackson/Desktop/CCS - Clean Survey/oct_latino/oct_latino_forum.csv") # move to Zoonvierse Datasets folder
-latino_demographics <- read_csv("/Users/coreyjackson/Desktop/CCS - Clean Survey/oct_latino/demographic-latino.csv")
+oct_latino_closed <- read_csv("/Volumes/cbjackson2/ccs-knowledge/deliberation-data/oct_latino/oct_latino_closed.csv") # move to Zoonvierse Datasets folder
+oct_latino_forum <- read_csv("/Volumes/cbjackson2/ccs-knowledge/deliberation-data/oct_latino/oct_latino_forum.csv") # move to Zoonvierse Datasets folder
+latino_demographics <- read_csv("/Volumes/cbjackson2/ccs-knowledge/deliberation-data/oct_latino/oct_demographic-latino.csv")
 latino_demographics <- latino_demographics[,c(1,4:10)]
 latino_demographics$race_recode <- "Hispanic"
 
 ### IMPORT DATA FROM MARCH FOLLOW-UP 
-#march_latino_airquality <- read_csv("/Users/coreyjackson/Desktop/CCS - Clean Survey/march_latino/oct_latino_forum-airquality.csv") # move to Zoonvierse Datasets folder
-#march_latino_urbanheat <- read_csv("/Users/coreyjackson/Desktop/CCS - Clean Survey/march_latino/oct_latino_forum-urbanheat.csv") # move to Zoonvierse Datasets folder
+march_latino_airquality <- read_csv("/Volumes/cbjackson2/ccs-knowledge/deliberation-data/march_latino/oct_latino_forum-airquality.csv") # move to Zoonvierse Datasets folder
+march_latino_urbanheat <- read_csv("/Volumes/cbjackson2/ccs-knowledge/deliberation-data/march_latino/oct_latino_forum-urbanheat.csv") # move to Zoonvierse Datasets folder
 
 
 ##############################################
@@ -259,6 +259,7 @@ write.csv(oct_heathealth,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/deliberatio
 write.csv(oct_treegreen,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/deliberation/oct_treesgreenery.csv")
 write.csv(oct_carbon,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/deliberation/oct_carbon.csv")
 write.csv(oct_general,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/deliberation/oct_general.csv")
+
 
 
 
