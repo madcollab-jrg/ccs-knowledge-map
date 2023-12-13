@@ -1,0 +1,117 @@
+---
+title: "CCS Knowledge Map Results"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+
+---
+
+```{r setup, include=FALSE}
+# Import all datasets
+
+
+# Clean and transform data when necessary
+
+```
+
+# Project Overview
+
+# Local Government Survey Descriptions
+
+## Air Quality (AQ)
+
+```{r aq-setup, include=FALSE, cache=TRUE}
+
+# Run all analysis for the AQ survey here
+
+```
+
+- Description of survey and the questions asked
+
+
+### AQ Analysis
+```{r aq-analysis-report, echo=TRUE}
+
+# Report the analysis of survey items here
+
+```
+
+### AQ Map
+```{r aq-map-report, echo=TRUE}
+
+# Report the analysis of map items here
+
+```
+
+
+## Urban Heat (UH)
+```{r uh-setup, include=FALSE, cache=TRUE}
+
+# Run all analysis for the AQ survey here
+
+```
+
+- Description of survey and the questions asked
+
+### UH Analysis
+```{r uh-analysis-report, echo=TRUE}
+
+# Report the analysis of survey items here
+
+```
+
+### UH Map
+```{r uh-map-report, echo=TRUE}
+
+# Report the analysis of survey items here
+
+```
+
+## Tree Canopies (TC)
+```{r tc-setup, include=FALSE, cache=TRUE}
+
+# Run all analysis for the AQ survey here
+
+```
+
+- Description of survey and the questions asked
+
+
+### TC Analysis
+```{r tc-analysis-report, echo=TRUE}
+
+# Report the analysis of survey items here
+
+```
+
+
+### TC Map
+```{r tc-map-report, echo=TRUE}
+
+# Report the analysis of survey items here
+
+```
+
+
+# Environmental Justics Survey Descriptions
+
+## EJ Stories 
+```{r ej-stories-setup, include=FALSE, cache=TRUE}
+
+```
+
+- Description of survey and the questions asked
+
+
+## EJ Solutions
+```{r ej-solutions-setup, include=FALSE, cache=TRUE}
+
+```
+
+- Description of survey and the questions asked
+
+
+# Meta Summary
+
