@@ -42,7 +42,7 @@ data:
     Census Tract 137, Dane County, Wisconsin: "55025013700"
     Census Tract 1004, Jefferson County, Wisconsin: "55055100400"
     
-  zip:
+  zipcode:
     34787: "34787"
     53070: "53070"
     53527: "53527"
