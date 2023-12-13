@@ -1,0 +1,22 @@
+Q1: What do you think are the most urgent environmental issues facting your community?
+Q2: I would like to learn more about how environmental issues impact my community.
+Q3: When I have questions about climate change or environmental issues, I know where to go for the information.
+Q4: How informed would you now say you are about environmental issues in your community?
+Q5: How much do you now feel like you know about climate change?
+Q6: People like me can have a say in the environment justice issues related to my community.
+Q7: People like me can have an impact on the environment policymaking process in my community. 
+Q8: I have the knowledge and skills I need to improve environment in my community. 
+Q9: I have the knowledge and skills I need to respond to the collective problems facing my community. 
+Q10: I want to work with other community members to take actions to improve environment in my community. 
+Q11: I can create positive changes in my life. 
+Q12: I have the ownership over environment problems facing my community. 
+Q13: What are your goals to improve the quality of environment?
+Q14: Do you agree/disagree that new technology can slow down climate change?
+Q15: If there is new technology to slow down climate change, how likely are you willing to use it in your community?
+Q16: Who do you think should be responsible for ensuring that new technology is developed to slow down climate change?
+Q17: Who do you think should be responsible for ensuring that new technology is deployed equitably in our community?
+Q18: What are your concerns of deploying new technologies such as the carbon dioxide removal storage in your neighborhood?
+Q19: Climate change affects my health.
+Q20: In the future, what is the most convenient way for you to share your opinions about environmental issues and other social issues?
+Q21: Do you agree or disagree with the statement that climate change is happening?
+Q22: Do you agree or disagree with the statement that climate change is caused by human activities?

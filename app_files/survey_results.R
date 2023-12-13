@@ -388,7 +388,7 @@ resulting_graphics = function(input, output, survey_data, is_survey, question = 
                             survey_flag = is_survey()
                             message(q_type)
                             if(q_type!= "Ranking" & survey_flag){ # Unsure how rank type questions are suppose to be displayed
-                              question_num = question()+3 # column number of question
+                              question_num = question() # column number of question
                               print(question_num)
                               
                               # column names of categories
@@ -416,30 +416,47 @@ resulting_graphics = function(input, output, survey_data, is_survey, question = 
                               # get data and change year of birth
                               data = survey_data()
                               
-                              data=data %>% 
-                                mutate(Year.of.Birth = 2023-Year.of.Birth)%>%
-                                mutate(Year.of.Birth = case_when( 
-                                  Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
-                                  Year.of.Birth >= 25 & Year.of.Birth <=34 ~ "25_to_34",
-                                  Year.of.Birth >= 35 & Year.of.Birth <=44 ~ "35_to_44",
-                                  Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45_to_54",
-                                  Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
-                                  Year.of.Birth >= 65 ~ "65_over"
-                                ) )
+                              if("Year.of.Birth" %in% names(data)) {
+                                data=data %>% 
+                                  mutate(Year.of.Birth = 2023-Year.of.Birth)%>%
+                                  mutate(Year.of.Birth = case_when( 
+                                    Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
+                                    Year.of.Birth >= 25 & Year.of.Birth <=34 ~ "25_to_34",
+                                    Year.of.Birth >= 35 & Year.of.Birth <=44 ~ "35_to_44",
+                                    Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45_to_54",
+                                    Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
+                                    Year.of.Birth >= 65 ~ "65_over"
+                                  ) )
+                              }
+                              else {
+                                data=data %>% 
+                                  mutate(Year.of.Birth = "18_to_24")
+                              }
+                              
                               
                     
                               # data needed to make graphics by survey
                               data_for_visualization = NA
                               if(input$survey == "Urban Heat Survey"){
-                                data_for_visualization = data[,c(2,question_num,45:53,22,19)]
+                                data_for_visualization = data[,c(2,question_num+3,45:53,22,19)]
                               }else if(input$survey == "Tree Canopy Survey"){
-                                data_for_visualization = data[,c(2,question_num,48:56,25,22)]
+                                data_for_visualization = data[,c(2,question_num+3,48:56,25,22)]
                               }else if(input$survey == "Air Quality Survey"){
-                                data_for_visualization = data[,c(2,question_num,47:55,24,21)]
+                                data_for_visualization = data[,c(2,question_num+3,47:55,24,21)]
                               }else if(input$survey == "Environmental Justice Survey"){
-                                data_for_visualization = data[,c(2,question_num,28:58,27,24)]
+                                data_for_visualization = data[,c(2,question_num+3,28:58,27,24)]
+                              }else if(input$survey == "General Survey"){
+                                data_for_visualization = data[,c(1,question_num+1,25:28,24)]
+                              }else if(input$survey == "Carbon Survey"){
+                                data_for_visualization = data[,c(1,question_num+1,6:9,5)]
+                              }else if(input$survey == "Energy Survey"){
+                                data_for_visualization = data[,c(1,question_num+1,5:8,4)]
+                              }else if(input$survey == "Heat Health Survey"){
+                                data_for_visualization = data[,c(1,question_num+1,10:13,9)]
+                              }else if(input$survey == "Trees Greenery Survey"){
+                                data_for_visualization = data[,c(1,question_num+1,7:10,6)]
                               }
-                              
+
                               # print based on question type
                               message(q_type)
                               if(q_type == "matrix"){
@@ -468,7 +485,7 @@ resulting_graphics = function(input, output, survey_data, is_survey, question = 
                               
                             }
                             else{
-                              message("no")
+                              message("no plots")
                             }
                           })
 }

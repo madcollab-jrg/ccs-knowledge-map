@@ -1,0 +1,7 @@
+Q1: How important is extreme heat to your everyday life 
+Q2: Do you agree/disagree that extreme heat has impacted your life?
+Q3: Insulation and weatherization are ways to reduce energy consumption at my home.
+Q4: Electrification is one way to reduce carbon emissions at my home.
+Q5: I can go to a cooling center during extreme heat weather to stay cool.
+Q6: In Dane County, days over 100F will double in the next 30 years.
+Q7: Extreme heat is dangerous to my health.

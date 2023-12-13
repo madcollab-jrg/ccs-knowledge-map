@@ -2,30 +2,36 @@
 # which gives option to select survey, questions, representative metrics,
 # and census.
 
+# Given a survey name, return a list of questions related to that survey
+# Args:
+#   - survey: type string, the survey that is selected
+# Returns: List of survey questions
 get_survey_questions <- function(survey){
-    # Given a survey name, return a list of questions related to that 
-    # survey
-    # Args:
-    #   survey: type string, the survey that is selected
-    #   
-    # Returns:
-    #   List of survey questions
-    survey = gsub("'","",survey)
-    if (survey == "Air Quality Survey"){
-        air_quality = readLines(paste(getwd(),"/survey_questions/air_quality.txt", sep = ""))
-        return( air_quality )
-    }else if (survey == "Environmental Justice Survey"){
-        # environmental justice survey
-        ej_survey = readLines(paste(getwd(),"/survey_questions/ej_survey.txt", sep = ""))
-        return( ej_survey )
-    }else if (survey == "Tree Canopy Survey"){
-        # tree canopy survey
-        tree_canopy = readLines(paste(getwd(),"/survey_questions/tree_canopy.txt", sep = ""))
-        return( tree_canopy )
-    }else if (survey == "Urban Heat Survey"){
-        # urban heat survey
-        urban_head = readLines(paste(getwd(),"/survey_questions/urban_heat.txt", sep = ""))
-        return( urban_head )
+    
+    # if (survey == "Air Quality Survey"){
+    #     air_quality = readLines(paste(getwd(),"/survey_questions/air_quality.txt", sep = ""))
+    #     return( air_quality )
+    # }else if (survey == "Environmental Justice Survey"){
+    #     # environmental justice survey
+    #     ej_survey = readLines(paste(getwd(),"/survey_questions/ej_survey.txt", sep = ""))
+    #     return( ej_survey )
+    # }else if (survey == "Tree Canopy Survey"){
+    #     # tree canopy survey
+    #     tree_canopy = readLines(paste(getwd(),"/survey_questions/tree_canopy.txt", sep = ""))
+    #     return( tree_canopy )
+    # }else if (survey == "Urban Heat Survey"){
+    #     # urban heat survey
+    #     urban_heat = readLines(paste(getwd(),"/survey_questions/urban_heat.txt", sep = ""))
+    #     return( urban_heat )
+    # } else if (survey == "Carbon Survey") {
+    #     carbon = readLines(paste0(getwd(),"/survey_questions/carbon.txt"))
+    #     return( carbon )
+    # }
+    
+    if (grepl("survey", survey, ignore.case = T)) {
+        file_name = gsub(" ", "_", gsub(" survey", "", tolower(survey)))
+        file_path = paste0(getwd(),"/survey_questions/",file_name,".txt")
+        return (readLines(file_path))
     }
     return(c(""))
 }
@@ -50,7 +56,7 @@ get_census_items = function(census_item){
     return(survey_questions)
 }
 
-make_conditional_panel_survey <- function(survey, all_surveys, id){
+make_conditional_panel_survey <- function(survey, id){
     # make a conditional panel for the survey box ui that
     # gives provides different question for the different
     # survey responses
@@ -64,7 +70,7 @@ make_conditional_panel_survey <- function(survey, all_surveys, id){
     #   conditionalPanel that holds the questions for survey selected
     #   and contains a selectInput with inputId = id
     survey_conditional_panel = conditionalPanel(
-        condition = paste("input.survey ==", survey),
+        condition = paste0("input.survey == '",survey,"'"),
         selectInput(inputId = id,
                     label = div(style = "font-size:10px", "Choose a question"),
                     choices = get_survey_questions(survey),
@@ -106,15 +112,20 @@ survey_box_ui <- function(surveys){
                                 label = div(style = "font-size:10px", "Choose a question"),
                                 choices = c(""))
                     ),
-                make_conditional_panel_survey("'Air Quality Survey'", surveys, "air_quality_qs"),
-                make_conditional_panel_survey("'Air Quality Map'", surveys, "air_quality_map_qs"),
-                make_conditional_panel_survey("'Community Ideas Survey'", surveys, "ej_report_qs"),
-                make_conditional_panel_survey("'Story From the Community Survey'", surveys, "ej_storytile_qs"),
-                make_conditional_panel_survey("'Environmental Justice Survey'", surveys, "ej_survey_qs"),
-                make_conditional_panel_survey("'Tree Canopy Survey'", surveys, "tree_canopy_qs"),
-                make_conditional_panel_survey("'Tree Canopy Map'", surveys, "tree_canopy_map_qs"),
-                make_conditional_panel_survey("'Urban Heat Survey'", surveys, "urban_heat_qs"),
-                make_conditional_panel_survey("'Urban Heat Map'", surveys, "urban_heat_map_qs"),
+                make_conditional_panel_survey("Air Quality Survey", "air_quality_qs"),
+                make_conditional_panel_survey("Air Quality Map", "air_quality_map_qs"),
+                make_conditional_panel_survey("Community Ideas Survey", "ej_report_qs"),
+                make_conditional_panel_survey("Story From the Community Survey", "ej_storytile_qs"),
+                make_conditional_panel_survey("Environmental Justice Survey", "ej_survey_qs"),
+                make_conditional_panel_survey("Tree Canopy Survey", "tree_canopy_qs"),
+                make_conditional_panel_survey("Tree Canopy Map", "tree_canopy_map_qs"),
+                make_conditional_panel_survey("Urban Heat Survey", "urban_heat_qs"),
+                make_conditional_panel_survey("Urban Heat Map", "urban_heat_map_qs"),
+                make_conditional_panel_survey("Carbon Survey", "carbon_survey_qs"),
+                make_conditional_panel_survey("Energy Survey", "energy_survey_qs"),
+                make_conditional_panel_survey("General Survey", "general_survey_qs"),
+                make_conditional_panel_survey("Heat Health Survey", "heat_health_survey_qs"),
+                make_conditional_panel_survey("Trees Greenery Survey", "trees_greenery_survey_qs"),
                 p(""),
                 p(""),
                 
