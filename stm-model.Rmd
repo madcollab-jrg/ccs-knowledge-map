@@ -22,8 +22,6 @@ out <- prepDocuments(processed_texts$documents, processed_texts$vocab, processed
 docs <- out$documents
 vocab <- out$vocab
 meta <- out$meta
-
-
 ```
 
 ## General STM
@@ -83,18 +81,21 @@ perform_topic_modeling <- function(attribute, attribute_name) {
     meta <- out$meta
 
     # Fit the topic model for the subgroup
+    set.seed(353)
     topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=75, init.type="Spectral")
     
     # Add model output to dataframe
-    plot_name <- paste0("Topic_Model_Summary_", attr_val, ".png")
-    png(plot_name)
+    #plot_name <- paste0("Topic_Model_Summary_", attr_val, ".png")
     plot(topic_model, type="summary", main=paste("Topic Model Summary -", attr_val))
-    dev.off()
+
+    #png(plot_name)
+    #plot_see
+    #dev.off()
     
     # Extract common comments for the subgroup
     #thoughts <- find_thoughts(topic_model, texts=sub_df$text_column, n=10)
     
-    thoughts <-  findThoughts(topic_model, texts=sub_df$text_column[which(sub_df$...1 %in% out$meta$...1)], n=5)
+    thoughts <-  findThoughts(topic_model, texts=sub_df$text_column[which(sub_df$...1 %in% out$meta$...1)], n=2)
     
      # Create a dataframe for thoughts and add attribute information
     thoughts_sub_df <- data.frame(Attribute = attr_val, Thoughts = I(list(thoughts)))
