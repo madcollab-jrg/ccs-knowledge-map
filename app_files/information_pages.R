@@ -1,11 +1,6 @@
 library(shinydashboard)
 library(bs4Dash)
 
-# includeCSS("styles/home.css")
-
-# addResourcePath("styles", "styles")
-
-
 tags$head(
   tags$link(rel = "stylesheet", type = "text/css", href = "home.css")
 )
@@ -20,7 +15,7 @@ home_tab_body <- function() {
       h1("Welcome to Knowledge Map", class = "home-title"),
       p("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque vitae tempus quam pellentesque nec nam.", class = "home-body"),
       actionButton("button1", "Examine Your data", class = "button-filled"),
-      actionButton("button1", "available datasets", class = "button-outlined"),
+      actionButton("availDataBtn", "Available Datasets", class = "button-outlined"),
     ),
     column(
       6,

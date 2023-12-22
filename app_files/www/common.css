@@ -1,27 +1,42 @@
+:root {
+  --primary-color: #2884f9;
+  --bg-color: #fff;
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1200px;
+}
+
+.dark-mode .button-filled,
 .button-filled {
   border-radius: 2.5rem;
-  background: #2884f9;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
   padding: 0.75rem 1.5rem;
-  color: #fff;
+  color: var(--bg-color);
   text-transform: uppercase;
   font-weight: 600;
   font-size: 0.85rem;
+  margin-bottom: 0.5rem;
 }
 
+.dark-mode .button-outlined,
 .button-outlined {
   border-radius: 2.5rem;
-  border: 1px solid #2884f9;
+  border-color: var(--primary-color);
   padding: 0.75rem 1.5rem;
-  color: #2884f9;
+  color: var(--primary-color);
   text-transform: uppercase;
   font-weight: 600;
   font-size: 0.85rem;
+  margin-bottom: 0.5rem;
 }
 
+.dark-mode .button-common,
 .button-common {
-  background: #2884f9;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
   padding: 0.5rem 1.5rem;
-  color: #fff;
+  color: var(--bg-color);
   text-transform: uppercase;
   font-weight: 600;
   font-size: 0.85rem;
@@ -34,7 +49,7 @@
 .page-title {
   font-size: 2.25rem;
   font-weight: 700;
-  line-height: 2.5rem;
+  line-height: 120%;
   letter-spacing: 0.01563rem;
 }
 
@@ -50,4 +65,41 @@
   font-weight: 400;
   line-height: 1.5rem;
   letter-spacing: 0.03125rem;
+}
+
+.footer {
+  background-color: #2884f9;
+  color: #fff;
+  padding: 40px 10px;
+  text-align: left;
+  margin-top: 40px;
+}
+
+@media screen and (max-width: 900px) {
+  .container-row {
+    padding: 0 20px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .container-row {
+    padding: 0 10px;
+  }
+
+  .footer {
+    padding: 20px 10px;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+  .page-para {
+    font-size: 0.85rem;
+  }
+
+  .button-filled,
+  .button-outlined,
+  .button-common {
+    font-size: 0.75rem;
+  }
 }

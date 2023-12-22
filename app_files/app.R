@@ -1,5 +1,4 @@
 library(shiny)
-# library(shinydashboard)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -82,55 +81,44 @@ ui <- dashboardPage(
   # header = dashboardHeader(title = "CCS Knowledge Map Report", titleWidth = "calc(100% - 44px)"),
   header = dashboardHeader(
     title = tags$a(href = "/", tags$img(src = "assets/logo.png", alt = "Logo", height = "50px", style = "margin-right: 5px")),
-    # tags$img(src = "assets/logo.png", alt = "Logo", height = "50px"),
-    # titleWidth = "calc(100% - 44px)",
     navbarMenu(
       id = "navmenu",
-      # title = "Menu",
-      # icon = icon("bars"),
-      # collapsible = TRUE,
-      # collapsed = TRUE,
       navbarTab(tabName = "home_page", text = "Home"),
       navbarTab(tabName = "avail_data", text = "Available Data"),
-      # navbarTab(tabName = "method_page", text = "Method"),
       navbarTab(tabName = "reporting_tool", text = "Reporting Tool"),
-      # navbarTab(tabName = "result_summary", text = "About"),
       navbarTab(tabName = "about", text = "About"),
-      # navbarTab(tabName = "team_page", text = "Info")
       navbarTab(tabName = "info_page", text = "Info")
     )
   ),
   sidebar = dashboardSidebar(
     disable = TRUE
-    #   sidebarMenu(
-    #   id = "tabs",
-    #   menuItem("Home", tabName = "home_page"),
-    #   menuItem("Description", tabName = "description_page"),
-    #   menuItem("Method", tabName = "method_page"),
-    #   menuItem("Reporting Tool", tabName = "reporting_tool"),
-    #   menuItem("Result Summary", tabName = "result_summary"),
-    #   menuItem("Team", tabName = "team_page")
-    # )
   ),
   body = dashboardBody(
+    navbarMenu(
+      id = "navmenu",
+      navbarTab(tabName = "home_page", text = "Home"),
+      navbarTab(tabName = "avail_data", text = "Available Data"),
+      navbarTab(tabName = "reporting_tool", text = "Reporting Tool"),
+      navbarTab(tabName = "about", text = "About"),
+      navbarTab(tabName = "info_page", text = "Info")
+    ),
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "home.css"),
       tags$link(rel = "stylesheet", type = "text/css", href = "common.css"),
       tags$link(rel = "stylesheet", type = "text/css", href = "overrides.css"),
-      tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"),
-      # tags$link(rel = "stylesheet", type = "text/css", href = "about.css"),
       tags$style(
         HTML(
           "
-              @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');            body {
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+            body {
               font-family: 'Inter', sans-serif;
-          }"
+            }
+          "
         )
       ),
     ),
     tabItems(
       tabItem(tabName = "home_page", home_tab_body()),
-      # tabItem(tabName = "description_page", description_tab_body()),
       tabItem(tabName = "avail_data", avail_data_tab_body()),
       tabItem(tabName = "method_page", method_tab_body()),
       tabItem(tabName = "reporting_tool", reporting_tool_body()),
@@ -140,14 +128,14 @@ ui <- dashboardPage(
     ),
     # Footer content
     tags$footer(
-      style = "background-color: #2884f9; color: #fff; padding: 40px 10px; text-align: left; margin-top: 40px;",
+      class = "footer",
       "© 2023 UW Madison. All rights reserved."
     )
   ),
   skin = "blue"
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   demographic_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
   survey_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
 
@@ -233,6 +221,10 @@ server <- function(input, output) {
 
   # results graphics
   resulting_graphics(input, output, survey_data, is_survey, question_number, question_type, question_subtype)
+
+  observeEvent(input$availDataBtn, {
+    updateTabItems(session, "navmenu", "avail_data")
+  })
 }
 
 # run app
