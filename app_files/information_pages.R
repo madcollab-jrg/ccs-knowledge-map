@@ -13,7 +13,7 @@ home_tab_body <- function() {
       6,
       h4("THE ULTIMATE Design System SOLUTION", class = "home-tagline"),
       h1("Welcome to Knowledge Map", class = "home-title"),
-      p("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque vitae tempus quam pellentesque nec nam.", class = "home-body"),
+      p("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque vitae tempus quam pellentesque nec nam.", class = "home-body text-lighter"),
       actionButton("button1", "Examine Your data", class = "button-filled"),
       actionButton("availDataBtn", "Available Datasets", class = "button-outlined"),
     ),
@@ -99,26 +99,26 @@ avail_data_tab_body <- function() {
       accordion(
         id = "accordion1",
         accordionItem(
-          title = HTML("<span>Air Quality Survey</span><br><span style='color: #1A1A1AB2; font-size: 0.85rem;'>From the CCS Knowledge Map</span>"),
+          title = HTML("<span>Air Quality Survey</span><br><span style='font-size: 0.85rem;' class='text-lighter'>From the CCS Knowledge Map</span>"),
           subtitle = "Lorem",
           status = "white",
           collapsed = FALSE,
           "Ability decrease armor bonus character coup de grace cowering critical roll death attack dexterity fear aura fighter healing subschool monk monstrous humanoid type pattern subschool prone reptilian subtype rounding spell immunity spell resistance square teleportation subschool turn resistance turned turning damage undeath domain.Select a survey on the right to view the description and questions."
         ),
         accordionItem(
-          title = HTML("<span>Air Quality Map</span><br><span style='color: #1A1A1AB2; font-size: 0.85rem;'>From the CCS Knowledge Map</span>"),
+          title = HTML("<span>Air Quality Map</span><br><span style='font-size: 0.85rem;' class='text-lighter'>From the CCS Knowledge Map</span>"),
           status = "white",
           collapsed = TRUE,
           "Ability decrease armor bonus character coup de grace cowering critical roll death attack dexterity fear aura fighter healing subschool monk monstrous humanoid type pattern subschool prone reptilian subtype rounding spell immunity spell resistance square teleportation subschool turn resistance turned turning damage undeath domain.Select a survey on the right to view the description and questions."
         ),
         accordionItem(
-          title = HTML("<span>Tree Canopy Survey</span><br><span style='color: #1A1A1AB2; font-size: 0.85rem;'>From the CCS Knowledge Map</span>"),
+          title = HTML("<span>Tree Canopy Survey</span><br><span style='font-size: 0.85rem;' class='text-lighter'>From the CCS Knowledge Map</span>"),
           status = "white",
           collapsed = TRUE,
           "Ability decrease armor bonus character coup de grace cowering critical roll death attack dexterity fear aura fighter healing subschool monk monstrous humanoid type pattern subschool prone reptilian subtype rounding spell immunity spell resistance square teleportation subschool turn resistance turned turning damage undeath domain.Select a survey on the right to view the description and questions."
         ),
         accordionItem(
-          title = HTML("<span>Tree Canopy Map</span><br><span style='color: #1A1A1AB2; font-size: 0.85rem;'>From the CCS Knowledge Map</span>"),
+          title = HTML("<span>Tree Canopy Map</span><br><span style='font-size: 0.85rem;' class='text-lighter'>From the CCS Knowledge Map</span>"),
           status = "white",
           collapsed = TRUE,
           "Ability decrease armor bonus character coup de grace cowering critical roll death attack dexterity fear aura fighter healing subschool monk monstrous humanoid type pattern subschool prone reptilian subtype rounding spell immunity spell resistance square teleportation subschool turn resistance turned turning damage undeath domain.Select a survey on the right to view the description and questions."
