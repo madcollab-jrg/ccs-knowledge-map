@@ -87,6 +87,10 @@ li {
   border: 1px solid var(--primary-color);
 }
 
+.dark-mode .card-white:not(.card-outline) > .card-header {
+  background-color: var(--primary-color);
+}
+
 .selectize-dropdown .selected {
   background-color: var(--primary-color) !important;
 }

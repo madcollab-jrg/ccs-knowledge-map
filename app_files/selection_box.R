@@ -110,7 +110,7 @@ survey_box_ui <- function(surveys) {
             label = div(
                 style = "font-size: 0.85rem;",
                 "STEP 1: Select a survey",
-                HTML("<br/><span style='color: #1A1A1AB2; font-weight: 400;'>You can review the list of surveys here:</span> <span style='font-weight: 700; text-decoration: underline;'>Dataset</span>")
+                HTML("<br/><span style='font-weight: 400; class='text-lighter''>You can review the list of surveys here:</span> <span style='font-weight: 700; text-decoration: underline;'>Dataset</span>")
             ),
             choices = surveys,
             options = list(
@@ -150,7 +150,7 @@ survey_box_ui <- function(surveys) {
             label = div(
                 style = "font-size: 0.85rem;",
                 "STEP 3: Choose a geography to examine the data",
-                HTML("<br/><span style='color: #1A1A1AB2; font-weight: 400;'>Check the list of geographies here:</span> <span style='font-weight: 700; text-decoration: underline;'>How we analyse the data</span>")
+                HTML("<br/><span style='font-weight: 400;' class='text-lighter'>Check the list of geographies here:</span> <span style='font-weight: 700; text-decoration: underline;'>How we analyse the data</span>")
             ),
             choices = c("Census Tract", "Census State", "Census County", "Zipcode"),
             options = list(
@@ -166,7 +166,7 @@ survey_box_ui <- function(surveys) {
                 label = div(
                     style = "font-size: 0.85rem;",
                     "STEP 4: Choose which data you would like to examine",
-                    HTML("<br/><span style='color: #1A1A1AB2; font-weight: 400;'>Check the list of available demographic descriptors and groupings</span>")
+                    HTML("<br/><span style='font-weight: 400;' class='text-lighter'>Check the list of available demographic descriptors and groupings</span>")
                 ),
                 choices = c("")
             )
