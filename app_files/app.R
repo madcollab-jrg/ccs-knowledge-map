@@ -1,10 +1,10 @@
 library(shiny)
+library(shinydashboard)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(stringr)
 library(yaml)
-library(bs4Dash)
 
 source("selection_box.R")
 source("data_description_box.R")
@@ -14,7 +14,14 @@ source("data_util.R")
 source("information_pages.R")
 source("reporting_tool.R")
 
-
+surveys <- c(
+  "Air Quality Survey", "Community Ideas Survey",
+  "Story From the Community Survey", "Environmental Justice Survey",
+  "Tree Canopy Survey", "Urban Heat Survey",
+  "Urban Heat Map", "Air Quality Map", "Tree Canopy Map",
+  "Carbon Survey", "Energy Survey", "General Survey",
+  "Heat Health Survey", "Trees Greenery Survey"
+)
 surveyInputId <- c(
   "Air Quality Survey" = "air_quality_qs",
   "Community Ideas Survey" = "ej_report_qs",
@@ -24,19 +31,20 @@ surveyInputId <- c(
   "Urban Heat Survey" = "urban_heat_qs",
   "Air Quality Map" = "air_quality_map_qs",
   "Tree Canopy Map" = "tree_canopy_map_qs",
-  "Urban Heat Map" = "urban_heat_map_qs"
+  "Urban Heat Map" = "urban_heat_map_qs",
+  "Carbon Survey" = "carbon_survey_qs",
+  "Energy Survey" = "energy_survey_qs",
+  "General Survey" = "general_survey_qs",
+  "Heat Health Survey" = "heat_health_survey_qs",
+  "Trees Greenery Survey" = "trees_greenery_survey_qs"
 )
 
 has_results <- c(
-  "Air Quality Survey" = T,
-  "Community Ideas Survey" = F,
-  "Story From the Community Survey" = F,
-  "Environmental Justice Survey" = T,
-  "Tree Canopy Survey" = T,
-  "Urban Heat Survey" = T,
-  "Air Quality Map" = F,
-  "Tree Canopy Map" = F,
-  "Urban Heat Map" = F
+  "Air Quality Survey" = T, "Community Ideas Survey" = F, "Story From the Community Survey" = F,
+  "Environmental Justice Survey" = T, "Tree Canopy Survey" = T, "Urban Heat Survey" = T,
+  "Air Quality Map" = F, "Tree Canopy Map" = F, "Urban Heat Map" = F, "Carbon Survey" = T,
+  "Energy Survey" = T, "General Survey" = T, "Heat Health Survey" = T,
+  "Trees Greenery Survey" = T
 )
 
 censusInputId <- c(
@@ -54,13 +62,18 @@ input_to_data_demo <- c(
   "Urban Heat Survey" = "urban-heat-survey",
   "Urban Heat Map" = "urban-heat-map",
   "Air Quality Map" = "air-quality-map",
-  "Tree Canopy Map" = "tree-canopy-map"
+  "Tree Canopy Map" = "tree-canopy-map",
+  "Carbon Survey" = "carbon_survey",
+  "Energy Survey" = "energy_survey",
+  "General Survey" = "general_survey",
+  "Heat Health Survey" = "heat_health_survey",
+  "Trees Greenery Survey" = "trees_greenery_survey"
 )
 census_input_to_data <- c(
   "Census Tract" = "tract",
   "Census State" = "state",
   "Census County" = "county",
-  "Zipcode" = "zip"
+  "Zipcode" = "zipcode"
 )
 census_level_input_to_data <- read_yaml("census_items/census_level_to_results.yaml")
 input_to_data_survey <- c(
@@ -72,13 +85,16 @@ input_to_data_survey <- c(
   "Urban Heat Survey" = "urban-heat/heat_survey.csv",
   "Urban Heat Map" = "urban-heat/heat_map.csv",
   "Air Quality Map" = "air-quality/air_map.csv",
-  "Tree Canopy Map" = "tree-canopy/tree_map.csv"
+  "Tree Canopy Map" = "tree-canopy/tree_map.csv",
+  "Carbon Survey" = "deliberation/oct_carbon.csv",
+  "Energy Survey" = "deliberation/oct_energy.csv",
+  "General Survey" = "deliberation/oct_general.csv",
+  "Heat Health Survey" = "deliberation/oct_heathealth.csv",
+  "Trees Greenery Survey" = "deliberation/oct_treesgreenery.csv"
 )
 question_type_map <- c()
 
-
 ui <- dashboardPage(
-  # header = dashboardHeader(title = "CCS Knowledge Map Report", titleWidth = "calc(100% - 44px)"),
   header = dashboardHeader(
     title = tags$a(href = "/", tags$img(src = "assets/logo.png", alt = "Logo", height = "50px", style = "margin-right: 5px")),
     navbarMenu(
@@ -120,9 +136,7 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "home_page", home_tab_body()),
       tabItem(tabName = "avail_data", avail_data_tab_body()),
-      tabItem(tabName = "method_page", method_tab_body()),
       tabItem(tabName = "reporting_tool", reporting_tool_body()),
-      tabItem(tabName = "result_summary"),
       tabItem(tabName = "about", about_tab_body()),
       tabItem(tabName = "info_page", info_tab_body())
     ),
