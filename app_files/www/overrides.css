@@ -1,0 +1,43 @@
+body,
+.content-wrapper {
+  background: #fff;
+}
+
+.navbar {
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08);
+  border-bottom: none;
+  padding: 5px 15px !important;
+}
+
+.nav-link,
+.nav-link.active {
+  font-weight: 500;
+  color: #2884f9 !important;
+}
+.nav-link.active {
+  color: #000 !important;
+}
+.nav-link p {
+  margin-bottom: 0;
+}
+
+.custom-switch:first-child {
+  display: none;
+}
+
+.content-wrapper > .content {
+  padding: 0 !important;
+}
+
+.accordion .card.active .card-header {
+  border: 1px solid #2884f9;
+  background-color: rgba(40, 132, 249, 0.3);
+}
+
+.accordion .card .card-header {
+  border: 1px solid #2884f9;
+}
+
+.selectize-dropdown .selected {
+  background-color: #2884f9 !important;
+}
