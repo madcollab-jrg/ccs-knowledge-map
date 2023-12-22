@@ -1,0 +1,53 @@
+.button-filled {
+  border-radius: 2.5rem;
+  background: #2884f9;
+  padding: 0.75rem 1.5rem;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.button-outlined {
+  border-radius: 2.5rem;
+  border: 1px solid #2884f9;
+  padding: 0.75rem 1.5rem;
+  color: #2884f9;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.button-common {
+  background: #2884f9;
+  padding: 0.5rem 1.5rem;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.container-row {
+  padding: 0 40px;
+}
+
+.page-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 2.5rem;
+  letter-spacing: 0.01563rem;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5rem; /* 150% */
+  letter-spacing: 0.03125rem;
+}
+
+.page-para {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5rem;
+  letter-spacing: 0.03125rem;
+}
