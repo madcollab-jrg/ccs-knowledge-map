@@ -40,10 +40,14 @@ surveyInputId <- c(
 )
 
 has_results <- c(
-  "Air Quality Survey" = T, "Community Ideas Survey" = F, "Story From the Community Survey" = F,
-  "Environmental Justice Survey" = T, "Tree Canopy Survey" = T, "Urban Heat Survey" = T,
-  "Air Quality Map" = F, "Tree Canopy Map" = F, "Urban Heat Map" = F, "Carbon Survey" = T,
-  "Energy Survey" = T, "General Survey" = T, "Heat Health Survey" = T,
+  "Air Quality Survey" = T, "Community Ideas Survey" = F,
+  "Story From the Community Survey" = F,
+  "Environmental Justice Survey" = T, "Tree Canopy Survey" = T,
+  "Urban Heat Survey" = T,
+  "Air Quality Map" = F, "Tree Canopy Map" = F, "Urban Heat Map" = F,
+  "Carbon Survey" = T,
+  "Energy Survey" = T, "General Survey" = T,
+  "Heat Health Survey" = T,
   "Trees Greenery Survey" = T
 )
 
@@ -75,7 +79,8 @@ census_input_to_data <- c(
   "Census County" = "county",
   "Zipcode" = "zipcode"
 )
-census_level_input_to_data <- read_yaml("census_items/census_level_to_results.yaml")
+census_level_input_to_data <-
+  read_yaml("census_items/census_level_to_results.yaml")
 input_to_data_survey <- c(
   "Air Quality Survey" = "air-quality/air_survey.csv",
   "Community Ideas Survey" = "ej-report/ej_report.csv",
@@ -96,7 +101,10 @@ question_type_map <- c()
 
 ui <- dashboardPage(
   header = dashboardHeader(
-    title = tags$a(href = "/", tags$img(src = "assets/logo.png", alt = "Logo", height = "50px", style = "margin-right: 5px")),
+    title = tags$a(href = "/", tags$img(
+      src = "assets/logo.png", alt = "Logo", height = "50px",
+      style = "margin-right: 5px"
+    )),
     navbarMenu(
       id = "navmenu",
       navbarTab(tabName = "home_page", text = "Home"),
@@ -126,6 +134,7 @@ ui <- dashboardPage(
         HTML(
           "
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
             body {
               font-family: 'Inter', sans-serif;
             }
@@ -143,14 +152,15 @@ ui <- dashboardPage(
     # Footer content
     tags$footer(
       class = "footer",
-      "© 2023 UW Madison. All rights reserved."
+      "© 2023 CCS Knowledge Map. All rights reserved."
     )
   ),
   skin = "blue"
 )
 
 server <- function(input, output, session) {
-  demographic_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
+  demographic_data_loc <-
+    "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
   survey_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
 
   # import survey data
@@ -160,7 +170,8 @@ server <- function(input, output, session) {
       req(input$survey)
       # import data here - reactive to input$survey
       name <- input$survey
-      survey_data <- read.csv(paste(survey_data_loc, input_to_data_survey[[name]], sep = ""))
+      survey_data <-
+        read.csv(paste(survey_data_loc, input_to_data_survey[[name]], sep = ""))
       survey_data[, -1]
     }
   )
@@ -183,8 +194,14 @@ server <- function(input, output, session) {
 
       key <- input[[census_id]]
 
-      file <- paste(input_to_data_demo[[input$survey]], census_level, census_level_input_to_data[["data"]][[census_level]][[key]], sep = "-")
-      file_loc <- paste(input_to_data_demo[[input$survey]], "/", file, ".RData", sep = "")
+      file <- paste(input_to_data_demo[[input$survey]], census_level,
+        census_level_input_to_data[["data"]][[census_level]][[key]],
+        sep = "-"
+      )
+      file_loc <- paste(input_to_data_demo[[input$survey]],
+        "/", file, ".RData",
+        sep = ""
+      )
     } else {
       file <- ""
     }
@@ -228,15 +245,37 @@ server <- function(input, output, session) {
   })
 
   # middle panel data description
-  get_data_description_reaction(input, output, surveyInputId, survey_data, census_data, file_loc = file_to_get)
+  get_data_description_reaction(input, output, surveyInputId,
+    survey_data, census_data,
+    file_loc = file_to_get
+  )
 
   # Representation
   get_representative_reactive(input, output, file_to_get)
 
   # results graphics
-  resulting_graphics(input, output, survey_data, is_survey, question_number, question_type, question_subtype)
+  resulting_graphics(
+    input, output, survey_data, is_survey,
+    question_number, question_type, question_subtype
+  )
 
+  # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {
+    updateTabItems(session, "navmenu", "avail_data")
+  })
+  observeEvent(input$helpBtn, {
+    updateTabItems(session, "navmenu", "about")
+  })
+  observeEvent(input$definitionsBtn, {
+    updateTabItems(session, "navmenu", "avail_data")
+  })
+  observeEvent(input$datasetEle, {
+    updateTabItems(session, "navmenu", "avail_data")
+  })
+  observeEvent(input$howWeAnalEle, {
+    updateTabItems(session, "navmenu", "info_page")
+  })
+  observeEvent(input$curatedData, {
     updateTabItems(session, "navmenu", "avail_data")
   })
 }
