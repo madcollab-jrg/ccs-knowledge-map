@@ -46,9 +46,6 @@ body.dark-mode {
 .nav-link p {
   margin-bottom: 0;
 }
-li {
-  list-style-type: none !important;
-}
 
 .content-wrapper .sidebar-menu {
   padding: 0 2rem;
@@ -93,6 +90,10 @@ li {
 
 .selectize-dropdown .selected {
   background-color: var(--primary-color) !important;
+}
+
+.control-label {
+  display: none;
 }
 
 @media screen and (min-width: 900px) {

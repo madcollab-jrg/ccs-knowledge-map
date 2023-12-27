@@ -72,7 +72,10 @@ make_conditional_panel_survey <- function(survey, id) {
         condition = paste0("input.survey == '", survey, "'"),
         selectInput(
             inputId = id,
-            label = div(style = "font-size:0.85rem;", "STEP 2: Select a question from the survey"),
+            label = div(
+                style = "font-size:0.85rem;",
+                "STEP 2: Select a question from the survey"
+            ),
             choices = get_survey_questions(survey),
             selectize = F
         )
@@ -84,9 +87,18 @@ make_conditional_panel_survey <- function(survey, id) {
 make_conditional_panel_census <- function(census_item, id) {
     census_conditional_panel <- conditionalPanel(
         condition = paste("input.census_level ==", census_item),
+        p("STEP 4: Choose which data you would like to examine",
+            class = "label"
+        ),
+        HTML("<div class='label-desc'>
+            Check the list of available demographic descriptors and groupings
+            </div>"),
         selectInput(
             inputId = id,
-            label = div(style = "font-size:0.85rem;", "STEP 4: Choose which data you would like to examine"),
+            label = div(
+                style = "font-size:0.85rem;",
+                "STEP 4: Choose which data you would like to examine"
+            ),
             choices = get_census_items(census_item),
             selectize = F
         )
@@ -95,7 +107,8 @@ make_conditional_panel_census <- function(census_item, id) {
 
 survey_box_ui <- function(surveys) {
     # Construct and return survey box UI. This contains
-    # Select Survey, Select Questions, Select Representativeness comparisons, select
+    # Select Survey, Select Questions, Select Representativeness
+    # comparisons, select
     # Census, and an action button to run the survey.
     #
     # Returns:
@@ -103,14 +116,25 @@ survey_box_ui <- function(surveys) {
 
     surveyui <- box(
         collapsible = FALSE,
-        actionButton("Help", "Help", class = "button-common", style = "margin-bottom: 0.5rem;"),
-        actionButton("Definitions", "Definitions", class = "button-common", style = "margin-bottom: 0.5rem;"),
+        actionButton("helpBtn",
+            "Help",
+            class = "button-common",
+        ),
+        actionButton("definitionsBtn",
+            "Definitions",
+            class = "button-common",
+        ),
+        p("STEP 1: Select a survey",
+            class = "label",
+            style = "margin-top: 0.5rem;"
+        ),
+        span("You can review the list of surveys here:", class = "label-desc"),
+        actionLink("datasetEle", "Dataset", class = "label-link font-sm"),
         selectizeInput(
             inputId = "survey",
             label = div(
-                style = "font-size: 0.85rem;",
-                "STEP 1: Select a survey",
-                HTML("<br/><span style='font-weight: 400; class='text-lighter''>You can review the list of surveys here:</span> <span style='font-weight: 700; text-decoration: underline;'>Dataset</span>")
+                style = "display: none;",
+                "STEP 1: Select a survey"
             ),
             choices = surveys,
             options = list(
@@ -118,19 +142,27 @@ survey_box_ui <- function(surveys) {
                 onInitialize = I('function() { this.setValue(""); }')
             )
         ),
+        p("STEP 2: Select a question from the survey", class = "label"),
         conditionalPanel(
             condition = "input.survey == ''",
             selectInput(
                 inputId = "null",
-                label = div(style = "font-size:0.85rem;", "STEP 2: Select a question from the survey"),
+                label = div(style = "display: none;", "
+                STEP 2: Select a question from the survey"),
                 choices = c("")
             )
         ),
         make_conditional_panel_survey("Air Quality Survey", "air_quality_qs"),
         make_conditional_panel_survey("Air Quality Map", "air_quality_map_qs"),
         make_conditional_panel_survey("Community Ideas Survey", "ej_report_qs"),
-        make_conditional_panel_survey("Story From the Community Survey", "ej_storytile_qs"),
-        make_conditional_panel_survey("Environmental Justice Survey", "ej_survey_qs"),
+        make_conditional_panel_survey(
+            "Story From the Community Survey",
+            "ej_storytile_qs"
+        ),
+        make_conditional_panel_survey(
+            "Environmental Justice Survey",
+            "ej_survey_qs"
+        ),
         make_conditional_panel_survey("Tree Canopy Survey", "tree_canopy_qs"),
         make_conditional_panel_survey("Tree Canopy Map", "tree_canopy_map_qs"),
         make_conditional_panel_survey("Urban Heat Survey", "urban_heat_qs"),
@@ -138,21 +170,33 @@ survey_box_ui <- function(surveys) {
         make_conditional_panel_survey("Carbon Survey", "carbon_survey_qs"),
         make_conditional_panel_survey("Energy Survey", "energy_survey_qs"),
         make_conditional_panel_survey("General Survey", "general_survey_qs"),
-        make_conditional_panel_survey("Heat Health Survey", "heat_health_survey_qs"),
-        make_conditional_panel_survey("Trees Greenery Survey", "trees_greenery_survey_qs"),
+        make_conditional_panel_survey(
+            "Heat Health Survey",
+            "heat_health_survey_qs"
+        ),
+        make_conditional_panel_survey(
+            "Trees Greenery Survey",
+            "trees_greenery_survey_qs"
+        ),
         p(""),
         p(""),
 
         # use to compute representation
+        p("STEP 3: Choose a geography to examine the data", class = "label"),
+        span("Check the list of geographies here: ", class = "label-desc"),
+        actionLink("howWeAnalEle", "How we analyse the data",
+            class = "label-link font-sm"
+        ),
         selectizeInput(
             inputId = "census_level",
-            # label = div(style = "font-size:0.85rem;", "STEP 3: Choose a geography to examine the data"),
             label = div(
-                style = "font-size: 0.85rem;",
-                "STEP 3: Choose a geography to examine the data",
-                HTML("<br/><span style='font-weight: 400;' class='text-lighter'>Check the list of geographies here:</span> <span style='font-weight: 700; text-decoration: underline;'>How we analyse the data</span>")
+                style = "display: none;",
+                "STEP 3: Choose a geography to examine the data"
             ),
-            choices = c("Census Tract", "Census State", "Census County", "Zipcode"),
+            choices = c(
+                "Census Tract", "Census State", "Census County",
+                "Zipcode"
+            ),
             options = list(
                 placeholder = "Please select an option below",
                 onInitialize = I('function() { this.setValue(""); }')
@@ -160,22 +204,21 @@ survey_box_ui <- function(surveys) {
         ),
         conditionalPanel(
             condition = "input.census_level == ''",
-            selectInput(
-                inputId = "null",
-                # label = div(style = "font-size:0.85rem;", "STEP 4: Choose which data you would like to examine"),
-                label = div(
-                    style = "font-size: 0.85rem;",
-                    "STEP 4: Choose which data you would like to examine",
-                    HTML("<br/><span style='font-weight: 400;' class='text-lighter'>Check the list of available demographic descriptors and groupings</span>")
-                ),
-                choices = c("")
-            )
+            p("STEP 4: Choose which data you would like to examine",
+                class = "label"
+            ),
+            HTML("<div class='label-desc'>
+            Check the list of available demographic descriptors and groupings
+            </div>"),
         ),
         make_conditional_panel_census("'Census Tract'", "census_tract_items"),
         make_conditional_panel_census("'Census State'", "census_state_items"),
         make_conditional_panel_census("'Census County'", "census_county_items"),
         make_conditional_panel_census("'Zipcode'", "census_zipcode_items"),
-        actionButton(inputId = "run_report", label = "Run Report", class = "button-common"),
+        actionButton(
+            inputId = "run_report", label = "Run Report",
+            class = "button-common"
+        ),
         width = 12
     )
     return(surveyui)

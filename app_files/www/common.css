@@ -42,6 +42,10 @@
   font-size: 0.85rem;
 }
 
+.font-sm {
+  font-size: 0.85rem;
+}
+
 .text-lighter {
   color: #1a1a1ab2;
 }
@@ -65,7 +69,7 @@
 }
 
 .page-subtitle {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.5rem; /* 150% */
   letter-spacing: 0.03125rem;
@@ -74,7 +78,7 @@
 .page-para {
   font-size: 1rem;
   font-weight: 400;
-  line-height: 1.5rem;
+  line-height: 150%;
   letter-spacing: 0.03125rem;
 }
 
@@ -84,6 +88,28 @@
   padding: 40px 10px;
   text-align: left;
   margin-top: 40px;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+.label-desc {
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.label-link {
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  color: #000;
+}
+
+.dark-mode .label-link {
+  color: var(--bg-color);
 }
 
 @media screen and (max-width: 900px) {
