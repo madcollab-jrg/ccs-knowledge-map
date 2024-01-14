@@ -1,92 +1,201 @@
 source("table.R")
+source("graphics_representative.R")
 library(gt)
 
-get_data_description_ui = function(){
-  # Data description UI. 
+result_rows <- list(
+  "gender" = 1:2,
+  "age" = 3:8,
+  "education" = 9:12,
+  "income" = 13:20
+)
+
+get_data_description_ui <- function() {
+  # print(demo_desc)
+  # Data description UI.
   #
   # Return:
-  #   box containing the necessary components of 
-  #   the data description UI. See get_data_description_reaction()
+  #   box containing the necessary components of
+  #   the data description UI.
+  #   See get_data_desc_rep_reaction()
   #   for the components.
-  data_description = box( title = "Data Description", 
-                          #div(style = "margin-top: -30px"),
-                          #p( textOutput(outputId = "survey_selection") ),
-                          gt_output("summary_table"),
-                          width = 12 )
-  
+  data_description <- box(
+    title = HTML("<div class='card-title'><h1 class='page-subtitle'>
+    [Survey] Representativeness by [Demographic] Compared to [Geography]</h1>
+    <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"),
+    gt_output("new_table"),
+    actionButton(
+      inputId = "downloadTable", label = "Save Table",
+      gradient = TRUE, class = "button-common"
+    ),
+    callout(
+      # ionicon("alert"),
+      title = HTML("<p class='page-para'>Representativeness is low for one or
+      more [Demographic] categories.</p>"),
+      actionLink("strategies", "Strategies"),
+      status = "danger",
+      width = 12,
+      class = "strategies-banner"
+    ),
+    width = 12,
+    collapsible = FALSE,
+    maximizable = TRUE,
+    solidHeader = TRUE,
+    elevation = NULL
+  )
+
   return(data_description)
 }
 
-print_questions = function(survey.selected, survey.selected.question, output, n){
-  if(survey.selected.question == ""){
-    # if no questions to select to print out survey and number of responses
-    output$survey_selection = renderText( sprintf("In the %s, there was %d responses", survey.selected, n )  )
-  }else{
-    # format printing the question
-    size = length(gregexpr(" ", survey.selected.question)[[1]])
-    if(size > 10){
-      survey_q_to_print = gsub("^((\\w+\\W+){9}\\w+).*$","\\1",survey.selected.question)
-      if( substr(survey_q_to_print, (nchar(survey_q_to_print) + 1)-3, nchar(survey_q_to_print) ) != "..." ){
-        survey_q_to_print = paste(survey_q_to_print, "...")
-      }
-    }else{
-      survey_q_to_print = survey.selected.question
-    }
-    
-    #print output
-    output$survey_selection = renderText( sprintf("In the %s, for \"%s\" there was %d total responses", 
-                                                  survey.selected, 
-                                                  survey_q_to_print, 
-                                                  n  ))
-  }
-}
-
-get_data_description_reaction = function(input, output, surveyIds, survey_data = NA, census_data = NA, file_loc = NA){
+get_data_desc_rep_reaction <- function(
+    input, output, surveyIds,
+    survey_data = NA, census_data = NA, file_loc = NA,
+    demographic_desc) {
   # When run report is pressed populate the data description box with table.
   # Table should have counts of people who answered the survey within wisconsin,
   # and split up into sub categories.
-  reaction = observeEvent(input$run_report,
-               {
-                 survey.selected = input[["survey"]] # survey selected
-                 
-                 # if the survey box is not empty - that is an option has been selected
-                 if(survey.selected != ""){
-                   survey.selected.Id = surveyIds[survey.selected] # id of the survey selected
-                   survey.selected.question = input[[survey.selected.Id]]
-                   n = 0
-                   if(survey.selected.question != ""){
-                     q_number = as.integer( str_match(survey.selected.question, "Q\\s*(.*?)\\s*:")[,2] )
-                     message(survey.selected.question)
-                     n = nrow(data.frame(survey_data()[[(4+q_number)]]) %>% drop_na() )
-                   }else{
-                     n = nrow(survey_data())
-                   }
-                   print_questions( survey.selected, survey.selected.question, output, n )
-                   if(input$census_level != ""){
-                     
-                     data_loc = paste("/Volumes/cbjackson2/ccs-knowledge/results_summary/", file_loc(), sep = "") # change
-                     tbl_data = get_table(data_loc)[[1]]
-                     gt_tbl = gt(tbl_data, rownames_to_stub = T)
-                     
-                     gt_tbl = 
-                       gt_tbl %>%
-                       tab_row_group(label = "Gender", rows = 1:2)%>%
-                       tab_row_group(label = "Age", rows = 3:8)%>%
-                       tab_row_group(label = "Education", rows = 9:12)%>%
-                       tab_row_group(label = "Income", rows = 13:20) %>%
-                       tab_header( title = "Number of Survey Responses" ) %>%
-                       tab_footnote(footnote = paste("Counts are from minority participates in ", input[[census_data()]]),
-                                    location = cells_title())%>%
-                       tab_style(
-                         style = cell_text(size = pct(80)),
-                         locations = list(cells_body(), cells_title(), cells_stub(), cells_column_labels(), cells_row_groups() )
-                       ) %>%
-                       tab_options(data_row.padding = px(2), footnotes.font.size = pct(65))
-                     
-                     output$summary_table = render_gt(gt_tbl)
-                       
-                   }
-                 }
-               })
+  # Example: using demographic_desc
+  reaction <- observeEvent(input$run_report, {
+    survey.selected <- input[["survey"]] # survey selected
+
+    # if the survey box is not empty - that is an option has been selected
+    if (survey.selected != "") {
+      # id of the survey selected
+      survey.selected.Id <- surveyIds[survey.selected]
+      survey.selected.question <- input[[survey.selected.Id]]
+      n <- 0
+      if (survey.selected.question != "") {
+        q_number <- as.integer(str_match(
+          survey.selected.question,
+          "Q\\s*(.*?)\\s*:"
+        )[, 2])
+        message(survey.selected.question)
+        n <- nrow(data.frame(survey_data()[[(4 + q_number)]]) %>% drop_na())
+      } else {
+        n <- nrow(survey_data())
+      }
+
+      if (input$census_level != "") {
+        print(survey_data)
+        print(census_data)
+        print(demographic_desc)
+
+        data_loc <- paste("/Volumes/cbjackson2/ccs-knowledge/results_summary/",
+          file_loc(),
+          sep = ""
+        ) # change
+
+        data_loc_rep <-
+          paste("/Volumes/cbjackson2/ccs-knowledge/results_representativeness/",
+            file_loc(),
+            sep = ""
+          )
+
+        tbl_data <- get_table(data_loc)[[1]]
+        rows_to_extract <- result_rows[[demographic_desc]]
+        tbl_data_filtered <- tbl_data[rows_to_extract, ]
+        gt_tbl <- gt(tbl_data_filtered, rownames_to_stub = TRUE)
+
+        loaded_data <- get_table(data_loc_rep)
+        tbl_data_rep <- loaded_data[[1]]
+        rows_to_extract <- result_rows[[demographic_desc]]
+        tbl_data_filtered_rep <- tbl_data_rep[rows_to_extract, ]
+        gt_tbl <- gt(tbl_data_filtered_rep, rownames_to_stub = TRUE)
+
+        tbl_data_filtered$row_names <- rownames(tbl_data_filtered)
+        tbl_data_filtered_rep$row_names <- rownames(tbl_data_filtered_rep)
+
+        # Merge two tables by row name
+        merged_tbl_data <- merge(
+          tbl_data_filtered,
+          tbl_data_filtered_rep,
+          by.x = "row_names", by.y = "row_names",
+          all = TRUE
+        )
+
+        # Remove the row numbers (serial numbering):
+        rownames(merged_tbl_data) <- NULL
+
+        # Rename the columns as needed:
+        colnames(merged_tbl_data) <- c(
+          "group", "Black Count Survey",
+          "Hispanic Count Survey", "Total Count Survey",
+          # "Black Representativeness",
+          # "Hispanic Representativeness", "Total Representativeness"
+          "Black Rep.",
+          "Hispanic Rep.", "Total Rep."
+        )
+
+
+        # Convert the "group" column to factor
+        merged_tbl_data$group <- factor(merged_tbl_data$group,
+          levels = unique(merged_tbl_data$group)
+        )
+        merged_tbl_data$group <- as.character(merged_tbl_data$group)
+
+        print(str(merged_tbl_data))
+
+        # Extract only the columns needed for color calculation
+        rep_data_numeric <- merged_tbl_data[, c(
+          "Black Rep.",
+          "Hispanic Rep.", "Total Rep."
+        )]
+
+        # Ensure all values are numeric
+        rep_data_numeric <- as.matrix(rep_data_numeric)
+        rep_data_numeric <- as.numeric(rep_data_numeric)
+
+        # Calculate colors based on numeric values
+        colors <- NULL
+        colors <- get_pal(
+          min(rep_data_numeric, na.rm = TRUE),
+          max(rep_data_numeric, na.rm = TRUE)
+        )
+
+        # Create gt table from the merged data
+        gt_tbl <- gt(merged_tbl_data, rownames_to_stub = FALSE)
+
+
+        # Formatting decimals
+        gt_tbl <- gt_tbl %>%
+          fmt_number(
+            columns = c(
+              "Black Rep.",
+              "Hispanic Rep.", "Total Rep."
+            ),
+            decimals = 2
+          )
+
+        # Assiging color
+        gt_tbl <- gt_tbl %>%
+          data_color(
+            method = "numeric",
+            colors = colors,
+            columns = c(
+              "Black Rep.",
+              "Hispanic Rep.", "Total Rep."
+            )
+          )
+
+        gt_tbl <-
+          gt_tbl %>%
+          tab_style(
+            style = cell_text(
+              size = pct(80), color = "#1A1A1A",
+              align = "left"
+            ),
+            locations = list(
+              cells_body(), cells_stub(),
+              cells_column_labels()
+            )
+          ) %>%
+          tab_style(
+            style = cell_text(color = "#000", size = pct(90), align = "left"),
+            locations = list(cells_title(), cells_row_groups())
+          ) %>%
+          tab_options(data_row.padding = px(10), footnotes.font.size = pct(65))
+        output$new_table <- render_gt(gt_tbl)
+      }
+    }
+  })
   return(reaction)
 }

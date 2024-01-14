@@ -28,6 +28,7 @@
 .home-row {
   padding: 0px 80px;
   margin-top: 40px;
+  min-height: 70vh;
 }
 
 @media screen and (max-width: 900px) {

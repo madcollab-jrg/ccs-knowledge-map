@@ -99,6 +99,13 @@ input_to_data_survey <- c(
 )
 question_type_map <- c()
 
+demographic_desc_to_data <- c(
+  "Age" = "age",
+  "Gender" = "gender",
+  "Income" = "income",
+  "Education" = "education"
+)
+
 ui <- dashboardPage(
   header = dashboardHeader(
     title = tags$a(href = "/", tags$img(
@@ -111,7 +118,8 @@ ui <- dashboardPage(
       navbarTab(tabName = "avail_data", text = "Available Data"),
       navbarTab(tabName = "reporting_tool", text = "Reporting Tool"),
       navbarTab(tabName = "about", text = "About"),
-      navbarTab(tabName = "info_page", text = "Info")
+      navbarTab(tabName = "info_page", text = "Info"),
+      navbarTab(tabName = "strategies_page", text = "Strategies")
     )
   ),
   sidebar = dashboardSidebar(
@@ -124,7 +132,8 @@ ui <- dashboardPage(
       navbarTab(tabName = "avail_data", text = "Available Data"),
       navbarTab(tabName = "reporting_tool", text = "Reporting Tool"),
       navbarTab(tabName = "about", text = "About"),
-      navbarTab(tabName = "info_page", text = "Info")
+      navbarTab(tabName = "info_page", text = "Info"),
+      navbarTab(tabName = "strategies_page", text = "Info 3")
     ),
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "home.css"),
@@ -134,7 +143,6 @@ ui <- dashboardPage(
         HTML(
           "
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
             body {
               font-family: 'Inter', sans-serif;
             }
@@ -145,9 +153,13 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "home_page", home_tab_body()),
       tabItem(tabName = "avail_data", avail_data_tab_body()),
-      tabItem(tabName = "reporting_tool", reporting_tool_body()),
+      tabItem(
+        tabName = "reporting_tool",
+        reporting_tool_body()
+      ),
       tabItem(tabName = "about", about_tab_body()),
-      tabItem(tabName = "info_page", info_tab_body())
+      tabItem(tabName = "info_page", info_tab_body()),
+      tabItem(tabName = "strategies_page", strategies_data_tab_body())
     ),
     # Footer content
     tags$footer(
@@ -182,6 +194,11 @@ server <- function(input, output, session) {
     census_id <- censusInputId[input$census_level]
   })
 
+  demographic_data <- reactive({
+    demographic_id <- demographic_desc_to_data[[input$demographic]]
+    return(demographic_id)
+  })
+
   # file for representativeness scores
   file_to_get <- reactive({
     input$run_report
@@ -189,8 +206,8 @@ server <- function(input, output, session) {
       census_level <- census_input_to_data[[input$census_level]]
       census_id <- censusInputId[input$census_level]
 
-      print(census_id)
-      print(input[[census_id]])
+      # print(census_id)
+      # print(input[[census_id]])
 
       key <- input[[census_id]]
 
@@ -238,16 +255,23 @@ server <- function(input, output, session) {
     }
   )
 
-  # is something a survey - For non-survey they haven't decided on graphical displays
+  # is something a survey - For non-survey they haven't
+  #  decided on graphical displays
   is_survey <- eventReactive(list(input$run_report), {
     req(input$survey)
     has_results[[input$survey]]
   })
 
-  # middle panel data description
-  get_data_description_reaction(input, output, surveyInputId,
+  # # middle panel data description
+  # get_data_description_reaction(input, output, surveyInputId,
+  #   survey_data, census_data,
+  #   file_loc = file_to_get
+  # )
+
+  get_data_desc_rep_reaction(input, output, surveyInputId,
     survey_data, census_data,
-    file_loc = file_to_get
+    file_loc = file_to_get,
+    demographic_desc = demographic_data()
   )
 
   # Representation
@@ -256,8 +280,19 @@ server <- function(input, output, session) {
   # results graphics
   resulting_graphics(
     input, output, survey_data, is_survey,
-    question_number, question_type, question_subtype
+    question_number, question_type, question_subtype,
+    demographic_desc = demographic_data()
   )
+
+  # observe({
+  #   reporting_tool_body(demographic_desc())
+  # })
+
+  # observe({
+  #   output$reporting_tool <- renderUI({
+  #     reporting_tool_body(demographic_data())
+  #   })
+  # })
 
   # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {
@@ -277,6 +312,9 @@ server <- function(input, output, session) {
   })
   observeEvent(input$curatedData, {
     updateTabItems(session, "navmenu", "avail_data")
+  })
+  observeEvent(input$strategies, {
+    updateTabItems(session, "navmenu", "strategies_page")
   })
 }
 
