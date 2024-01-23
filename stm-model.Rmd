@@ -64,14 +64,14 @@ datatable(extracted_df)
 
 ## Demographic Secific STM
 
-```{r specificstm-code}
+```{r specificstm-code, eval=FALSE}
 perform_topic_modeling <- function(attribute, attribute_name) {
   
   thoughts_df <- data.frame()
   
-  for (attr_val in unique(df[attribute_name])) {
+  for (attr_val in unique(df[[attribute_name]])) {
     # Filter dataset for each attribute value
-    sub_df <- df[which(df[attribute_name] == attr_val),]
+    sub_df <- df[which(df[[attribute_name]] == attr_val),]
 
     # Repeat the preprocessing and topic modeling steps for sub_df
     processed_texts <- textProcessor(documents=sub_df$text_column, metadata=sub_df)
@@ -81,7 +81,6 @@ perform_topic_modeling <- function(attribute, attribute_name) {
     meta <- out$meta
 
     # Fit the topic model for the subgroup
-    set.seed(353)
     topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=75, init.type="Spectral")
     
     # Add model output to dataframe
@@ -99,17 +98,30 @@ perform_topic_modeling <- function(attribute, attribute_name) {
     
      # Create a dataframe for thoughts and add attribute information
     thoughts_sub_df <- data.frame(Attribute = attr_val, Thoughts = I(list(thoughts)))
-
+    thoughts_sub_df$type <- attr_val
+    print(thoughts_sub_df)
     # Add to the main thoughts dataframe
     thoughts_df <- rbind(thoughts_df, thoughts_sub_df)    
    
   }
 }
 
+
+filtered_categories <- df %>%
+  group_by(race_recode) %>%
+  summarise(count = n()) %>%
+  filter(count > 10) %>%
+  pull(race_recode)
+
+subset_df <- df %>%
+  filter(race_recode %in% filtered_categories, !is.na(race_recode))
+
 ```
+
+
 
 ```{r specificstm-code-report}
 # Example of applying the function for 'race' and 'gender'
-perform_topic_modeling(df, "race_recode")
+perform_topic_modeling(subset_df, "race_recode")
 ```
 
