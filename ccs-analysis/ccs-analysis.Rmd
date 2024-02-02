@@ -10,8 +10,8 @@ output:
 
 ```{r setup, include=FALSE}
 library(readr)
-
-
+library(dplyr)
+library(ggplot2)
 # Import all datasets
 tree_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_survey.csv")
 tree_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_map.csv")
