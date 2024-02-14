@@ -154,6 +154,19 @@ body.dark-mode {
   color: #fff !important;
 }
 
+.js-plotly-plot .plotly,
+.js-plotly-plot .plotly div,
+.legendtext,
+text,
+.plotly * {
+  font-family: "Inter", sans-serif !important;
+}
+
+.ytitle,
+.xtitle {
+  font-weight: 600 !important;
+}
+
 @media screen and (min-width: 900px) {
   .nav-link[data-widget="pushmenu"] {
     display: none !important;

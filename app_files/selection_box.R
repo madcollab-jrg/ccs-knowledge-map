@@ -1,3 +1,4 @@
+library(shinyjs)
 # Functionality for the selection box section of the knowledge graph
 # which gives option to select survey, questions, representative metrics,
 # and census.
@@ -9,6 +10,7 @@
 get_survey_questions <- function(survey) {
   if (grepl("survey", survey, ignore.case = T)) {
     file_name <- gsub(" ", "_", gsub(" survey", "", tolower(survey)))
+    print(file_name)
     file_path <- paste0(getwd(), "/survey_questions/", file_name, ".txt")
     return(readLines(file_path))
   }
@@ -136,7 +138,7 @@ survey_box_ui <- function(surveys) {
     ),
     make_conditional_panel_survey("Air Quality Survey", "air_quality_qs"),
     make_conditional_panel_survey("Air Quality Map", "air_quality_map_qs"),
-    make_conditional_panel_survey("Community Ideas Survey", "ej_report_qs"),
+    # make_conditional_panel_survey("Community Ideas Survey", "ej_report_qs"),
     make_conditional_panel_survey(
       "Story From the Community Survey",
       "ej_storytile_qs"
@@ -166,7 +168,8 @@ survey_box_ui <- function(surveys) {
     # use to compute representation
     p("STEP 3: Choose a geography to examine the data", class = "label"),
     span("Check the list of geographies here: ", class = "label-desc"),
-    actionLink("howWeAnalEle", "How we analyse the data",
+    actionLink("howWeAnalEle",
+      "How we aggregate the data based on geography unit",
       class = "label-link font-sm"
     ),
     selectizeInput(
@@ -194,7 +197,7 @@ survey_box_ui <- function(surveys) {
     p(""),
     p(""),
     # use to compute representation
-    p("STEP 4: Choose which data you would like to examine",
+    p("STEP 4: Choose which demography you want to examine",
       class = "label"
     ),
     HTML("<div class='label-desc'>
@@ -204,7 +207,7 @@ survey_box_ui <- function(surveys) {
       inputId = "demographic",
       label = div(
         style = "display: none;",
-        "STEP 4: Choose which data you would like to examine"
+        "STEP 4: Choose which demography you want to examine"
       ),
       choices = c("Age", "Gender", "Income", "Education"),
       options = list(
@@ -214,9 +217,38 @@ survey_box_ui <- function(surveys) {
     ),
     actionButton(
       inputId = "run_report", label = "Run Report",
-      class = "button-common"
+      class = "button-common", disabled = TRUE
     ),
     width = 12
   )
+
+  surveyui$script <- HTML('
+  console.log("check");
+    shinyjs.disableButton = function() {
+      $("#run_report").prop("disabled", true);
+    }
+
+    shinyjs.enableButton = function() {
+      $("#run_report").prop("disabled", false);
+    }
+
+    // Disable the button initially
+    shinyjs.disableButton();
+
+    // Enable/disable the button based on input selection
+    document.addEventListener("input", function() {
+      var surveyValue = $("#survey").val();
+      var censusLevelValue = $("#census_level").val();
+      var demographicValue = $("#demographic").val();
+
+      if (surveyValue !== "" && censusLevelValue !== "" && demographicValue !== "") {
+        shinyjs.enableButton();
+      } else {
+        shinyjs.disableButton();
+      }
+    });
+  ')
+
+
   return(surveyui)
 }

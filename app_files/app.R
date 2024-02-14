@@ -5,6 +5,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 library(yaml)
+library(shinyjs)
 
 source("selection_box.R")
 source("data_description_box.R")
@@ -15,7 +16,8 @@ source("information_pages.R")
 source("reporting_tool.R")
 
 surveys <- c(
-  "Air Quality Survey", "Community Ideas Survey",
+  "Air Quality Survey",
+  # "Community Ideas Survey",
   "Story From the Community Survey", "Environmental Justice Survey",
   "Tree Canopy Survey", "Urban Heat Survey",
   "Urban Heat Map", "Air Quality Map", "Tree Canopy Map",
@@ -24,7 +26,7 @@ surveys <- c(
 )
 surveyInputId <- c(
   "Air Quality Survey" = "air_quality_qs",
-  "Community Ideas Survey" = "ej_report_qs",
+  # "Community Ideas Survey" = "ej_report_qs",
   "Story From the Community Survey" = "ej_storytile_qs",
   "Environmental Justice Survey" = "ej_survey_qs",
   "Tree Canopy Survey" = "tree_canopy_qs",
@@ -40,15 +42,15 @@ surveyInputId <- c(
 )
 
 has_results <- c(
-  "Air Quality Survey" = T, "Community Ideas Survey" = F,
-  "Story From the Community Survey" = F,
-  "Environmental Justice Survey" = T, "Tree Canopy Survey" = T,
-  "Urban Heat Survey" = T,
-  "Air Quality Map" = F, "Tree Canopy Map" = F, "Urban Heat Map" = F,
-  "Carbon Survey" = T,
-  "Energy Survey" = T, "General Survey" = T,
-  "Heat Health Survey" = T,
-  "Trees Greenery Survey" = T
+  "Air Quality Survey" = TRUE, "Community Ideas Survey" = FALSE,
+  "Story From the Community Survey" = FALSE,
+  "Environmental Justice Survey" = TRUE, "Tree Canopy Survey" = TRUE,
+  "Urban Heat Survey" = TRUE,
+  "Air Quality Map" = TRUE, "Tree Canopy Map" = FALSE, "Urban Heat Map" = FALSE,
+  "Carbon Survey" = TRUE,
+  "Energy Survey" = TRUE, "General Survey" = TRUE,
+  "Heat Health Survey" = TRUE,
+  "Trees Greenery Survey" = TRUE
 )
 
 censusInputId <- c(
@@ -59,7 +61,7 @@ censusInputId <- c(
 )
 input_to_data_demo <- c(
   "Air Quality Survey" = "air-quality-survey",
-  "Community Ideas Survey" = "ej-report",
+  # "Community Ideas Survey" = "ej-report",
   "Story From the Community Survey" = "ej-storytile",
   "Environmental Justice Survey" = "ej-survey",
   "Tree Canopy Survey" = "tree-canopy-survey",
@@ -83,7 +85,7 @@ census_level_input_to_data <-
   read_yaml("census_items/census_level_to_results.yaml")
 input_to_data_survey <- c(
   "Air Quality Survey" = "air-quality/air_survey.csv",
-  "Community Ideas Survey" = "ej-report/ej_report.csv",
+  # "Community Ideas Survey" = "ej-report/ej_report.csv",
   "Story From the Community Survey" = "ej-storytile/ej_story.csv",
   "Environmental Justice Survey" = "ej-survey/ej_survey.csv",
   "Tree Canopy Survey" = "tree-canopy/tree_survey.csv",
@@ -180,6 +182,7 @@ server <- function(input, output, session) {
     list(input$run_report),
     {
       req(input$survey)
+      req(input$demographic)
       # import data here - reactive to input$survey
       name <- input$survey
       survey_data <-
@@ -194,6 +197,7 @@ server <- function(input, output, session) {
     census_id <- censusInputId[input$census_level]
   })
 
+  # import demographic data
   demographic_data <- reactive({
     demographic_id <- demographic_desc_to_data[[input$demographic]]
     return(demographic_id)
@@ -202,7 +206,8 @@ server <- function(input, output, session) {
   # file for representativeness scores
   file_to_get <- reactive({
     input$run_report
-    if (input$survey != "" & input$census_level != "") {
+    if (input$survey != "" & input$census_level != "" &
+      input$demographic != "") {
       census_level <- census_input_to_data[[input$census_level]]
       census_id <- censusInputId[input$census_level]
 
@@ -229,6 +234,7 @@ server <- function(input, output, session) {
     list(input$run_report),
     {
       req(input$survey)
+      req(input$demographic)
       surveyQid <- surveyInputId[[input$survey]]
       question <- input[[surveyQid]]
       as.integer(str_extract(question, regex("[0-9]+"))) #+3
@@ -240,6 +246,7 @@ server <- function(input, output, session) {
     list(input$run_report),
     {
       req(input$survey)
+      req(input$demographic)
       q_num <- question_number()
       get_question_type(input$survey, q_num)
     }
@@ -250,6 +257,7 @@ server <- function(input, output, session) {
     list(input$run_report),
     {
       req(input$survey)
+      req(input$demographic)
       q_num <- question_number()
       get_question_subtype(input$survey, q_num)
     }
@@ -259,6 +267,7 @@ server <- function(input, output, session) {
   #  decided on graphical displays
   is_survey <- eventReactive(list(input$run_report), {
     req(input$survey)
+    req(input$demographic)
     has_results[[input$survey]]
   })
 
@@ -294,6 +303,11 @@ server <- function(input, output, session) {
   #   })
   # })
 
+  # observeEvent(input$run_report, {
+  #   # Update demographic_data whenever run_report changes
+  #   demographic_data()
+  # })
+
   # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {
     updateTabItems(session, "navmenu", "avail_data")
@@ -316,6 +330,7 @@ server <- function(input, output, session) {
   observeEvent(input$strategies, {
     updateTabItems(session, "navmenu", "strategies_page")
   })
+  shinyjs::enable("run_report")
 }
 
 # run app
