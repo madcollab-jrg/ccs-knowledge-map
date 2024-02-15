@@ -4161,7 +4161,7 @@ censuscongress_raceeth = get_decennial(
   sumfile = "pl",
   output = 'wide'
 )
-write.csv(censustract_raceeth,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_raceeth.csv")
+write.csv(censuscongress_raceeth,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_raceeth.csv")
 
 
 ############# state legislative district (upper chamber) ############# 
