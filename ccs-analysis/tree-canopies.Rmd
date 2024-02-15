@@ -1,5 +1,7 @@
 ---
-title: "CCS Knowledge Map Results"
+title: "CCS Knowledge Map Results: Tree Canopies"
+author: "Corey Jackson"
+date: "`r Sys.Date()`"
 output:
   html_document:
     toc: true
@@ -14,12 +16,6 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(DT)
-potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
-                     330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
-                     346, 348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359, 360, 361, 
-                     362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 374, 376, 378, 379, 380,
-                     381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399)
-
 
 # Import all datasets
 tree_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_survey.csv")
@@ -74,58 +70,6 @@ clean_multi <- function(data, response) {
 
 # Project Overview
 
-
-# Local Government Survey Descriptions
-
-## Air Quality (AQ)
-
-```{r aq-setup, include=FALSE, cache=TRUE}
-
-# Run all analysis for the AQ survey here
-
-```
-
-- Description of survey and the questions asked
-
-
-### AQ Analysis
-```{r aq-analysis-report, echo=TRUE}
-
-# Report the analysis of survey items here
-
-```
-
-### AQ Map
-```{r aq-map-report, echo=TRUE}
-
-# Report the analysis of map items here
-
-```
-
-
-## Urban Heat (UH)
-```{r uh-setup, include=FALSE, cache=TRUE}
-
-# Run all analysis for the AQ survey here
-
-```
-
-- Description of survey and the questions asked
-
-### UH Analysis
-```{r uh-analysis-report, echo=TRUE}
-
-# Report the analysis of survey items here
-
-```
-
-### UH Map
-```{r uh-map-report, echo=TRUE}
-
-# Report the analysis of survey items here
-
-```
-
 ## Tree Canopies (TC)
 ```{r tc-setup, include=FALSE, cache=TRUE}
 new_names <- c(
@@ -154,99 +98,81 @@ tree_support <- clean_multi(tree_survey,tree_support)
 - Description of survey and the questions asked
 
 
-### TC Analysis
+## Tree Canopies Analysis
 
-#### Rate the level of agreement with the following statement: "Over the past 10 years,..." 
+### Rate the level of agreement with the following statement: "Over the past 10 years,..." 
 
 ```{r tc-analysis-report, echo=TRUE}
 datatable(tree_experiences_overtime)
 # Report the analysis of survey items here
 ```
 
-#### Please rate the importance of each of the following benefits of trees:
+### Please rate the importance of each of the following benefits of trees:
 
 ```{r}
 datatable(tree_benefits)
 ```
 
-#### Please rate your level of agreement with each of the following statements:
+### Please rate your level of agreement with each of the following statements:
 
 ```{r}
 datatable(tree_beliefs)
 ```
 
-#### Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grows over the road)
+### Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grows over the road)
 
 ```{r}
 datatable(trees_home)
 ```
 
-#### Have you observed tree-related damage to infrastructure in your neighborhood? Select all that apply
+### Have you observed tree-related damage to infrastructure in your neighborhood? Select all that apply
 ```{r}
 datatable(tree_damage)
 ```
 
-#### How do trees impact your quality of life and your community?
+### How do trees impact your quality of life and your community?
 ```{r}
 # OPEN ENDED NEED TO PROCESS USING TEXT MINING
 ```
 
-#### Which aspects of trees do you value? Select all that apply.
-
+### Which aspects of trees do you value? Select all that apply.
 ```{r}
 datatable(tree_value)
 ```
 
-#### What general areas in your community need more trees? Select all that apply.
+
+
+### What general areas in your community need more trees? Select all that apply.
 
 ```{r}
 datatable(tree_area_need)
 ```
 
-#### What type of trees would you like to see planted? Check all that apply.
+### What type of trees would you like to see planted? Check all that apply.
 
 ```{r}
 datatable(tree_area_need)
 ```
 
-#### What tree-related goals would you like to see prioritized? Select up to 3
+### What tree-related goals would you like to see prioritized? Select up to 3
 
 ```{r}
 datatable(tree_goals)
 ```
 
-#### If you are interested in helping to support the Town's tree-planting efforts, which of the following activities would you be willing to participate in? Select all that apply.
+### If you are interested in helping to support the Town's tree-planting efforts, which of the following activities would you be willing to participate in? Select all that apply.
 
 ```{r}
 datatable(tree_support)
 
 ```
 
-### TC Map
+## TC Map
 ```{r tc-map-report, echo=TRUE}
 
 # Report the analysis of survey items here
 
 ```
-
-
-# Environmental Justics Survey Descriptions
-
-## EJ Stories 
-```{r ej-stories-setup, include=FALSE, cache=TRUE}
-
-```
-
-- Description of survey and the questions asked
-
-
-## EJ Solutions
-```{r ej-solutions-setup, include=FALSE, cache=TRUE}
-
-```
-
-- Description of survey and the questions asked
-
 
 # Meta Summary
 

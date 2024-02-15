@@ -1,0 +1,84 @@
+---
+title: 'CCS Knowledge Map Results: EJ'
+author: "Corey Jackson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(DT)
+
+potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
+                     330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
+                     346, 348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359, 360, 361, 
+                     362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 374, 376, 378, 379, 380,
+                     381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399)
+
+
+# Import all datasets
+ej_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-survey/ej_survey.csv")
+ej_report <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-report/ej_report.csv")
+
+# Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
+
+# Cleaning functions
+clean_matrix <- function(dataframe, column_name) {
+  cleaned_data <- dataframe %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
+  cleaned_data$answer <- as.factor(cleaned_data$answer)
+  
+  summary_data <- cleaned_data %>%
+    group_by(question, answer) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
+
+
+clean_box <- function(data, response) {
+  summary_data <- data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2)*100)
+  
+  return(summary_data)
+}
+
+
+clean_multi <- function(data, response) {
+  cleaned_data <- data %>%
+    separate_rows({{ response }}, sep = "; ")
+  
+  summary_data <- cleaned_data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2) * 100)
+  
+  return(summary_data)
+}
+```
+
+# Environmental Justics Survey Descriptions
+
+## EJ Stories 
+```{r ej-stories-setup, include=FALSE, cache=TRUE}
+
+```
+
+- Description of survey and the questions asked
+
+
+## EJ Solutions
+```{r ej-solutions-setup, include=FALSE, cache=TRUE}
+
+```
+
+- Description of survey and the questions asked
+
+# Meta Summary
