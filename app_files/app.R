@@ -12,8 +12,16 @@ source("data_description_box.R")
 source("graphics_representative.R")
 source("survey_results.R")
 source("data_util.R")
-source("information_pages.R")
 source("reporting_tool.R")
+
+source("pages/home_page.R")
+source("pages/avail_data.R")
+# source("pages/reporting_tool.R")
+source("pages/about.R")
+source("pages/info_page.R")
+source("pages/strategies_page.R")
+
+# source("pages/components/selection_box.R")
 
 surveys <- c(
   "Air Quality Survey",
@@ -83,6 +91,7 @@ census_input_to_data <- c(
 )
 census_level_input_to_data <-
   read_yaml("census_items/census_level_to_results.yaml")
+
 input_to_data_survey <- c(
   "Air Quality Survey" = "air-quality/air_survey.csv",
   # "Community Ideas Survey" = "ej-report/ej_report.csv",
@@ -99,6 +108,19 @@ input_to_data_survey <- c(
   "Heat Health Survey" = "deliberation/oct_heathealth.csv",
   "Trees Greenery Survey" = "deliberation/oct_treesgreenery.csv"
 )
+
+input_to_data_survey_desc <- c(
+  "Air Quality Map" = "air_map",
+  "Air Quality Survey" = "air_survey",
+  "Environmental Justice Report" = "ej_report",
+  "Environmental Justice Story" = "ej_story",
+  "Environmental Justice Survey" = "ej_survey",
+  "Heat Map" = "heat_map",
+  "Heat Survey" = "heat_survey",
+  "Tree Map" = "tree_map",
+  "Tree Survey" = "tree_survey"
+)
+
 question_type_map <- c()
 
 demographic_desc_to_data <- c(
@@ -166,7 +188,7 @@ ui <- dashboardPage(
     # Footer content
     tags$footer(
       class = "footer",
-      "© 2023 CCS Knowledge Map. All rights reserved."
+      "© 2024 CCS Knowledge Map. All rights reserved."
     )
   ),
   skin = "blue"
@@ -229,6 +251,29 @@ server <- function(input, output, session) {
     }
   })
 
+  file_to_get_sum <- reactive({
+    req(input$run_report)
+    if (input$survey != "" & input$census_level != "" &
+      input$demographic != "") {
+      census_level <- census_input_to_data[[input$census_level]]
+      census_id <- censusInputId[input$census_level]
+
+      key <- input[[census_id]]
+
+      file <- paste(input_to_data_survey_desc[[input$survey]], census_level,
+        census_level_input_to_data[["data"]][[census_level]][[key]],
+        sep = "-"
+      )
+      file_sum <- paste(input_to_data_survey_desc[[input$survey]],
+        "/", file, ".RData",
+        sep = ""
+      )
+    } else {
+      file <- ""
+    }
+  })
+
+
   # get question column number + question type for survey results
   question_number <- eventReactive(
     list(input$run_report),
@@ -280,6 +325,7 @@ server <- function(input, output, session) {
   get_data_desc_rep_reaction(input, output, surveyInputId,
     survey_data, census_data,
     file_loc = file_to_get,
+    file_sum = file_to_get_sum,
     demographic_desc = demographic_data()
   )
 
@@ -292,21 +338,6 @@ server <- function(input, output, session) {
     question_number, question_type, question_subtype,
     demographic_desc = demographic_data()
   )
-
-  # observe({
-  #   reporting_tool_body(demographic_desc())
-  # })
-
-  # observe({
-  #   output$reporting_tool <- renderUI({
-  #     reporting_tool_body(demographic_data())
-  #   })
-  # })
-
-  # observeEvent(input$run_report, {
-  #   # Update demographic_data whenever run_report changes
-  #   demographic_data()
-  # })
 
   # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {

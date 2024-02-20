@@ -15,13 +15,13 @@ library(igraph)
 library(RColorBrewer)
 library(ggthemes)
 library(tm)
-library(tidytext)
 library(textdata)
 library(topicmodels)
 library(networkD3)
 library(SnowballC)
 library(plotly)
-
+library(wordcloud)
+library(wordcloud2)
 
 survey_results_ui <- function() {
   # print(demographic_desc)
@@ -70,7 +70,8 @@ text_questions <- function(survey_data, demographic_variable) {
     example_open$response_cleaned,
     c(stopwords("english"), malletwords)
   )
-  example_open$response_cleaned <- lemmatize_words(example_open$response_cleaned)
+  example_open$response_cleaned <-
+    lemmatize_words(example_open$response_cleaned)
 
   ###### BIGRAMS
   bigram_response <- example_open %>%
@@ -97,43 +98,41 @@ text_questions <- function(survey_data, demographic_variable) {
   filtered_data <- bigram_summary %>%
     filter(freq >= 0.02)
 
-  # Check if there are any rows left after filtering
-  if (nrow(filtered_data) == 0) {
-    cat("No data after filtering. Unable to create the network plot.")
-    return(NULL)
-  }
+  # print(filtered_data)
 
-  # Create nodes and links for networkD3 plot
-  nodes <- data.frame(
-    name = unique(c(
-      as.character(filtered_data[[demographic_variable]]),
-      as.character(filtered_data$word)
-    ))
+  legendtext <- switch(demographic_variable,
+    "Gender" = "Gender",
+    "income_recode" = "Income Groups",
+    "edu_recode" = "Education Levels",
+    "Year.of.Birth" = "Age Group",
+    "Unknown Demographic" = "Unknown Demographic"
   )
-  links <- data.frame(
-    source = match(filtered_data[[demographic_variable]], nodes$name) - 1,
-    target = match(filtered_data$word, nodes$name) - 1,
-    value = filtered_data$count
-  )
-
-  # Create interactive network plot using Plotly
-  p <- plot_ly(
-    type = "sankey",
-    orientation = "h",
-    node = list(
-      pad = 15,
-      thickness = 20,
-      line = list(color = "black", width = 0.5),
-      label = nodes$name
-    ),
-    link = list(
-      source = links$source,
-      target = links$target,
-      value = links$value
+  # Create ggplot object for word cloud
+  word_cloud_plot <- ggplot(filtered_data, aes(
+    x = 1, y = 1, label = word,
+    size = count,
+    # color = freq
+    color = !!as.name(demographic_variable)
+  )) +
+    geom_text(aes(size = count, color = !!as.name(demographic_variable)),
+      position = position_jitter(width = 0.1, height = 0.1)
+    ) +
+    labs(color = legendtext) +
+    scale_size(range = c(2, 20)) +
+    scale_color_brewer(palette = "Set2") + # Use a gradient color scale
+    theme_void() + # Remove grid lines and axes
+    theme(
+      plot.margin = margin(5, 5, 5, 5), # Adjust plot margins
+      panel.grid = element_blank(), # Remove grid lines
+      panel.border = element_blank(), # Remove panel border
+      axis.text = element_blank(), # Remove axis text
+      axis.ticks = element_blank() # Remove axis ticks
     )
-  )
 
-  return(p)
+  # Convert ggplot object to plotly
+  word_cloud_plotly <- ggplotly(word_cloud_plot)
+
+  return(word_cloud_plotly)
 }
 
 matrix_questions <- function(example_matrix, demographic_variable, q_type) {
@@ -155,7 +154,7 @@ matrix_questions <- function(example_matrix, demographic_variable, q_type) {
   matrix_summary <- matrix_summary %>%
     filter(!is.na(!!sym(demographic_variable)))
 
-  print(matrix_summary)
+  # print(matrix_summary)
 
   # Define color sets based on q_type
   color_sets <- list(
@@ -198,7 +197,7 @@ matrix_questions <- function(example_matrix, demographic_variable, q_type) {
 
   matrix_summary <- matrix_summary[, -ncol(matrix_summary)]
 
-  print(matrix_summary)
+  # print(matrix_summary)
 
   switch(demographic_variable,
     "Gender" = {
@@ -305,7 +304,7 @@ multi_choice_questions <- function(
   }
   multi_summary$wrapped_labels <- wrap_labels(multi_summary$response)
 
-  print(multi_summary)
+  # print(multi_summary)
 
   # based on demographics determine the variables
   switch(demographic_variable,
@@ -369,7 +368,7 @@ multi_choice_questions <- function(
         showlegend = FALSE
       )
     )
-  print(multi_visualization)
+  # print(multi_visualization)
 
   return(multi_visualization)
 }
@@ -411,7 +410,7 @@ select_box_questions <- function(
 
   select_summary$wrapped_labels <- wrap_labels(select_summary$response)
 
-  print(select_summary)
+  # print(select_summary)
 
   switch(demographic_variable,
     "Gender" = {
@@ -530,7 +529,7 @@ resulting_graphics <- function(
 
       if ("Year.of.Birth" %in% names(data)) {
         data <- data %>%
-          mutate(Year.of.Birth = 2023 - Year.of.Birth) %>%
+          mutate(Year.of.Birth = 2024 - Year.of.Birth) %>%
           mutate(Year.of.Birth = case_when(
             Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
             Year.of.Birth >= 25 & Year.of.Birth <= 34 ~ "25_to_34",

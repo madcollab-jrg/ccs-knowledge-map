@@ -10,7 +10,7 @@ library(shinyjs)
 get_survey_questions <- function(survey) {
   if (grepl("survey", survey, ignore.case = T)) {
     file_name <- gsub(" ", "_", gsub(" survey", "", tolower(survey)))
-    print(file_name)
+    # print(file_name)
     file_path <- paste0(getwd(), "/survey_questions/", file_name, ".txt")
     return(readLines(file_path))
   }

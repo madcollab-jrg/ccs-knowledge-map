@@ -1,7 +1,7 @@
-source("table.R")
-source("graphics_representative.R")
+source("pages/components/functions/table.R")
+source("pages/components/graphics_representative.R")
 library(gt)
-library(gtsummary)
+
 result_rows <- list(
   "gender" = 1:2,
   "age" = 3:8,
@@ -41,7 +41,7 @@ get_data_description_ui <- function() {
 
 get_data_desc_rep_reaction <- function(
     input, output, surveyIds,
-    survey_data = NA, census_data = NA, file_loc = NA, file_sum = NA,
+    survey_data = NA, census_data = NA, file_loc = NA,
     demographic_desc) {
   reactiveValuesObj <- reactiveValues(gt_tbl = NULL)
 
@@ -63,11 +63,9 @@ get_data_desc_rep_reaction <- function(
         n <- nrow(survey_data())
       }
 
-      # print(file_sum())
-      # print(file_loc())
       if (input$census_level != "") {
         data_loc <-
-          paste("/Volumes/cbjackson2/ccs-knowledge/results_summary/",
+          paste("/Volumes/cbjackson2/ccs-knowledge/results_summary_new/",
             file_loc(),
             sep = ""
           )
@@ -78,26 +76,16 @@ get_data_desc_rep_reaction <- function(
             sep = ""
           )
 
-        # some_data <- paste("/Volumes/cbjackson2/ccs-knowledge/results_summary_new/",
-        #   file_sum(),
-        #   sep = ""
-        # )
-
-        # some_data <- get_table(some_data)
-        # rows_to_extract <- result_rows[[demographic_desc]]
-        # tbl_data <- some_data[[1]]
-        # print(tbl_data[rows_to_extract, ])
-
-        # print(data_loc)
-        # print(file_loc())
+        print(data_loc)
+        print(file_loc())
         data_loc <- get_table(data_loc)
         tbl_data <- data_loc[[1]]
         rows_to_extract <- result_rows[[demographic_desc]]
         tbl_data_filtered <- tbl_data[rows_to_extract, ]
         gt_tbl <- gt(tbl_data_filtered, rownames_to_stub = TRUE)
 
-        # print(tbl_data)
-        # print(tbl_data_filtered)
+        print(tbl_data)
+        print(tbl_data_filtered)
 
         loaded_data <- get_table(data_loc_rep)
         tbl_data_rep <- loaded_data[[1]]
@@ -117,19 +105,11 @@ get_data_desc_rep_reaction <- function(
 
         rownames(merged_tbl_data) <- NULL
 
-        print(merged_tbl_data)
-
-        merged_tbl_data <- merged_tbl_data %>%
-          dplyr::select(-c(2, 3, 5, 6))
-
         colnames(merged_tbl_data) <- c(
-          "group",
-          # "Black Count Survey",
-          # "Hispanic Count Survey",
-          "Total Count Survey",
-          # "Black Rep.",
-          # "Hispanic Rep.",
-          "Total Rep."
+          "group", "Black Count Survey",
+          "Hispanic Count Survey", "Total Count Survey",
+          "Black Rep.",
+          "Hispanic Rep.", "Total Rep."
         )
 
         merged_tbl_data$group <- factor(merged_tbl_data$group,
@@ -138,9 +118,8 @@ get_data_desc_rep_reaction <- function(
         merged_tbl_data$group <- as.character(merged_tbl_data$group)
 
         rep_data_numeric <- merged_tbl_data[, c(
-          # "Black Rep.",
-          # "Hispanic Rep.",
-          "Total Rep."
+          "Black Rep.",
+          "Hispanic Rep.", "Total Rep."
         )]
 
         rep_data_numeric <- as.matrix(rep_data_numeric)
@@ -156,9 +135,8 @@ get_data_desc_rep_reaction <- function(
         gt_tbl <- gt_tbl %>%
           fmt_number(
             columns = c(
-              # "Black Rep.",
-              # "Hispanic Rep.",
-              "Total Rep."
+              "Black Rep.",
+              "Hispanic Rep.", "Total Rep."
             ),
             decimals = 2
           )
@@ -168,9 +146,8 @@ get_data_desc_rep_reaction <- function(
             method = "numeric",
             colors = colors,
             columns = c(
-              # "Black Rep.",
-              # "Hispanic Rep.",
-              "Total Rep."
+              "Black Rep.",
+              "Hispanic Rep.", "Total Rep."
             )
           )
 
