@@ -16,6 +16,10 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(DT)
+library(ggsci)
+library(gridExtra)
+library(stringr)
+
 
 # Import all datasets
 tree_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_survey.csv")
@@ -23,7 +27,7 @@ tree_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tre
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
-# Cleaning functions
+### Functions for Data Tables 
 clean_matrix <- function(dataframe, column_name) {
   cleaned_data <- dataframe %>%
     separate_rows({{ column_name }}, sep = "; ") %>%
@@ -44,7 +48,8 @@ clean_box <- function(data, response) {
     group_by({{ response }}) %>%
     summarise(count = n()) %>%
     mutate(freq = round(count / sum(count), digits = 2)*100)
-  
+    names(summary_data)[1] <- "response"
+
   return(summary_data)
 }
 
@@ -57,34 +62,99 @@ clean_multi <- function(data, response) {
     group_by({{ response }}) %>%
     summarise(count = n()) %>%
     mutate(freq = round(count / sum(count), digits = 2) * 100)
-  
+      names(summary_data)[1] <- "response"
+
   return(summary_data)
 }
-```
 
-# Project Overview
 
-## Tree Canopies (TC)
-```{r tc-setup, include=FALSE, cache=TRUE}
+### Functions for DAta VISUALIZATION 
+# Define the visualization function
+viz_matrix <- function(dataframe, graph_title) {
+  ggplot(dataframe, aes(x=question, y=freq, fill=answer)) +
+    geom_bar(stat="identity", position="stack") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Question",
+         y="Frequency (%)",
+         fill="Answer") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+scale_fill_nejm()
+}
+
+
+viz_box_multi <- function(dataframe,graph_title) {
+  # Order the dataframe by decreasing frequency
+  ordered_df <- dataframe %>%
+    arrange(desc(freq))
+  
+  # Create the bar chart
+  ggplot(ordered_df, aes(x=reorder(response, -freq), y=freq)) +
+    geom_bar(stat="identity", fill="blue") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    theme(axis.text.x = element_text(angle=45, hjust=1))+
+scale_fill_nejm()
+}
+
+
 new_names <- c(
   "past_years","importance_of_benefits","agreement_about_trees","neighborhood_street_trees","tree_infrastructure_damage","tree_quality_life","tree_values","areas_needing_trees","preferred_tree_types","tree_goals","tree_support")
 
 # Selecting the columns to rename by their position using the colnames function
 colnames(tree_survey)[5:15] <- new_names
+```
 
-# OVERALL QUESTION SUMMARY
-tree_experiences_overtime <- clean_matrix(tree_survey,"past_years")
+# Project Overview
+
+## Tree Canopies (TC)
+
+
+```{r tc-setup, include=FALSE, cache=TRUE}
+# QUESTION SUMMARY
+trees_overtime <- clean_matrix(tree_survey,"past_years")
+trees_overtime_viz <- viz_matrix(trees_overtime,"Beliefs about Trees")
+
+###
 tree_benefits <- clean_matrix(tree_survey,"importance_of_benefits")
-tree_beliefs <- clean_matrix(tree_survey,"agreement_about_trees")
-trees_home <- clean_box(tree_survey,neighborhood_street_trees)
-tree_damage <- clean_multi(tree_survey,tree_infrastructure_damage)
-tree_value <- clean_multi(tree_survey,tree_values)
-tree_area_need <- clean_multi(tree_survey,areas_needing_trees)
-tree_types <- clean_multi(tree_survey,preferred_tree_types)
-tree_goals <- clean_multi(tree_survey,tree_goals)
-tree_support <- clean_multi(tree_survey,tree_support)
+tree_benefits_viz <- viz_matrix(tree_benefits,"Benefits of Trees")
 
-# Run all analysis for the AQ survey here
+###
+tree_beliefs <- clean_matrix(tree_survey,"agreement_about_trees")
+ree_beliefs_viz <- viz_matrix(tree_beliefs,"Beliefs about Trees")
+
+###
+trees_home <- clean_box(tree_survey,neighborhood_street_trees)
+trees_home_viz <- viz_box_multi(trees_home,"Trree")
+###
+tree_damage <- clean_multi(tree_survey,tree_infrastructure_damage)
+tree_damage_viz <- viz_box_multi(tree_damage,"Trree")
+
+###
+tree_value <- clean_multi(tree_survey,tree_values)
+tree_value_viz <- viz_box_multi(tree_value,"Trree")
+
+###
+tree_area_need <- clean_multi(tree_survey,areas_needing_trees)
+ttree_area_need_viz <- viz_box_multi(tree_area_need,"Trree")
+
+###
+tree_types <- clean_multi(tree_survey,preferred_tree_types)
+tree_types_viz <- viz_box_multi(tree_types,"Trree")
+
+###
+tree_goals <- clean_multi(tree_survey,tree_goals)
+tree_goals_viz <- viz_box_multi(tree_goals,"Trree")
+
+###
+tree_support <- clean_multi(tree_survey,tree_support)
+tree_support_viz <- viz_box_multi(tree_support,"Trree")
 
 ```
 
@@ -97,30 +167,34 @@ tree_support <- clean_multi(tree_survey,tree_support)
 
 ```{r tc-analysis-report, echo=TRUE}
 datatable(tree_experiences_overtime)
-# Report the analysis of survey items here
+trees_overtime_viz
 ```
 
 ### Please rate the importance of each of the following benefits of trees:
 
 ```{r}
 datatable(tree_benefits)
+tree_benefits_viz
 ```
 
 ### Please rate your level of agreement with each of the following statements:
 
 ```{r}
 datatable(tree_beliefs)
+tree_beliefs_viz
 ```
 
 ### Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grows over the road)
 
 ```{r}
 datatable(trees_home)
+trees_home_viz
 ```
 
 ### Have you observed tree-related damage to infrastructure in your neighborhood? Select all that apply
 ```{r}
 datatable(tree_damage)
+tree_damage_viz
 ```
 
 ### How do trees impact your quality of life and your community?
@@ -131,6 +205,7 @@ datatable(tree_damage)
 ### Which aspects of trees do you value? Select all that apply.
 ```{r}
 datatable(tree_value)
+tree_value_viz
 ```
 
 
@@ -138,25 +213,28 @@ datatable(tree_value)
 
 ```{r}
 datatable(tree_area_need)
+ttree_area_need_viz
 ```
 
 ### What type of trees would you like to see planted? Check all that apply.
 
 ```{r}
 datatable(tree_area_need)
+ttree_area_need_viz
 ```
 
 ### What tree-related goals would you like to see prioritized? Select up to 3
 
 ```{r}
 datatable(tree_goals)
+tree_goals_viz
 ```
 
 ### If you are interested in helping to support the Town's tree-planting efforts, which of the following activities would you be willing to participate in? Select all that apply.
 
 ```{r}
 datatable(tree_support)
-
+tree_support_viz
 ```
 
 ## TC Map
@@ -171,28 +249,72 @@ datatable(tree_support)
 
 # The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
 
-tree_survey <- tree_survey %>%
-  mutate(
-    county_code = sprintf("%03d", as.integer(county_fips)),
-    census_tract = sprintf("%06d", as.integer(census_tract)),
-    census_block = sprintf("%04d", as.integer(census_block)),
-    census_tract_full = paste0(state_fips, county_code, census_tract),
-    census_block_full = paste0(state_fips, county_code, census_tract, census_block),
-  )
+# tree_survey <- tree_survey %>%
+#   mutate(
+#     county_code = sprintf("%03d", as.integer(county_fips)),
+#     census_tract = sprintf("%06d", as.integer(census_tract)),
+#     census_block = sprintf("%04d", as.integer(census_block)),
+#     census_tract_full = paste0(state_fips, county_code, census_tract),
+#     census_block_full = paste0(state_fips, county_code, census_tract, census_block),
+#   )
+
+data_tracts <- c(unique(tree_survey$census_tract_full))
 
 
-# Import SVI 
+# https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
 svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
 
-# Import EJ40
-eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+# Which variables are important to include in the analysis?
+
+
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
-ejm <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+eji_response <- eji[which(eji$geoid %in% data_tracts),]
 
+# Which variables are important to include in the analysis?
+
+
+#https://www.epa.gov/ejscreen/understanding-ejscreen-results
+ejscreen <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
+
+
+# Which variables are important to include in the analysis?
 
 ```
 
 
-# Meta Summary
+## Indices Report
+
+
+### [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)
+```{r}
+datatable(svi_response)
+```
+
+
+### [Environmental Justice Index Indicators](https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html)
+```{r}
+datatable(eji_response)
+```
+
+### [Environmental Justice Index Indicators](https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
+```{r}
+datatable(ejscreen_response)
+```
+
+## Research Questions
+
+These should be asked in relation to tree canopies
+
+1. How communities (as distinguished by some criteria) view environmental challenges
+
+```{r}
+# Compare places with high/low SVI and/or EJ 40
+
+
+```
+
 
