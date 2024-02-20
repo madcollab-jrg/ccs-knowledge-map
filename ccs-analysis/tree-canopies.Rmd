@@ -84,7 +84,6 @@ tree_types <- clean_multi(tree_survey,preferred_tree_types)
 tree_goals <- clean_multi(tree_survey,tree_goals)
 tree_support <- clean_multi(tree_survey,tree_support)
 
-
 # Run all analysis for the AQ survey here
 
 ```
@@ -135,7 +134,6 @@ datatable(tree_value)
 ```
 
 
-
 ### What general areas in your community need more trees? Select all that apply.
 
 ```{r}
@@ -167,6 +165,34 @@ datatable(tree_support)
 # Report the analysis of survey items here
 
 ```
+
+# Place Analysis 
+```{r}
+
+# The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
+
+tree_survey <- tree_survey %>%
+  mutate(
+    county_code = sprintf("%03d", as.integer(county_fips)),
+    census_tract = sprintf("%06d", as.integer(census_tract)),
+    census_block = sprintf("%04d", as.integer(census_block)),
+    census_tract_full = paste0(state_fips, county_code, census_tract),
+    census_block_full = paste0(state_fips, county_code, census_tract, census_block),
+  )
+
+
+# Import SVI 
+svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+
+# Import EJ40
+eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+
+#https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
+ejm <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+
+
+```
+
 
 # Meta Summary
 
