@@ -60,6 +60,46 @@ clean_multi <- function(data, response) {
 }
 ```
 
+```{r}
+names(air_survey)[5:14] <- c("Air.Quality.Experience",
+               "Pollution.Health.Impact",
+               "Pollution.Sources.Identification",
+               "Quality.Change.Perception",
+               "Vulnerable.Populations.Impact",
+               "Contaminants.Awareness.Knowledge",
+               "Sensor.Location.Suggestions",
+               "Improvement.Actions.Taken",
+               "Alert.Reception.Preference",
+               "Deployment.Participation.Interest")
+
+```
+
+
+```{r}
+
+air_box <- c(8,14)
+air_box_col <- names(air_survey)[air_box]
+air_multi <- c(2,3,6,7,9)+4
+air_multi_col <- names(air_survey)[air_multi]
+```
+
+```{r}
+library(rlang)
+lapply(air_box_col, function(col) {
+  col_sym <- sym(col)  # Convert string to symbol
+  clean_box(air_survey, !!col_sym)  # Pass the symbol to clean_box
+})
+
+```
+
+```{r}
+lapply(air_multi_col, function(col) {
+  col_sym <- sym(col)  # Convert string to symbol
+  clean_multi(air_survey, !!col_sym)  # Pass the symbol to clean_box
+})
+```
+
+
 ## Air Quality (AQ)
 
 ```{r aq-setup, include=FALSE, cache=TRUE}
