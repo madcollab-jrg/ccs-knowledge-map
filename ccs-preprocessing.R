@@ -390,6 +390,9 @@ participant_geo$census_tract_full <- paste(participant_geo$state_fips, participa
 participant_geo$census_block_full <- paste(participant_geo$state_fips, participant_geo$county_fips,participant_geo$census_tract,participant_geo$census_block, sep="")
 
 
+# ADD MISSING DATA
+
+
 tree_survey <- merge(tree_survey, participant_geo, by.x = "Member Username" , by.y = "username", all.x = TRUE)  
 tree_map <- merge(tree_map, participant_geo, by.x = "Member Username" , by.y = "username", all.x = TRUE)  
 heat_survey <- merge(heat_survey, participant_geo, by.x = "Member Username" , by.y = "username", all.x = TRUE)  
@@ -402,6 +405,11 @@ ej_story <- merge(ej_story, participant_geo, by.x = "Member Username" , by.y = "
 
 #######################
 ##### TRANSLATION ##### 
+#######################
+
+
+#######################
+##### ADD NEW DATA ####
 #######################
 
 

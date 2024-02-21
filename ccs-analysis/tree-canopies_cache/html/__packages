@@ -5,8 +5,12 @@ utils
 grDevices
 graphics
 stats
+topicmodels
 readr
 dplyr
 ggplot2
 tidyr
 DT
+ggsci
+gridExtra
+stringr
