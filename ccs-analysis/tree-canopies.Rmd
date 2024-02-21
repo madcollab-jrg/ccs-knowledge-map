@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output:
   html_document:
     toc: true
-    toc_depth: 4
+    toc_depth: 3
     toc_float: true
 
 ---
@@ -27,7 +27,7 @@ tree_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tre
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
-### Functions for Data Tables 
+### Functions for MATRIX QUESTIONS
 clean_matrix <- function(dataframe, column_name) {
   cleaned_data <- dataframe %>%
     separate_rows({{ column_name }}, sep = "; ") %>%
@@ -42,7 +42,34 @@ clean_matrix <- function(dataframe, column_name) {
   return(summary_data)
 }
 
+clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
+  cleaned_data <- dataframe %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
+  cleaned_data$answer <- as.factor(cleaned_data$answer)
+  
+  summary_data <- cleaned_data %>%
+    group_by(question, answer, {{demographic_var}}) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
 
+clean_matrix_eval_viz <- function(dataframe, demographic_var) {
+  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
+    geom_bar(position = "fill") +
+    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
+    scale_y_continuous(labels = scales::percent_format()) +
+    theme_minimal() +
+    coord_flip() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+scale_fill_nejm()
+}
+
+
+
+### Functions for BOX QUESTIONS
 clean_box <- function(data, response) {
   summary_data <- data %>%
     group_by({{ response }}) %>%
@@ -84,6 +111,17 @@ viz_matrix <- function(dataframe, graph_title) {
 scale_fill_nejm()
 }
 
+clean_matrix_eval_viz <- function(dataframe, demographic_var) {
+  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
+    geom_bar(position = "fill") +
+    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
+    scale_y_continuous(labels = scales::percent_format()) +
+    theme_minimal() +
+    coord_flip() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+scale_fill_nejm()
+}
+
 
 viz_box_multi <- function(dataframe,graph_title) {
   # Order the dataframe by decreasing frequency
@@ -111,23 +149,192 @@ new_names <- c(
 colnames(tree_survey)[5:15] <- new_names
 ```
 
-# Project Overview
+# Tree Canopy Survey
 
-## Tree Canopies (TC)
+1. **How do trees impact your quality of life and/or community?**  
+   (Open-ended response)
+
+2. **Over the past 10 years, the number of trees in my neighborhood has:**  
+   - Increased  
+   - Decreased  
+   - Stayed the same  
+   - Unsure
+
+3. **Over the past 10 years, the overall health and quality of trees (both public and private) in your neighborhood has:**  
+   - Improved  
+   - Declined  
+   - Stayed the same
+
+4. **How would you rate the overall care and maintenance of trees in your neighborhood?**  
+   (Open-ended response)
+
+5. **Please rate your level of agreement with each of the following statements:**  
+   - Trees are important for maintaining a healthy community environment.  
+   - Trees properly planted and cared for enhance the overall quality of life in a community.  
+   - Trees properly planted and cared for improve the appearance of a community.
+
+6. **Please rate the importance of each of the following benefits of trees:**  
+   - Improve air quality by filtering airborne pollutants and dust.  
+   - Improve water quality by controlling pollution, preventing erosion, and reducing flooding from stormwater runoff.  
+   - Provide shading to maintain cooler temperatures.
+
+7. **Which aspects of trees do you value? Select all that apply.**  
+   - Shade, which cools neighborhoods and homes  
+   - Cleaner air, by filtering air pollution  
+   - The aesthetics or beauty that trees provide neighborhoods  
+   - Mental health and emotional benefits  
+   - The habitat and food source for wildlife that trees provide  
+   - Environmental services that trees provide (carbon storage, storm water reduction, erosion control, etc.)  
+   - The increase in property values  
+   - Other (please specify)
+
+8. **Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grow over the road)?**  
+   - Yes, but I wish we didn't.  
+   - Yes and I fully support having them.  
+   - No, but I wish we did.  
+   - No and I prefer not having them.
+
+9. **Have you observed tree-related damage to infrastructure in your neighborhood? Select all that apply:**  
+   - No, I have not observed tree-related damage to infrastructure  
+   - Yes, damage to a street or sidewalk  
+   - Yes, damage to overhead utilities (power lines, phone lines, etc.)  
+   - Yes, damage to underground infrastructure (pipes, sewer lines, underground power lines, etc.)  
+   - Other (please specify)
+
+10. **Where would you like to see more trees planted? (Select up to three)**  
+    - Street terrace  
+    - Parks  
+    - Apartment communities  
+    - Commercial areas  
+    - Parking lots  
+    - Schools  
+    - Along biking and walking paths  
+    - Neighborhoods  
+    - Other (please specify)
+
+11. **What type of trees would you like to see planted?**  
+    - Shade trees  
+    - Fruit trees  
+    - Evergreen trees  
+    - No preference  
+    - Other (please specify)
+
+12. **If you are interested in helping to support the Town's tree planting efforts, which of the following activities would you be willing to participate in? Select all that apply.**  
+    - None  
+    - Volunteer or help organize a community tree planting event  
+    - Attend an educational workshop (in person or virtual)  
+    - Plant a tree on your private property  
+    - Encourage your landlord to allow tree planting on a property you rent  
+    - Volunteer to provide basic tree care in your neighborhood (watering and weeding)  
+    - Other (please specify)
+
+13. **If you are not interested or hesitant about planting a tree on your property, what are the contributing factor(s)? Select all that apply.**  
+    - N/A  
+    - Cost to maintain and trim trees  
+    - Cost to water trees  
+    - Mess caused by leaves, fruit, bark  
+    - Damage to sewer pipes/sidewalks/driveways  
+    - Risk of damage by falling branches  
+    - Other (please specify)
+
+14. **What tree related goals would you like to see prioritized? (Select up to three)**  
+    - Increase the number of trees planted each year  
+    - Maintain and preserve existing trees better  
+    - Remove dead, dying, or otherwise hazardous trees  
+    - Preserve trees better during development (keeping trees from getting removed as buildings and homes are built)  
+    - Strengthen management strategies to reduce the risk of invasive pests and diseases  
+
+
+# Indices
+These indices provide a composite score reflecting various factors, including economic, health, and environmental indicators, which can significantly affect community perceptions.
+
+## [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)
+```{r}
+datatable(svi_response)
+```
+
+## [Environmental Justice Index Indicators](https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html)
+```{r}
+datatable(eji_response)
+```
+
+## [Environmental Justice Index Indicators](https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
+```{r}
+datatable(ejscreen_response)
+```
+
+# Analysis 
+
+Comparative Analysis - Use comparative statistics (t-tests, ANOVA) to determine if there are statistically significant differences in responses between demographic groups, geographic locations, or SVI/EJI categories. For example, comparing the importance of tree benefits between communities with high vs. low vulnerability scores.
+
+Regression Analysis - Conduct regression analyses (linear regression, logistic regression) to examine the relationship between demographic or SVI/EJI indicators and specific perceptions or attitudes. This can help identify factors that most strongly predict positive or negative perceptions. For example, if people from low vulnerability areas are more/less likely to report issues. 
+
+Correlation Analysis - Explore correlations between SVI/EJI scores and survey responses to see if higher vulnerability or environmental injustice scores are associated with specific perceptions or concerns about trees and green spaces.
 
 
 ```{r tc-setup, include=FALSE, cache=TRUE}
+# Survey Population
+demographics_hisp <- clean_box(tree_survey,hisp_code)
+demographics_race <- clean_box(tree_survey,race_recode)
+demographics_income <-clean_box(tree_survey,income_recode)
+demographics_education <- clean_box(tree_survey,edu_recode)
+demographics_tract <- clean_box(tree_survey,census_tract_full)
+demographics_county <- clean_box(tree_survey,county_fips)
+
+demo_vars <- c("edu_recode","hisp_code","race_recode","income_recode","Gender")
+
 # QUESTION SUMMARY
 trees_overtime <- clean_matrix(tree_survey,"past_years")
 trees_overtime_viz <- viz_matrix(trees_overtime,"Beliefs about Trees")
+trees_overtime_eval <-  clean_matrix_eval(tree_survey,"past_years",edu_recode)
 
+
+eval_summary <- function(tree_survey, past_years, demographic_variable) {
+  # Your existing implementation of the function
+}
+
+# List of demographic variables
+demo_vars <- c("edu_recode","hisp_code","race_recode","income_recode","Gender")
+
+# Function to loop through demo_vars and apply clean_matrix_eval
+process_and_save_results <- function(tree_survey, past_years) {
+  results_list <- list() # Create an empty list to store results
+  
+  for(demo_var in demo_vars) {
+    # Apply the clean_matrix_eval function for each demographic variable
+    result <- clean_matrix_eval(tree_survey, "past_years", demo_var)
+    
+    # Extract the first word of the demographic variable for naming
+    var_name_first_word <- strsplit(demo_var, "_")[[1]][1]
+    
+    # Construct the new dataframe name
+    dataframe_name <- paste("trees_overtime", var_name_first_word, sep = "_")
+    
+    # Save the result with the constructed name
+    results_list[[dataframe_name]] <- result
+  }
+  
+  # Optionally, return all results as a list if you need to use them later in the same session
+  return(results_list)
+}
+
+# You would call this function with your tree_survey dataframe and past_years column as follows:
+ results <- process_and_save_results(tree_survey, past_years)
+
+# Note: This script assumes that your clean_matrix_eval function returns a dataframe
+# and that you have a predefined tree_survey dataframe and past_years column to work with.
+
+
+
+trees_overtime_eval_viz <- clean_matrix_eval_viz(trees_overtime_eval,"edu_recode")
 ###
 tree_benefits <- clean_matrix(tree_survey,"importance_of_benefits")
 tree_benefits_viz <- viz_matrix(tree_benefits,"Benefits of Trees")
 
 ###
 tree_beliefs <- clean_matrix(tree_survey,"agreement_about_trees")
-ree_beliefs_viz <- viz_matrix(tree_beliefs,"Beliefs about Trees")
+tree_beliefs_edu <- clean_matrix_eval(tree_survey,"agreement_about_trees",edu_recode)
+tree_beliefs_viz <- viz_matrix(tree_beliefs,"Beliefs about Trees")
 
 ###
 trees_home <- clean_box(tree_survey,neighborhood_street_trees)
@@ -158,94 +365,180 @@ tree_support_viz <- viz_box_multi(tree_support,"Trree")
 
 ```
 
-- Description of survey and the questions asked
 
+# Tree Canopy Analysis
 
-## Tree Canopies Analysis
+## Survey Population
+```{r}
+datatable(demographics_hisp)
+```
 
-### Rate the level of agreement with the following statement: "Over the past 10 years,..." 
+```{r}
+datatable(demographics_race)
+```
+
+```{r}
+datatable(demographics_income)
+```
+
+```{r}
+datatable(demographics_education)
+```
+
+```{r}
+datatable(demographics_tract)
+```
+
+```{r}
+datatable(demographics_county)
+```
+
+## Response Summary
+
+###  Tree Change
+
+**Over the past 10 years, the number of trees in my neighborhood has:**  
+   - Increased  
+   - Decreased  
+   - Stayed the same  
+   - Unsure
+
+**Over the past 10 years, the overall health and quality of trees (both public and private) in your neighborhood has:**  
+   - Increased  
+   - Decreased  
+   - Stayed the same  
+   - Unsure
 
 ```{r tc-analysis-report, echo=TRUE}
-datatable(tree_experiences_overtime)
+datatable(trees_overtime)
 trees_overtime_viz
 ```
 
-### Please rate the importance of each of the following benefits of trees:
+### Agreement on Tree Benefits
+
+**Please rate the importance of each of the following benefits of trees:**  
+   - Improve air quality by filtering airborne pollutants and dust.  
+   - Improve water quality by controlling pollution, preventing erosion, and reducing flooding from stormwater runoff.  
+   - Provide shading to maintain cooler temperatures.
 
 ```{r}
 datatable(tree_benefits)
 tree_benefits_viz
 ```
 
-### Please rate your level of agreement with each of the following statements:
+### Importance of Tree Benefits
 
+**Please rate your level of agreement with each of the following statements:**  
+   - Trees are important for maintaining a healthy community environment.  
+   - Trees properly planted and cared for enhance the overall quality of life in a community.  
+   - Trees properly planted and cared for improve the appearance of a community.
+   
 ```{r}
 datatable(tree_beliefs)
-tree_beliefs_viz
+ree_beliefs_viz
 ```
 
-### Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grows over the road)
+### Neighborhood Street Trees Presence
 
+**Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grow over the road)?**  
+   - Yes, but I wish we didn't.  
+   - Yes and I fully support having them.  
+   - No, but I wish we did.  
+   - No and I prefer not having them.
 ```{r}
 datatable(trees_home)
 trees_home_viz
 ```
 
-### Have you observed tree-related damage to infrastructure in your neighborhood? Select all that apply
+### Tree-Related Infrastructure Damage
+
+**Have you observed tree-related damage to infrastructure in your neighborhood? Select all that apply:**  
+   - No, I have not observed tree-related damage to infrastructure  
+   - Yes, damage to a street or sidewalk  
+   - Yes, damage to overhead utilities (power lines, phone lines, etc.)  
+   - Yes, damage to underground infrastructure (pipes, sewer lines, underground power lines, etc.)  
+   - Other (please specify)
 ```{r}
 datatable(tree_damage)
 tree_damage_viz
 ```
 
-### How do trees impact your quality of life and your community?
+### Trees and Quality of Life
 ```{r}
 # OPEN ENDED NEED TO PROCESS USING TEXT MINING
 ```
 
-### Which aspects of trees do you value? Select all that apply.
+### Valued Tree Aspects
+
+**Which aspects of trees do you value? Select all that apply.**  
+   - Shade, which cools neighborhoods and homes  
+   - Cleaner air, by filtering air pollution  
+   - The aesthetics or beauty that trees provide neighborhoods  
+   - Mental health and emotional benefits  
+   - The habitat and food source for wildlife that trees provide  
+   - Environmental services that trees provide (carbon storage, storm water reduction, erosion control, etc.)  
+   - The increase in property values  
+   - Other (please specify)
 ```{r}
 datatable(tree_value)
 tree_value_viz
 ```
 
+### Preferred Tree Planting Locations
 
-### What general areas in your community need more trees? Select all that apply.
-
+**Where would you like to see more trees planted? (Select up to three)**  
+    - Street terrace  
+    - Parks  
+    - Apartment communities  
+    - Commercial areas  
+    - Parking lots  
+    - Schools  
+    - Along biking and walking paths  
+    - Neighborhoods  
+    - Other (please specify)
 ```{r}
 datatable(tree_area_need)
 ttree_area_need_viz
 ```
 
-### What type of trees would you like to see planted? Check all that apply.
-
+### Desired Types of Trees
 ```{r}
-datatable(tree_area_need)
-ttree_area_need_viz
+datatable(tree_types)
+tree_types_viz
 ```
 
-### What tree-related goals would you like to see prioritized? Select up to 3
+### Tree-Related Priority Goals
 
+**What tree related goals would you like to see prioritized? (Select up to three)**  
+    - Increase the number of trees planted each year  
+    - Maintain and preserve existing trees better  
+    - Remove dead, dying, or otherwise hazardous trees  
+    - Preserve trees better during development (keeping trees from getting removed as buildings and homes are built)  
+    - Strengthen management strategies to reduce the risk of invasive pests and diseases  
 ```{r}
 datatable(tree_goals)
 tree_goals_viz
 ```
 
-### If you are interested in helping to support the Town's tree-planting efforts, which of the following activities would you be willing to participate in? Select all that apply.
+### Support for Tree Planting
 
+
+**If you are interested in helping to support the Town's tree planting efforts, which of the following activities would you be willing to participate in? Select all that apply.**  
+    - None  
+    - Volunteer or help organize a community tree planting event  
+    - Attend an educational workshop (in person or virtual)  
+    - Plant a tree on your private property  
+    - Encourage your landlord to allow tree planting on a property you rent  
+    - Volunteer to provide basic tree care in your neighborhood (watering and weeding)  
+    - Other (please specify)
 ```{r}
 datatable(tree_support)
 tree_support_viz
 ```
 
-## TC Map
-```{r tc-map-report, echo=TRUE}
 
-# Report the analysis of survey items here
-
-```
-
-# Place Analysis 
-```{r}
+## Place Analysis 
+```{r place-analysis, include=FALSE, cache=FALSE}
 
 # The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
 
@@ -260,14 +553,11 @@ tree_support_viz
 
 data_tracts <- c(unique(tree_survey$census_tract_full))
 
-
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
 svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
 svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
-
-
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
@@ -275,46 +565,14 @@ eji_response <- eji[which(eji$geoid %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
 
-
 #https://www.epa.gov/ejscreen/understanding-ejscreen-results
 ejscreen <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
 ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
 
-
 # Which variables are important to include in the analysis?
-
 ```
 
 
-## Indices Report
 
-
-### [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)
-```{r}
-datatable(svi_response)
-```
-
-
-### [Environmental Justice Index Indicators](https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html)
-```{r}
-datatable(eji_response)
-```
-
-### [Environmental Justice Index Indicators](https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
-```{r}
-datatable(ejscreen_response)
-```
-
-## Research Questions
-
-These should be asked in relation to tree canopies
-
-1. How communities (as distinguished by some criteria) view environmental challenges
-
-```{r}
-# Compare places with high/low SVI and/or EJ 40
-
-
-```
 
 
