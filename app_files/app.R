@@ -25,8 +25,7 @@ source("pages/strategies_page.R")
 
 surveys <- c(
   "Air Quality Survey",
-  # "Community Ideas Survey",
-  "Story From the Community Survey", "Environmental Justice Survey",
+  "Environmental Justice Survey",
   "Tree Canopy Survey", "Urban Heat Survey",
   "Urban Heat Map", "Air Quality Map", "Tree Canopy Map",
   "Carbon Survey", "Energy Survey", "General Survey",

@@ -5,6 +5,9 @@ library(dplyr)
 get_summary_statistics <- function(
     survey, census_level, queries,
     census_code, save = TRUE, fname = "") {
+  # print(census_code)
+  # print(census_level)
+  # print(queries)
   n <- length(queries)
   survey_df <- read.csv(survey)
 
@@ -26,16 +29,21 @@ get_summary_statistics <- function(
   for (i in 1:n) {
     query_to_be_generated <- queries[[i]]
 
+    # print(census_level)
+
     # add census code to the query
-    if (census_level == "county") {
-      if (census_code == 55025) {
-        query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 25
-      } else {
-        query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 55
-      }
-    } else {
+    if (census_level == "tract") {
       query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- census_code
     }
+    # if (census_level == "county") {
+    #   if (census_code == 55025) {
+    #     query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 25
+    #   } else {
+    #     query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 55
+    #   }
+    # } else {
+    #   query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- census_code
+    # }
 
     query <- query_to_be_generated$survey_query$query
     temp <- survey_df
@@ -52,40 +60,40 @@ get_summary_statistics <- function(
 demographic_data <-
   "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
 
-# SURVEYS <- c(
-#   "ej-report", "ej-storytile", "ej-survey",
-#   "air-quality-map", "air-quality-survey",
-#   "tree-canopy-map", "tree-canopy-survey",
-#   "urban-heat-map", "urban-heat-survey"
-# )
 
 SURVEYS <- c(
-  "ej-report"
+  # "air-quality-map",
+  # "air-quality-survey",
+  # "urban-heat-map",
+  # "urban-heat-survey",
+  # "ej-report",
   # "ej-storytile",
   # "ej-survey",
-  # "air-quality-survey"
+  # "air-quality-survey",
   # "tree-canopy-map",
-  # "tree-canopy-survey",
-  # "urban-heat-map",
-  # "urban-heat-survey"
+  # "tree-canopy-survey"
+  "carbon-concerns",
+  "energy-concerns",
+  "general-survey",
+  "health-impacts",
+  "tree-knowledge"
 )
 
 # SURVEYS = c("air-quality-map")
 CENSUS_TO_SURVEY_COL <- c(
-  "tract" = "census_tract_full",
-  "state" = "state_fips",
-  "county" = "county_fips"
+  "tract" = "zip"
+  # "tract" = "census_tract_full",
+  # "state" = "state_fips",
+  # "county" = "county_fips"
 )
 # HEAD <- "/Users/christianvarner/Research/ccs-knowledge-map/data_preprocessing/results_summary/"
 
 HEAD <- "/Volumes/cbjackson2/ccs-knowledge/results_summary/"
 
 census_codes <- yaml::yaml.load_file("data_preprocessing/rosetta/stone.yaml")
-queries_to_compile <- yaml::yaml.load_file("data_preprocessing/queries/generated_queries.yaml")
+queries_to_compile <-
+  yaml::yaml.load_file("data_preprocessing/queries/generated_queries.yaml")
 
-
-# census_codes <- get_yaml("data_preprocessing/rosetta/stone.yaml")
-# queries_to_compile <- get_yaml("data_preprocessing/queries/generated_queries.yaml")
 
 start_time <- Sys.time()
 i <- 0
@@ -103,7 +111,7 @@ for (survey in SURVEYS) {
       print(paste("Starting:", name))
       get_summary_statistics(survey_dataset, rep_level,
         queries_to_compile, census_code,
-        save = T, fname = name
+        save = TRUE, fname = name
       )
       print(paste("Finished:", name))
     }

@@ -10,10 +10,12 @@ library(bs4Dash)
 
 surveys <- c(
   "Air Quality Survey",
-  # "Community Ideas Survey",
   "Environmental Justice Survey",
   "Tree Canopy Survey", "Urban Heat Survey",
-  "Urban Heat Map", "Air Quality Map", "Tree Canopy Map"
+  "Urban Heat Map", "Air Quality Map", "Tree Canopy Map",
+  "Environmental Justice Story", "Environmental Justice Report",
+  "Tree Knowledge", "Carbon Concerns", "Energy Concerns",
+  "General Survey", "Health Impacts"
 )
 
 reporting_tool_body <- function() {
