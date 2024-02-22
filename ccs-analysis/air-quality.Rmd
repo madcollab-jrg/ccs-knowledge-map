@@ -61,8 +61,8 @@ clean_multi <- function(data, response) {
 ```
 
 ```{r}
-names(air_survey)[5:14] <- c("Air.Quality.Experience",
-               "Pollution.Health.Impact",
+names(air_survey)[5:14] <- c("Air_Quality_Experience",
+               "Pollution_Health_Impact",
                "Pollution.Sources.Identification",
                "Quality.Change.Perception",
                "Vulnerable.Populations.Impact",
@@ -71,6 +71,9 @@ names(air_survey)[5:14] <- c("Air.Quality.Experience",
                "Improvement.Actions.Taken",
                "Alert.Reception.Preference",
                "Deployment.Participation.Interest")
+
+
+clean_multi(air_survey,Pollution_Health_Impact)
 
 ```
 
@@ -89,7 +92,7 @@ lapply(air_box_col, function(col) {
   col_sym <- sym(col)  # Convert string to symbol
   clean_box(air_survey, !!col_sym)  # Pass the symbol to clean_box
 })
-
+air_box
 ```
 
 ```{r}
@@ -112,10 +115,21 @@ lapply(air_multi_col, function(col) {
 
 
 ### AQ Analysis
-```{r aq-analysis-report, echo=TRUE}
+```{r aq-analysis-report, echo=FALSE}
+new_column_names <- c("Air_Quality_Issues", "Health_Issues", "Pollution_Sources", "Air_Quality_Changes", 
+                      "Vulnerable_Populations", "Awareness_of_PM_and_Ozone", "Sensor_Locations", 
+                      "Improvement_Actions", "Alert_Preferences", "Participation_in_Decisions")
 
+# Replace the names of columns 5 to 14
+colnames(air_survey)[5:14] <- new_column_names
+air_issues<-clean_multi(air_survey,Health_Issues)
 # Report the analysis of survey items here
 
+```
+
+###Have you or anyone you know experienced the following health issues related to poor air quality?
+```{r}
+datatable(air_issues)
 ```
 
 ### AQ Map
