@@ -11,7 +11,7 @@
 
 <meta name="author" content="Corey Jackson" />
 
-<meta name="date" content="2024-02-15" />
+<meta name="date" content="2024-02-21" />
 
 <title>CCS Knowledge Map Results: Air Quality</title>
 
@@ -3941,11 +3941,102 @@ border-radius: 0px;
 
 <h1 class="title toc-ignore">CCS Knowledge Map Results: Air Quality</h1>
 <h4 class="author">Corey Jackson</h4>
-<h4 class="date">2024-02-15</h4>
+<h4 class="date">2024-02-21</h4>
 
 </div>
 
 
+<pre class="r"><code>datatable(pollution)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-fc8cc6c1325fcfc8409c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-fc8cc6c1325fcfc8409c">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["Asthma","Lung Cancer","Respiratory Issues",null],[91,29,194,2],[29,9,61,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Pollution_Health_Impact<\/th>\n      <th>count<\/th>\n      <th>freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Pollution_Health_Impact","targets":1},{"name":"count","targets":2},{"name":"freq","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>air_box &lt;- c(8,14)
+air_box_col &lt;- names(air_survey)[air_box]
+air_multi &lt;- c(2,3,6,7,9)+4
+air_multi_col &lt;- names(air_survey)[air_multi]</code></pre>
+<pre class="r"><code>library(rlang)
+lapply(air_box_col, function(col) {
+  col_sym &lt;- sym(col)  # Convert string to symbol
+  clean_box(air_survey, !!col_sym)  # Pass the symbol to clean_box
+})</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 4 × 3
+##   Quality.Change.Perception                    count  freq
+##   &lt;chr&gt;                                        &lt;int&gt; &lt;dbl&gt;
+## 1 I do not feel any changes in the air quality    78    26
+## 2 No, air quality has decreased                  108    36
+## 3 Yes, air quality has improved                  114    38
+## 4 &lt;NA&gt;                                             1     0
+## 
+## [[2]]
+## # A tibble: 10 × 3
+##    Deployment.Participation.Interest                                 count  freq
+##    &lt;chr&gt;                                                             &lt;int&gt; &lt;dbl&gt;
+##  1 Attending a community outreach event                                 54    18
+##  2 Attending the community outreach event                              130    43
+##  3 Connect with local working group to be the messenger to deliver …    87    29
+##  4 Connecting with local working group to be the messenger to deliv…    24     8
+##  5 Other: Actualmente no es posible, porque nos mudamos con mi fami…     1     0
+##  6 Other: Hopefully online, I have a tight schedule, and it’s hard …     1     0
+##  7 Other: Online feedback form                                           1     0
+##  8 Other: Spanish translator                                             1     0
+##  9 Other: Utilizando Zoom u otro medio para participar en linea          1     0
+## 10 &lt;NA&gt;                                                                  1     0</code></pre>
+<pre class="r"><code>air_box</code></pre>
+<pre><code>## [1]  8 14</code></pre>
+<pre class="r"><code>lapply(air_multi_col, function(col) {
+  col_sym &lt;- sym(col)  # Convert string to symbol
+  clean_multi(air_survey, !!col_sym)  # Pass the symbol to clean_box
+})</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 4 × 3
+##   Pollution_Health_Impact count  freq
+##   &lt;chr&gt;                   &lt;int&gt; &lt;dbl&gt;
+## 1 Asthma                     91    29
+## 2 Lung Cancer                29     9
+## 3 Respiratory Issues        194    61
+## 4 &lt;NA&gt;                        2     1
+## 
+## [[2]]
+## # A tibble: 7 × 3
+##   Pollution.Sources.Identification                                   count  freq
+##   &lt;chr&gt;                                                              &lt;int&gt; &lt;dbl&gt;
+## 1 Mobile sources (e.g., cars, buses, trains)                           124    35
+## 2 Natural sources (e.g., wind-blown dust)                               77    22
+## 3 Other: Construction                                                    1     0
+## 4 Other: Lack of trees                                                   1     0
+## 5 Other: Pollen                                                          1     0
+## 6 Pollution producing sites from agricultural areas, cities and woo…    40    11
+## 7 Stationary sources (e.g., power plants, industrial facilities and…   107    30
+## 
+## [[3]]
+## # A tibble: 2 × 3
+##   Contaminants.Awareness.Knowledge count  freq
+##   &lt;chr&gt;                            &lt;int&gt; &lt;dbl&gt;
+## 1 No                                 115    38
+## 2 Yes                                186    62
+## 
+## [[4]]
+## # A tibble: 6 × 3
+##   Sensor.Location.Suggestions                    count  freq
+##   &lt;chr&gt;                                          &lt;int&gt; &lt;dbl&gt;
+## 1 Other: In communities close to industry areas.     1     0
+## 2 Other: Near parks                                  1     0
+## 3 Other: Áreas de recreación                         1     0
+## 4 Residential areas                                159    44
+## 5 Schools                                          122    34
+## 6 Shopping area                                     78    22
+## 
+## [[5]]
+## # A tibble: 7 × 3
+##   Alert.Reception.Preference                     count  freq
+##   &lt;chr&gt;                                          &lt;int&gt; &lt;dbl&gt;
+## 1 Neighborhood associations                          5     1
+## 2 Newsletter from the city/county to your email    138    26
+## 3 Newsletters from the city/county to your email    28     5
+## 4 Other: Alarm                                       1     0
+## 5 Social Media                                     144    27
+## 6 Text Messages                                    151    28
+## 7 neighborhood associations                         73    14</code></pre>
 <div id="air-quality-aq" class="section level2">
 <h2>Air Quality (AQ)</h2>
 <ul>
@@ -3956,8 +4047,8 @@ border-radius: 0px;
 <p>###Have you or anyone you know experienced the following health
 issues related to poor air quality?</p>
 <pre class="r"><code>datatable(air_issues)</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-5d2b03d40fa8705b58c2" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-5d2b03d40fa8705b58c2">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["Asthma","Lung Cancer","Respiratory Issues",null],[91,29,194,2],[29,9,61,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Health_Issues<\/th>\n      <th>count<\/th>\n      <th>freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Health_Issues","targets":1},{"name":"count","targets":2},{"name":"freq","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3cba28730c30a55c6f86" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3cba28730c30a55c6f86">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["Asthma","Lung Cancer","Respiratory Issues",null],[91,29,194,2],[29,9,61,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Health_Issues<\/th>\n      <th>count<\/th>\n      <th>freq<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Health_Issues","targets":1},{"name":"count","targets":2},{"name":"freq","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="aq-map" class="section level3">
 <h3>AQ Map</h3>

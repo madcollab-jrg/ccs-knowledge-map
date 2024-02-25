@@ -15,6 +15,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(DT)
+library(ggsci)
 
 air_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_survey.csv")
 air_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_map.csv")
@@ -34,6 +35,24 @@ clean_matrix <- function(dataframe, column_name) {
     mutate(freq = round((n / sum(n)),digits=2     )*100)
   
   return(summary_data)
+}
+
+viz_box_multi <- function(dataframe,graph_title) {
+  # Order the dataframe by decreasing frequency
+  ordered_df <- dataframe %>%
+    arrange(desc(freq))
+  
+  # Create the bar chart
+  ggplot(ordered_df, aes(x=reorder(response, -freq), y=freq)) +
+    geom_bar(stat="identity", fill="blue") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    theme(axis.text.x = element_text(angle=45, hjust=1))+
+scale_fill_nejm()
 }
 
 
@@ -60,77 +79,80 @@ clean_multi <- function(data, response) {
 }
 ```
 
-```{r}
+```{r, include=FALSE}
 names(air_survey)[5:14] <- c("Air_Quality_Experience",
                "Pollution_Health_Impact",
-               "Pollution.Sources.Identification",
-               "Quality.Change.Perception",
-               "Vulnerable.Populations.Impact",
-               "Contaminants.Awareness.Knowledge",
-               "Sensor.Location.Suggestions",
-               "Improvement.Actions.Taken",
-               "Alert.Reception.Preference",
-               "Deployment.Participation.Interest")
+               "Pollution_Sources_Identification",
+               "Quality_Change_Perception",
+               "Vulnerable_Populations_Impact",
+               "Contaminants_Awareness_Knowledge",
+               "Sensor_Location_Suggestions",
+               "Improvement_Actions_Taken",
+               "Alert_Reception_Preference",
+               "Deployment_Participation_Interest")
 
-
-clean_multi(air_survey,Pollution_Health_Impact)
+pollution <- clean_multi(air_survey,Pollution_Health_Impact)
 
 ```
 
 
 ```{r}
+# Causing Error
+# datatable(pollution)
+# viz_box_multi(pollution,"Air QQQQQQ")
 
-air_box <- c(8,14)
-air_box_col <- names(air_survey)[air_box]
-air_multi <- c(2,3,6,7,9)+4
-air_multi_col <- names(air_survey)[air_multi]
 ```
-
-```{r}
-library(rlang)
-lapply(air_box_col, function(col) {
-  col_sym <- sym(col)  # Convert string to symbol
-  clean_box(air_survey, !!col_sym)  # Pass the symbol to clean_box
-})
-air_box
-```
-
-```{r}
-lapply(air_multi_col, function(col) {
-  col_sym <- sym(col)  # Convert string to symbol
-  clean_multi(air_survey, !!col_sym)  # Pass the symbol to clean_box
-})
-```
-
 
 ## Air Quality (AQ)
 
-```{r aq-setup, include=FALSE, cache=TRUE}
+### Have you or anyone you know experienced the following health issues related to poor air quality?
 
-# Run all analysis for the AQ survey here
-
+```{r}
+Pollution_Health_Impact <- clean_multi(air_survey,Pollution_Health_Impact)
+datatable(Pollution_Health_Impact)
 ```
+
+### What do you think are the sources of air pollution in your community?
+```{r}
+Pollution_Sources_Identification <- clean_multi(air_survey,Pollution_Sources_Identification)
+datatable(Pollution_Sources_Identification)
+```
+
+### Have you noticed any changes in air quality in your community over the past 5 years?
+```{r}
+Quality_Change_Perception <- clean_box(air_survey,Quality_Change_Perception)
+datatable(Quality_Change_Perception)
+```
+
+### Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?
+```{r}
+Contaminants_Awareness_Knowledge <- clean_multi(air_survey,Contaminants_Awareness_Knowledge)
+datatable(Contaminants_Awareness_Knowledge)
+```
+
+### If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?
+```{r}
+Sensor_Location_Suggestions <- clean_multi(air_survey,Sensor_Location_Suggestions)
+datatable(Sensor_Location_Suggestions)
+```
+
+### If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?
+```{r}
+Alert_Reception_Preference <- clean_multi(air_survey,Alert_Reception_Preference)
+datatable(Alert_Reception_Preference)
+```
+
+### If there will be opportunities for you to participate in deciding where to deploy the air quality monitoring sensors. How would you like to be part of it? What roles would you like to take?
+```{r}
+Deployment_Participation_Interest <- clean_box(air_survey,Deployment_Participation_Interest)
+datatable(Deployment_Participation_Interest)
+```
+
 
 - Description of survey and the questions asked
 
 
-### AQ Analysis
-```{r aq-analysis-report, echo=FALSE}
-new_column_names <- c("Air_Quality_Issues", "Health_Issues", "Pollution_Sources", "Air_Quality_Changes", 
-                      "Vulnerable_Populations", "Awareness_of_PM_and_Ozone", "Sensor_Locations", 
-                      "Improvement_Actions", "Alert_Preferences", "Participation_in_Decisions")
 
-# Replace the names of columns 5 to 14
-colnames(air_survey)[5:14] <- new_column_names
-air_issues<-clean_multi(air_survey,Health_Issues)
-# Report the analysis of survey items here
-
-```
-
-###Have you or anyone you know experienced the following health issues related to poor air quality?
-```{r}
-datatable(air_issues)
-```
 
 ### AQ Map
 ```{r aq-map-report, echo=TRUE}
