@@ -75,9 +75,49 @@ clean_multi <- function(data, response) {
 ```{r uh-analysis-report, echo=TRUE}
 
 # Report the analysis of survey items here
+# Report the analysis of survey items here
 
+names(heat_survey)[5:12] <- c("urban_heat_experience",
+    "summer_activity_frequency",
+    "disproportionate_heat_impact",
+    "personal_heat_actions",
+    "government_heat_mitigation",
+    "heat_information_sources",
+    "community_heat_participation",
+    "heat_education_needs")
 ```
 
+### Please rate how frequently you have done each of the following during summer months and during extreme heat.
+```{r}
+summer_activity_frequency <- clean_matrix(heat_survey, summer_activity_frequency)
+datatable(summer_activity_frequency)
+```
+
+
+### Which of the following personal steps have you taken to reduce your contribution to urban heat and reduce greenhouse emissions?
+```{r}
+personal_heat_actions <- clean_multi(heat_survey, personal_heat_actions)
+datatable(personal_heat_actions)
+```
+
+
+### Where do you currently go for information about heat (waves)? And how do you usually learn about extremely hot weather?
+```{r}
+heat_information_sources <- clean_multi(heat_survey, heat_information_sources)
+datatable(heat_information_sources)
+```
+
+
+### Are you interested in participating in community-based efforts to address urban heat in your neighborhood?
+```{r}
+community_heat_participation <- clean_multi(heat_survey, community_heat_participation)
+datatable(community_heat_participation)
+```
+
+
+
+
+ 
 ### UH Map
 ```{r uh-map-report, echo=TRUE}
 
