@@ -76,8 +76,77 @@ clean_multi <- function(data, response) {
 
 ## EJ Solutions
 ```{r ej-solutions-setup, include=FALSE, cache=TRUE}
-
+names(ej_survey)[5:17] <- c("personal_justice_interpretation",
+    "impactful_ej_issue",
+    "personal_health_issue",
+    "agreement_level_statements",
+    "statements_agreement_level",
+    "policy_change_need",
+    "entity_responsibility_rating",
+    "action_effectiveness_ranking",
+    "technology_climate_potential",
+    "community_technology_willingness",
+    "technology_equity_responsibility",
+    "community_action_collaboration",
+    "individual_support_steps")
 ```
+
+
+### What does the term "environmental justice" mean to you?
+```{r}
+personal_justice_interpretation <- clean_multi(ej_survey,personal_justice_interpretation)
+datatable(personal_justice_interpretation)
+```
+
+### Which environmental justice issue do you think has the most significant impact on public health?
+```{r}
+impactful_ej_issue <- clean_multi(ej_survey,impactful_ej_issue)
+datatable(impactful_ej_issue)
+```
+
+### Please rate how much do you agree/disagree with the statements
+```{r}
+agreement_level_statements <- clean_matrix(ej_survey,agreement_level_statements)
+datatable(agreement_level_statements)
+```
+
+### Please rate how much do you agree/disagree with the statements
+```{r}
+statements_agreement_level <- clean_matrix(ej_survey,statements_agreement_level)
+datatable(statements_agreement_level)
+```
+
+### What is the most important policy change needed to address environmental justice in the United States? (select up to 3)
+```{r}
+policy_change_need <- clean_multi(ej_survey,policy_change_need)
+datatable(policy_change_need)
+```
+
+### Rate the following entities on their responsibility for addressing environmental justice issues
+```{r}
+entity_responsibility_rating <- clean_matrix(ej_survey,entity_responsibility_rating)
+datatable(entity_responsibility_rating)
+```
+
+### To what extent do you believe that new technology has the potential to slow down climate change?
+```{r}
+technology_climate_potential <- clean_multi(ej_survey,technology_climate_potential)
+datatable(technology_climate_potential)
+```
+
+### If there was new technology to slow down climate change, how willing would you be to use it in your community?
+```{r}
+community_technology_willingness <- clean_multi(ej_survey,community_technology_willingness)
+datatable(community_technology_willingness)
+```
+
+### Who should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?
+```{r}
+technology_equity_responsibility <- clean_matrix(ej_survey,technology_equity_responsibility)
+datatable(technology_equity_responsibility)
+```
+
+
 
 - Description of survey and the questions asked
 
