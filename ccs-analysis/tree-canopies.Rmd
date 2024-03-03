@@ -601,13 +601,35 @@ ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_trac
 ```
 
 # Categorizing Vulnerability 
-```{r vulnerability}
+```{r vulnerability, eval=FALSE, include=FALSE}
 # Summarize our data
 
 summary_eji <- eji_response_analysis %>%
   group_by(vulnerable) %>%
   summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
 
+
+library(sf)          # for handling spatial data
+library(tigris)
+options(tigris_use_cache = TRUE)
+
+
+# Load the shapefile
+wisconsin_tracts <- st_read("/Users/coreyjackson/Downloads/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+
+# Filter to include only your tracts
+# Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
+target_tracts <- c("55025000100", "55025000201", "55025000205", "55025000401", "55025000407", "55025000501")
+
+# Convert your 'geoid' values to character if they are not already, to ensure matching works
+wisconsin_tracts_filtered <- wisconsin_tracts %>%
+    filter(as.character(GEOID) %in% target_tracts)
+
+# Plot using ggplot2
+ggplot() +
+  geom_sf(data = wisconsin_tracts_filtered, fill = "lightblue", color = "white") +
+  theme_minimal() +
+  labs(title = "Highlighted Census Tracts in Dane County, Wisconsin")
 
 ```
 
