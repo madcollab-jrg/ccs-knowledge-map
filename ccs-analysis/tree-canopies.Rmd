@@ -250,17 +250,17 @@ These indices provide a composite score reflecting various factors, including ec
 
 ## [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)
 ```{r}
-datatable(svi_response)
+#datatable(svi_response)
 ```
 
 ## [Environmental Justice Index Indicators](https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html)
 ```{r}
-datatable(eji_response)
+#datatable(eji_response)
 ```
 
 ## [Environmental Justice Index Indicators](https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
 ```{r}
-datatable(ejscreen_response)
+#datatable(ejscreen_response)
 ```
 
 # Analysis 
@@ -302,8 +302,8 @@ process_and_save_results <- function(tree_survey, past_years) {
   
   for(demo_var in demo_vars) {
     # Apply the clean_matrix_eval function for each demographic variable
-    result <- clean_matrix_eval(tree_survey, "past_years", demo_var)
-    
+    result <- clean_matrix_eval(tree_survey, "past_years", "demo_var")
+  
     # Extract the first word of the demographic variable for naming
     var_name_first_word <- strsplit(demo_var, "_")[[1]][1]
     
@@ -435,7 +435,7 @@ tree_benefits_viz
    
 ```{r}
 datatable(tree_beliefs)
-ree_beliefs_viz
+tree_beliefs_viz
 ```
 
 ### Neighborhood Street Trees Presence
@@ -561,18 +561,80 @@ svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
-eji_response <- eji[which(eji$geoid %in% data_tracts),]
+eji <- eji[which(!is.na(eji$RPL_EBM)),]
+eji <- eji[which(eji$COUNTY == "Dane"),]
 
-# Which variables are important to include in the analysis?
+# Calculate quartiles
+Q1 <- quantile(eji$RPL_EBM, 0.25)
+Q3 <- quantile(eji$RPL_EBM, 0.75)
+
+eji_response <- eji[which(eji$geoid %in% data_tracts),]
+eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Most","Least")
+eji_response_analysis <- eji_response %>%
+  select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,
+         EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
+# Which indicators are important to include in the analysis? 
+
+# Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
+# Dictionary: https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
+# EJI -> Environmental Burden -> Air Pollution-> ALL (Ozone EPL_OZONE  ,PM2.5 EPL_PM  ,Disel Particulate Matter EPL_DSLPM, Air Toxic Cancer Risks EPL_TOTCR)
+  # SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter. 
+  # RPL_EBM_DOM1: Percentile rank of domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
+# EJI -> Environmental Burden -> Built Environment -> (Recreational Parks)
+
+# SPL_EJI: Summation of the HVM, EBI, and SVI module percentile ranks 
+# RPL_EJI: Percentile ranks of SPL_EJI
+
+eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
+
+
 
 #https://www.epa.gov/ejscreen/understanding-ejscreen-results
 ejscreen <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
 ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
+
+
+
+######### Decide which tracts are vulnerable. Make respondents in two groups.
 ```
 
+# Categorizing Vulnerability 
+```{r vulnerability, eval=FALSE, include=FALSE}
+# Summarize our data
+
+summary_eji <- eji_response_analysis %>%
+  group_by(vulnerable) %>%
+  summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
 
 
+library(sf)          # for handling spatial data
+library(tigris)
+options(tigris_use_cache = TRUE)
+
+
+# Load the shapefile
+wisconsin_tracts <- st_read("/Users/coreyjackson/Downloads/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+
+# Filter to include only your tracts
+# Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
+target_tracts <- c("55025000100", "55025000201", "55025000205", "55025000401", "55025000407", "55025000501")
+
+# Convert your 'geoid' values to character if they are not already, to ensure matching works
+wisconsin_tracts_filtered <- wisconsin_tracts %>%
+    filter(as.character(GEOID) %in% target_tracts)
+
+# Plot using ggplot2
+ggplot() +
+  geom_sf(data = wisconsin_tracts_filtered, fill = "lightblue", color = "white") +
+  theme_minimal() +
+  labs(title = "Highlighted Census Tracts in Dane County, Wisconsin")
+
+```
+
+```{r}
+datatable(summary_eji)
+```
 
 
