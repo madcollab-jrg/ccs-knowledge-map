@@ -111,11 +111,16 @@ input_to_data_survey <- c(
 input_to_data_survey_desc <- c(
   "Air Quality Map" = "air_map",
   "Air Quality Survey" = "air_survey",
+  "Carbon Concerns" = "carbon_concerns",
   "Environmental Justice Report" = "ej_report",
   "Environmental Justice Story" = "ej_story",
   "Environmental Justice Survey" = "ej_survey",
+  "Energy Concerns" = "energy_concerns",
+  "General Survey" = "general_survey",
+  "Health Impact" = "health_impacts",
   "Heat Map" = "heat_map",
   "Heat Survey" = "heat_survey",
+  "Tree Knowledge" = "tree_knowledge",
   "Tree Map" = "tree_map",
   "Tree Survey" = "tree_survey"
 )
@@ -196,7 +201,9 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   demographic_data_loc <-
     "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
-  survey_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
+  # survey_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
+
+  survey_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data-updated/"
 
   # import survey data
   survey_data <- eventReactive(
@@ -206,8 +213,13 @@ server <- function(input, output, session) {
       req(input$demographic)
       # import data here - reactive to input$survey
       name <- input$survey
+      # survey_data <-
+      #   read.csv(paste(survey_data_loc, input_to_data_survey[[name]], sep = ""))
       survey_data <-
-        read.csv(paste(survey_data_loc, input_to_data_survey[[name]], sep = ""))
+        read.csv(paste(survey_data_loc, input_to_data_survey_desc[[name]], "/",
+          input_to_data_survey_desc[[name]], ".csv",
+          sep = ""
+        ))
       survey_data[, -1]
     }
   )

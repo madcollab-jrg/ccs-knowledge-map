@@ -46,10 +46,10 @@ Trees Greenery,How important are trees to your everyday life,Multi-Choice,,0,1
 Trees Greenery,Do you agree/disagree that having green spaces and trees has impacted your health and quality of life?,Multi-Choice,,0,2
 Trees Greenery,Trees capture carbon from the atmosphere.,Multi-Choice,,0,3
 Trees Greenery,Trees can reduce flooding during summer.,Multi-Choice,,0,4
-Carbon,Climate pollutants come from transportation and buildings that burn lots of fossil fuels etc.,Multi-Choice,,0,1
-Carbon,Carbon dioxide can be removed by growing more trees.,Multi-Choice,,0,2
-Carbon,Carbon dioxide can be removed by new technologies.,Multi-Choice,,0,3
-Energy,How important is energy saving at home to your everyday life,Multi-Choice,,0,1
+Carbon,Climate pollutants come from transportation and buildings that burn lots of fossil fuels etc.,Multi-Choice,,1,1
+Carbon,Carbon dioxide can be removed by growing more trees.,Multi-Choice,,1,2
+Carbon,Carbon dioxide can be removed by new technologies.,Multi-Choice,,1,3
+Energy,How important is energy saving at home to your everyday life,Multi-Choice,,1,1
 Energy,Do you agree/disagree that energy saving has impacted your quality of life?,Multi-Choice,,0,2
 General,What do you think are the most urgent environmental issues facting your community?,Open-ended,,0,1
 General,I would like to learn more about how environmental issues impact my community.,Multi-Choice,,0,2
@@ -80,3 +80,4 @@ Heat Health,Electrification is one way to reduce carbon emissions at my home.,Mu
 Heat Health,I can go to a cooling center during extreme heat weather to stay cool.,Multi-Choice,,0,5
 Heat Health,"In Dane County, days over 100F will double in the next 30 years.",Multi-Choice,,0,6
 Heat Health,Extreme heat is dangerous to my health.,Multi-Choice,,0,7
+Air Map,What are the best locations to measure air quality in our neighborhoods?,Open-ended,,1,1

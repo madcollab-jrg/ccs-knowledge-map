@@ -7,14 +7,15 @@ library(shinyjs)
 # Args:
 #   - survey: type string, the survey that is selected
 # Returns: List of survey questions
-get_survey_questions <- function(survey) {
-  if (grepl("survey", survey, ignore.case = T)) {
-    file_name <- gsub(" ", "_", gsub(" survey", "", tolower(survey)))
-    # print(file_name)
-    file_path <- paste0(getwd(), "/survey_questions/", file_name, ".txt")
-    return(readLines(file_path))
-  }
-  return(c(""))
+get_survey_questions <- function(survey, fileName) {
+  # if (grepl("survey", survey, ignore.case = TRUE)) {
+  file_name <- fileName
+  # file_name <- gsub(" ", "_", gsub(" survey", "", tolower(survey)))
+  # print(file_name)
+  file_path <- paste0(getwd(), "/survey_questions/", file_name, ".txt")
+  return(readLines(file_path))
+  # }
+  # return(c(""))
 }
 
 get_census_items <- function(census_item) {
@@ -36,7 +37,7 @@ get_census_items <- function(census_item) {
   return(survey_questions)
 }
 
-make_conditional_panel_survey <- function(survey, id) {
+make_conditional_panel_survey <- function(survey, id, fileName = NA) {
   # make a conditional panel for the survey box ui that
   # gives provides different question for tshe different
   # survey responses
@@ -57,8 +58,8 @@ make_conditional_panel_survey <- function(survey, id) {
         style = "font-size:0.85rem;",
         "STEP 2: Select a question from the survey"
       ),
-      choices = get_survey_questions(survey),
-      selectize = F
+      choices = get_survey_questions(survey, fileName),
+      selectize = FALSE
     )
   )
 
@@ -136,31 +137,66 @@ survey_box_ui <- function(surveys) {
         choices = c("")
       )
     ),
-    make_conditional_panel_survey("Air Quality Survey", "air_quality_qs"),
-    make_conditional_panel_survey("Air Quality Map", "air_quality_map_qs"),
-    # make_conditional_panel_survey("Community Ideas Survey", "ej_report_qs"),
     make_conditional_panel_survey(
-      "Story From the Community Survey",
-      "ej_storytile_qs"
+      "Air Quality Survey", "air_quality_qs",
+      "air_quality"
     ),
     make_conditional_panel_survey(
       "Environmental Justice Survey",
-      "ej_survey_qs"
-    ),
-    make_conditional_panel_survey("Tree Canopy Survey", "tree_canopy_qs"),
-    make_conditional_panel_survey("Tree Canopy Map", "tree_canopy_map_qs"),
-    make_conditional_panel_survey("Urban Heat Survey", "urban_heat_qs"),
-    make_conditional_panel_survey("Urban Heat Map", "urban_heat_map_qs"),
-    make_conditional_panel_survey("Carbon Survey", "carbon_survey_qs"),
-    make_conditional_panel_survey("Energy Survey", "energy_survey_qs"),
-    make_conditional_panel_survey("General Survey", "general_survey_qs"),
-    make_conditional_panel_survey(
-      "Heat Health Survey",
-      "heat_health_survey_qs"
+      "ej_survey_qs",
+      "environmental_justice"
     ),
     make_conditional_panel_survey(
-      "Trees Greenery Survey",
-      "trees_greenery_survey_qs"
+      "Tree Canopy Survey", "tree_canopy_qs",
+      "tree_canopy"
+    ),
+    make_conditional_panel_survey(
+      "Urban Heat Survey", "urban_heat_qs",
+      "urban_heat"
+    ),
+    make_conditional_panel_survey(
+      "Urban Heat Map", "urban_heat_map_qs",
+      "heat_map"
+    ),
+    make_conditional_panel_survey(
+      "Air Quality Map",
+      "air_quality_map_qs", "air_quality_map"
+    ),
+    make_conditional_panel_survey(
+      "Tree Canopy Map", "tree_canopy_map_qs",
+      "tree_map"
+    ),
+    make_conditional_panel_survey(
+      "Environmental Justice Story",
+      "ej_story_qs",
+      "environmental_justice_story"
+    ),
+    make_conditional_panel_survey(
+      "Environmental Justice Report",
+      "ej_report_qs",
+      "environmental_justice_report"
+    ),
+    make_conditional_panel_survey(
+      "Tree Knowledge",
+      "trees_greenery_survey_qs",
+      "trees_greenery"
+    ),
+    make_conditional_panel_survey(
+      "Carbon Concerns", "carbon_survey_qs",
+      "carbon"
+    ),
+    make_conditional_panel_survey(
+      "Energy Concerns", "energy_survey_qs",
+      "energy"
+    ),
+    make_conditional_panel_survey(
+      "General Survey", "general_survey_qs",
+      "general"
+    ),
+    make_conditional_panel_survey(
+      "Health Impacts",
+      "heat_health_survey_qs",
+      "heat_health"
     ),
     p(""),
     p(""),
