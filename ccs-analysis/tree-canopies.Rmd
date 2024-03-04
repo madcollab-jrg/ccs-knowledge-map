@@ -634,7 +634,7 @@ ggplot() +
 ```
 
 ```{r}
-datatable(summary_eji)
+#datatable(summary_eji)
 ```
 
 
