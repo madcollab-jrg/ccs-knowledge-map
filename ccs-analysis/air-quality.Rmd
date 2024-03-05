@@ -16,13 +16,17 @@ library(ggplot2)
 library(tidyr)
 library(DT)
 library(ggsci)
+library(gridExtra)
+library(stringr)
+
 
 air_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_survey.csv")
 air_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_map.csv")
 
+
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
-# Cleaning functions
+### Functions for MATRIX QUESTIONS
 clean_matrix <- function(dataframe, column_name) {
   cleaned_data <- dataframe %>%
     separate_rows({{ column_name }}, sep = "; ") %>%
@@ -36,6 +40,87 @@ clean_matrix <- function(dataframe, column_name) {
   
   return(summary_data)
 }
+
+clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
+  cleaned_data <- dataframe %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
+  cleaned_data$answer <- as.factor(cleaned_data$answer)
+  
+  summary_data <- cleaned_data %>%
+    group_by(question, answer, {{demographic_var}}) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
+
+clean_matrix_eval_viz <- function(dataframe, demographic_var) {
+  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
+    geom_bar(position = "fill") +
+    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
+    scale_y_continuous(labels = scales::percent_format()) +
+    theme_minimal() +
+    coord_flip() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+scale_fill_nejm()
+}
+
+
+
+### Functions for BOX QUESTIONS
+clean_box <- function(data, response) {
+  summary_data <- data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2)*100)
+    names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+
+clean_multi <- function(data, response) {
+  cleaned_data <- data %>%
+    separate_rows({{ response }}, sep = "; ")
+  
+  summary_data <- cleaned_data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2) * 100)
+      names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+
+### Functions for DAta VISUALIZATION 
+# Define the visualization function
+viz_matrix <- function(dataframe, graph_title) {
+  ggplot(dataframe, aes(x=question, y=freq, fill=answer)) +
+    geom_bar(stat="identity", position="stack") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Question",
+         y="Frequency (%)",
+         fill="Answer") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+scale_fill_nejm()
+}
+
+clean_matrix_eval_viz <- function(dataframe, demographic_var) {
+  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
+    geom_bar(position = "fill") +
+    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
+    scale_y_continuous(labels = scales::percent_format()) +
+    theme_minimal() +
+    coord_flip() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+scale_fill_nejm()
+}
+
 
 viz_box_multi <- function(dataframe,graph_title) {
   # Order the dataframe by decreasing frequency
@@ -55,114 +140,202 @@ viz_box_multi <- function(dataframe,graph_title) {
 scale_fill_nejm()
 }
 
+names(air_survey)[5:14] <- c('air_quality_experience',
+ 'pollution_health_impact',
+ 'pollution_sources_identification',
+ 'quality_change_perception',
+ 'vulnerable_populations_impact',
+ 'contaminants_awareness_knowledge',
+ 'sensor_location_suggestions',
+ 'improvement_actions_taken',
+ 'alert_reception_preference',
+ 'deployment_participation_interest')
 
-clean_box <- function(data, response) {
-  summary_data <- data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2)*100)
-  
-  return(summary_data)
-}
-
-
-clean_multi <- function(data, response) {
-  cleaned_data <- data %>%
-    separate_rows({{ response }}, sep = "; ")
-  
-  summary_data <- cleaned_data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2) * 100)
-  
-  return(summary_data)
-}
 ```
 
+# Analysis
 ```{r, include=FALSE}
-names(air_survey)[5:14] <- c("Air_Quality_Experience",
-               "Pollution_Health_Impact",
-               "Pollution_Sources_Identification",
-               "Quality_Change_Perception",
-               "Vulnerable_Populations_Impact",
-               "Contaminants_Awareness_Knowledge",
-               "Sensor_Location_Suggestions",
-               "Improvement_Actions_Taken",
-               "Alert_Reception_Preference",
-               "Deployment_Participation_Interest")
 
-pollution <- clean_multi(air_survey,Pollution_Health_Impact)
+pol_impact <- clean_multi(air_survey,pollution_health_impact)
+pol_impact_viz <- viz_box_multi(pol_impact,"Health Issues")
+
+pol_sources <- clean_multi(air_survey,pollution_sources_identification)
+pol_impact_viz <- viz_box_multi(pol_impact,"Pollution Sources Issues")
+
+pol_changes <- clean_box(air_survey,quality_change_perception)
+pol_changes_viz <- viz_box_multi(pol_changes,"Community Air Quality Changes")
+
+pol_contam <- clean_multi(air_survey,contaminants_awareness_knowledge)
+pol_contam_viz <- viz_box_multi(pol_contam,"Awareness of Contaminants")
+
+pol_sensor <- clean_multi(air_survey,sensor_location_suggestions)
+pol_sensor_viz <- viz_box_multi(pol_sensor,"Location of Sensors")
+
+pol_alerts <- clean_multi(air_survey,alert_reception_preference)
+pol_alerts_viz <- viz_box_multi(pol_alerts,"Air Quality Alerts")
+
+pol_interest <- clean_box(air_survey,deployment_participation_interest)
+pol_interest_viz <- viz_box_multi(pol_interest,"Deployment Interest")
+```
+
+
+## Response Summary
+
+### Health Issues Related to Trees
+**Have you or anyone you know experienced the following health issues related to poor air quality?**
+
+```{r}
+datatable(pol_impact)
+pol_impact_viz
+```
+
+### Community Pollution Sources
+
+**What do you think are the sources of air pollution in your community**
+```{r}
+datatable(pol_sources)
+pol_impact_viz
+```
+
+### Community Air Quality Changes 
+
+**Have you noticed any changes in air quality in your community over the past 5 years?**
+```{r}
+datatable(pol_changes)
+pol_changes_viz
+```
+
+### PM and Ground-level Ozone
+**Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?**
+```{r}
+datatable(pol_contam)
+pol_contam_viz
+```
+
+### Air Quality Monitors
+**If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?**
+```{r}
+datatable(pol_sensor)
+pol_sensor_viz
+```
+
+
+### Being Informed about Air Quality
+**If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?**
+```{r}
+datatable(pol_alerts)
+pol_alerts_viz
+```
+
+### Deploying AQ Sensors Follow-up
+**If there will be opportunities for you to participate in deciding where to deploy the air quality monitoring sensors. How would you like to be part of it? What roles would you like to take?**
+```{r}
+datatable(pol_interest)
+pol_interest_viz
+```
+
+## Place Analysis for Tree Canopies
+```{r place-analysis, include=FALSE, cache=FALSE}
+
+# The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
+
+# tree_survey <- tree_survey %>%
+#   mutate(
+#     county_code = sprintf("%03d", as.integer(county_fips)),
+#     census_tract = sprintf("%06d", as.integer(census_tract)),
+#     census_block = sprintf("%04d", as.integer(census_block)),
+#     census_tract_full = paste0(state_fips, county_code, census_tract),
+#     census_block_full = paste0(state_fips, county_code, census_tract, census_block),
+#   )
+
+data_tracts <- c(unique(tree_survey$census_tract_full))
+
+# https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
+svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+
+# Which variables are important to include in the analysis?
+
+#https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
+eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+eji <- eji[which(!is.na(eji$RPL_EBM)),]
+eji <- eji[which(eji$COUNTY == "Dane"),]
+
+# Calculate quartiles
+Q1 <- quantile(eji$RPL_EBM, 0.25)
+Q3 <- quantile(eji$RPL_EBM, 0.75)
+
+eji_response <- eji[which(eji$geoid %in% data_tracts),]
+eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Most","Least")
+eji_response_analysis <- eji_response %>%
+  dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
+# Which indicators are important to include in the analysis? 
+
+# Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
+# Dictionary: https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
+# EJI -> Environmental Burden -> Air Pollution-> ALL (Ozone EPL_OZONE  ,PM2.5 EPL_PM  ,Disel Particulate Matter EPL_DSLPM, Air Toxic Cancer Risks EPL_TOTCR)
+  # SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter. 
+  # RPL_EBM_DOM1: Percentile rank of domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
+# EJI -> Environmental Burden -> Built Environment -> (Recreational Parks)
+
+# SPL_EJI: Summation of the HVM, EBI, and SVI module percentile ranks 
+# RPL_EJI: Percentile ranks of SPL_EJI
+
+eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
+
+
+
+#https://www.epa.gov/ejscreen/understanding-ejscreen-results
+ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
+
+# Which variables are important to include in the analysis?
+```
+
+# Categorizing Vulnerability 
+```{r vulnerability, eval=TRUE, include=FALSE}
+# Summarize our data
+
+summary_eji <- eji_response_analysis %>%
+  group_by(vulnerable) %>%
+  summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
+
+
+library(sf)          # for handling spatial data
+library(tigris)
+options(tigris_use_cache = TRUE)
+
+
+# Load the shapefile
+wisconsin_tracts <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+
+# Filter to include only your tracts
+# Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
+target_tracts <- c("550250001001", "550250001002", "550250002011", "550250002012", "550250002021", "550250002022")
+
+
+# Convert your 'geoid' values to character if they are not already, to ensure matching works
+wisconsin_tracts_filtered <- wisconsin_tracts %>%
+    filter(as.character(GEOID) %in% target_tracts)
+
+# Plot using ggplot2
+county_data <- ggplot() +
+  geom_sf(data = wisconsin_tracts_filtered, fill = "lightblue", color = "white") +
+  theme_minimal() +
+  labs(title = "Highlighted Census Tracts in Dane County, Wisconsin")
 
 ```
 
 
 ```{r}
-# Causing Error
-# datatable(pollution)
-# viz_box_multi(pollution,"Air QQQQQQ")
-
+county_data
 ```
 
-## Air Quality (AQ)
 
-### Have you or anyone you know experienced the following health issues related to poor air quality?
+In our analysis, we categorized vulnerability based on the Environmental Burden Module (RPL_EBM) percentile ranks derived from the 2022 Environmental Justice Index. To do this, we first determined the 25th (Q1) and 75th (Q3) percentile values of the RPL_EBM distribution. These percentile values served as thresholds to categorize regions based on their environmental burden. Specifically, regions with an RPL_EBM value greater than the 75th percentile (Q3) were categorized as "Most Vulnerable", indicating that they are in the top quartile of environmental burden and, therefore, face higher vulnerability to environmental injustices. Conversely, regions not exceeding this threshold were categorized as "Least Vulnerable". This method of categorization allows us to identify areas with the most significant environmental challenges and prioritize them for interventions and resource allocation.
 
 ```{r}
-Pollution_Health_Impact <- clean_multi(air_survey,Pollution_Health_Impact)
-datatable(Pollution_Health_Impact)
+datatable(summary_eji)
 ```
-
-### What do you think are the sources of air pollution in your community?
-```{r}
-Pollution_Sources_Identification <- clean_multi(air_survey,Pollution_Sources_Identification)
-datatable(Pollution_Sources_Identification)
-```
-
-### Have you noticed any changes in air quality in your community over the past 5 years?
-```{r}
-Quality_Change_Perception <- clean_box(air_survey,Quality_Change_Perception)
-datatable(Quality_Change_Perception)
-```
-
-### Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?
-```{r}
-Contaminants_Awareness_Knowledge <- clean_multi(air_survey,Contaminants_Awareness_Knowledge)
-datatable(Contaminants_Awareness_Knowledge)
-```
-
-### If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?
-```{r}
-Sensor_Location_Suggestions <- clean_multi(air_survey,Sensor_Location_Suggestions)
-datatable(Sensor_Location_Suggestions)
-```
-
-### If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?
-```{r}
-Alert_Reception_Preference <- clean_multi(air_survey,Alert_Reception_Preference)
-datatable(Alert_Reception_Preference)
-```
-
-### If there will be opportunities for you to participate in deciding where to deploy the air quality monitoring sensors. How would you like to be part of it? What roles would you like to take?
-```{r}
-Deployment_Participation_Interest <- clean_box(air_survey,Deployment_Participation_Interest)
-datatable(Deployment_Participation_Interest)
-```
-
-
-- Description of survey and the questions asked
-
-
-
-
-### AQ Map
-```{r aq-map-report, echo=TRUE}
-
-# Report the analysis of map items here
-
-```
-
-
-
-# Meta Summary
 
 
