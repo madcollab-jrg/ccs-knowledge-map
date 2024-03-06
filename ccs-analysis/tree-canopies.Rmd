@@ -522,7 +522,6 @@ tree_goals_viz
 
 ### Support for Tree Planting
 
-
 **If you are interested in helping to support the Town's tree planting efforts, which of the following activities would you be willing to participate in? Select all that apply.**  
     - None  
     - Volunteer or help organize a community tree planting event  
@@ -537,7 +536,7 @@ tree_support_viz
 ```
 
 
-## Place Analysis 
+## Place Analysis for Tree Canopies
 ```{r place-analysis, include=FALSE, cache=FALSE}
 
 # The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
@@ -552,6 +551,7 @@ tree_support_viz
 #   )
 
 data_tracts <- c(unique(tree_survey$census_tract_full))
+data_blocks <- c(unique(tree_survey$census_block_full))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
 svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
@@ -571,8 +571,7 @@ Q3 <- quantile(eji$RPL_EBM, 0.75)
 eji_response <- eji[which(eji$geoid %in% data_tracts),]
 eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Most","Least")
 eji_response_analysis <- eji_response %>%
-  select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,
-         EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
+  dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
 # Which indicators are important to include in the analysis? 
 
 # Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
@@ -590,7 +589,7 @@ eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis
 
 
 #https://www.epa.gov/ejscreen/understanding-ejscreen-results
-ejscreen <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
 ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
@@ -601,12 +600,14 @@ ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_trac
 ```
 
 # Categorizing Vulnerability 
-```{r vulnerability, eval=FALSE, include=FALSE}
+```{r vulnerability, eval=TRUE, include=FALSE}
 # Summarize our data
 
 summary_eji <- eji_response_analysis %>%
   group_by(vulnerable) %>%
   summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
+
+summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
 
 
 library(sf)          # for handling spatial data
@@ -615,26 +616,46 @@ options(tigris_use_cache = TRUE)
 
 
 # Load the shapefile
-wisconsin_tracts <- st_read("/Users/coreyjackson/Downloads/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+wisconsin_tracts <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
 
 # Filter to include only your tracts
 # Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
-target_tracts <- c("55025000100", "55025000201", "55025000205", "55025000401", "55025000407", "55025000501")
+target_tracts <- c("550250001001", "550250001002", "550250002011", "550250002012", "550250002021", "550250002022")
 
 # Convert your 'geoid' values to character if they are not already, to ensure matching works
 wisconsin_tracts_filtered <- wisconsin_tracts %>%
     filter(as.character(GEOID) %in% target_tracts)
 
 # Plot using ggplot2
-ggplot() +
+county_data <- ggplot() +
   geom_sf(data = wisconsin_tracts_filtered, fill = "lightblue", color = "white") +
   theme_minimal() +
+   theme_bw() + theme(panel.border = element_blank(), 
+                      panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(), 
+                      axis.line = element_blank(),
+                      axis.text = element_blank(),
+                      axis.ticks = element_blank()) +
   labs(title = "Highlighted Census Tracts in Dane County, Wisconsin")
-
 ```
 
 ```{r}
-#datatable(summary_eji)
+county_data
 ```
 
+
+In our analysis, we categorized vulnerability based on the Environmental Burden Module (RPL_EBM) percentile ranks derived from the 2022 Environmental Justice Index. To do this, we first determined the 25th (Q1) and 75th (Q3) percentile values of the RPL_EBM distribution. These percentile values served as thresholds to categorize regions based on their environmental burden. Specifically, regions with an RPL_EBM value greater than the 75th percentile (Q3) were categorized as "Most Vulnerable", indicating that they are in the top quartile of environmental burden and, therefore, face higher vulnerability to environmental injustices. Conversely, regions not exceeding this threshold were categorized as "Least Vulnerable". This method of categorization allows us to identify areas with the most significant environmental challenges and prioritize them for interventions and resource allocation.
+
+```{r}
+datatable(summary_eji)
+```
+
+```{r}
+
+# Group people into least/most vulnerable areas 
+
+#tree_survey
+
+
+```
 
