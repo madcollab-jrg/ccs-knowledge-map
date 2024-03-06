@@ -551,6 +551,7 @@ tree_support_viz
 #   )
 
 data_tracts <- c(unique(tree_survey$census_tract_full))
+data_blocks <- c(unique(tree_survey$census_block_full))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
 svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
@@ -606,6 +607,8 @@ summary_eji <- eji_response_analysis %>%
   group_by(vulnerable) %>%
   summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
 
+summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
+
 
 library(sf)          # for handling spatial data
 library(tigris)
@@ -627,8 +630,13 @@ wisconsin_tracts_filtered <- wisconsin_tracts %>%
 county_data <- ggplot() +
   geom_sf(data = wisconsin_tracts_filtered, fill = "lightblue", color = "white") +
   theme_minimal() +
+   theme_bw() + theme(panel.border = element_blank(), 
+                      panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(), 
+                      axis.line = element_blank(),
+                      axis.text = element_blank(),
+                      axis.ticks = element_blank()) +
   labs(title = "Highlighted Census Tracts in Dane County, Wisconsin")
-
 ```
 
 ```{r}
@@ -642,4 +650,12 @@ In our analysis, we categorized vulnerability based on the Environmental Burden 
 datatable(summary_eji)
 ```
 
+```{r}
+
+# Group people into least/most vulnerable areas 
+
+#tree_survey
+
+
+```
 
