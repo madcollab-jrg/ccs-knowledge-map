@@ -30,7 +30,7 @@ meta <- out$meta
 
 
 # Fit the topic model
-num_topics <- 5  # choose an appropriate number of topics
+num_topics <- 4  # choose an appropriate number of topics
 topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=75, init.type="Spectral")
 
 # Visualize the model
@@ -65,7 +65,9 @@ datatable(extracted_df)
 ## Demographic Secific STM
 
 ```{r specificstm-code, eval=FALSE}
-perform_topic_modeling <- function(attribute, attribute_name) {
+#https://burtmonroe.github.io/TextAsDataCourse/Tutorials/IntroSTM.nb.html
+
+perform_topic_modeling <- function(df, attribute_name) {
   
   thoughts_df <- data.frame()
   
@@ -81,7 +83,7 @@ perform_topic_modeling <- function(attribute, attribute_name) {
     meta <- out$meta
 
     # Fit the topic model for the subgroup
-    topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=75, init.type="Spectral")
+    topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=20, init.type="Spectral")
     
     # Add model output to dataframe
     #plot_name <- paste0("Topic_Model_Summary_", attr_val, ".png")
@@ -94,7 +96,7 @@ perform_topic_modeling <- function(attribute, attribute_name) {
     # Extract common comments for the subgroup
     #thoughts <- find_thoughts(topic_model, texts=sub_df$text_column, n=10)
     
-    thoughts <-  findThoughts(topic_model, texts=sub_df$text_column[which(sub_df$...1 %in% out$meta$...1)], n=2)
+    thoughts <-  findThoughts(topic_model, texts=sub_df$text_column[which(sub_df$...1 %in% out$meta$...1)], n=1)
     
      # Create a dataframe for thoughts and add attribute information
     thoughts_sub_df <- data.frame(Attribute = attr_val, Thoughts = I(list(thoughts)))
@@ -114,8 +116,10 @@ filtered_categories <- df %>%
   pull(race_recode)
 
 subset_df <- df %>%
-  filter(race_recode %in% filtered_categories, !is.na(race_recode))
+  filter(race_recode %in% filtered_categories, !is.na(race_recode)) 
 
+
+labelTopics(topic_model)
 ```
 
 

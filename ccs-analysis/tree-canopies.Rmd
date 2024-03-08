@@ -19,6 +19,7 @@ library(DT)
 library(ggsci)
 library(gridExtra)
 library(stringr)
+library(broom) # For tidy chi-squared test results
 
 
 # Import all datasets
@@ -27,7 +28,10 @@ tree_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tre
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
-### Functions for MATRIX QUESTIONS
+### ### ### ### ### ### ### ### ### ## 
+### Functions for MATRIX QUESTIONS ### 
+### ### ### ### ### ### ### ### ### ##
+
 clean_matrix <- function(dataframe, column_name) {
   cleaned_data <- dataframe %>%
     separate_rows({{ column_name }}, sep = "; ") %>%
@@ -42,61 +46,6 @@ clean_matrix <- function(dataframe, column_name) {
   return(summary_data)
 }
 
-clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
-  cleaned_data <- dataframe %>%
-    separate_rows({{ column_name }}, sep = "; ") %>%
-    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
-  cleaned_data$answer <- as.factor(cleaned_data$answer)
-  
-  summary_data <- cleaned_data %>%
-    group_by(question, answer, {{demographic_var}}) %>%
-    summarise(n = n()) %>%
-    mutate(freq = round((n / sum(n)),digits=2     )*100)
-  
-  return(summary_data)
-}
-
-clean_matrix_eval_viz <- function(dataframe, demographic_var) {
-  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
-    geom_bar(position = "fill") +
-    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
-    scale_y_continuous(labels = scales::percent_format()) +
-    theme_minimal() +
-    coord_flip() +
-    theme(axis.text.x = element_text(hjust = 1)) +
-scale_fill_nejm()
-}
-
-
-
-### Functions for BOX QUESTIONS
-clean_box <- function(data, response) {
-  summary_data <- data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2)*100)
-    names(summary_data)[1] <- "response"
-
-  return(summary_data)
-}
-
-
-clean_multi <- function(data, response) {
-  cleaned_data <- data %>%
-    separate_rows({{ response }}, sep = "; ")
-  
-  summary_data <- cleaned_data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2) * 100)
-      names(summary_data)[1] <- "response"
-
-  return(summary_data)
-}
-
-
-### Functions for DAta VISUALIZATION 
-# Define the visualization function
 viz_matrix <- function(dataframe, graph_title) {
   ggplot(dataframe, aes(x=question, y=freq, fill=answer)) +
     geom_bar(stat="identity", position="stack") +
@@ -111,6 +60,22 @@ viz_matrix <- function(dataframe, graph_title) {
 scale_fill_nejm()
 }
 
+## clean_matrix with variable
+clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
+  cleaned_data <- dataframe %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
+  cleaned_data$answer <- as.factor(cleaned_data$answer)
+  
+  summary_data <- cleaned_data %>%
+    group_by(question, answer, {{demographic_var}}) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
+
+## clean_matrix with variable
 clean_matrix_eval_viz <- function(dataframe, demographic_var) {
   ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
     geom_bar(position = "fill") +
@@ -122,6 +87,72 @@ clean_matrix_eval_viz <- function(dataframe, demographic_var) {
 scale_fill_nejm()
 }
 
+
+
+### ### ### ### ### ### ### ### ### 
+### Functions for BOX QUESTIONS ### 
+### ### ### ### ### ### ### ### ### 
+
+clean_box <- function(data, response) {
+  summary_data <- data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2)*100)
+    names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+
+
+### ### ### ### ### ### ### ### ### #
+### Functions for MULTI QUESTIONS ### 
+### ### ### ### ### ### ### ### ### #
+
+clean_multi <- function(data, response) {
+  cleaned_data <- data %>%
+    separate_rows({{ response }}, sep = "; ")
+  
+  summary_data <- cleaned_data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2) * 100)
+      names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+clean_multi_eval <- function(data, column_name, demographic_var) {
+
+  cleaned_data <- data %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question"), sep = " - ")
+
+  summary_data <- cleaned_data %>%
+    group_by(question, {{demographic_var}}) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
+
+viz_clean_multi_eval <- function(dataframe,graph_title) {
+ 
+  # Create the bar chart
+   # Create the bar chart with differentiation for 'vulnerable' levels within each 'question'
+  ggplot(dataframe, aes(x=reorder(question, -freq), y=freq, fill=vulnerable)) +
+    geom_bar(stat="identity", position="dodge") + # Use 'position=dodge' to place bars side by side
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 40 characters
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    scale_fill_brewer(palette="Set1") + # Use a Brewer palette for distinguishable colors
+    theme(axis.text.x = element_text(angle=45, hjust=1))
+}
+
+####
 
 viz_box_multi <- function(dataframe,graph_title) {
   # Order the dataframe by decreasing frequency
@@ -142,6 +173,18 @@ scale_fill_nejm()
 }
 
 
+
+
+
+
+### Functions for DAta VISUALIZATION 
+# Define the visualization function
+
+
+
+
+
+
 new_names <- c(
   "past_years","importance_of_benefits","agreement_about_trees","neighborhood_street_trees","tree_infrastructure_damage","tree_quality_life","tree_values","areas_needing_trees","preferred_tree_types","tree_goals","tree_support")
 
@@ -151,34 +194,31 @@ colnames(tree_survey)[5:15] <- new_names
 
 # Tree Canopy Survey
 
-1. **How do trees impact your quality of life and/or community?**  
-   (Open-ended response)
-
-2. **Over the past 10 years, the number of trees in my neighborhood has:**  
+1a. **Over the past 10 years, the number of trees in my neighborhood has:**  
    - Increased  
    - Decreased  
    - Stayed the same  
    - Unsure
 
-3. **Over the past 10 years, the overall health and quality of trees (both public and private) in your neighborhood has:**  
+1b. **Over the past 10 years, the overall health and quality of trees (both public and private) in your neighborhood has:**  
    - Improved  
    - Declined  
    - Stayed the same
 
-4. **How would you rate the overall care and maintenance of trees in your neighborhood?**  
+2. **How would you rate the overall care and maintenance of trees in your neighborhood?**  
    (Open-ended response)
 
-5. **Please rate your level of agreement with each of the following statements:**  
+3. **Please rate your level of agreement with each of the following statements:**  
    - Trees are important for maintaining a healthy community environment.  
    - Trees properly planted and cared for enhance the overall quality of life in a community.  
    - Trees properly planted and cared for improve the appearance of a community.
 
-6. **Please rate the importance of each of the following benefits of trees:**  
+4. **Please rate the importance of each of the following benefits of trees:**  
    - Improve air quality by filtering airborne pollutants and dust.  
    - Improve water quality by controlling pollution, preventing erosion, and reducing flooding from stormwater runoff.  
    - Provide shading to maintain cooler temperatures.
 
-7. **Which aspects of trees do you value? Select all that apply.**  
+5. **Which aspects of trees do you value? Select all that apply.**  
    - Shade, which cools neighborhoods and homes  
    - Cleaner air, by filtering air pollution  
    - The aesthetics or beauty that trees provide neighborhoods  
@@ -188,7 +228,7 @@ colnames(tree_survey)[5:15] <- new_names
    - The increase in property values  
    - Other (please specify)
 
-8. **Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grow over the road)?**  
+6. **Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grow over the road)?**  
    - Yes, but I wish we didn't.  
    - Yes and I fully support having them.  
    - No, but I wish we did.  
@@ -325,8 +365,8 @@ process_and_save_results <- function(tree_survey, past_years) {
 # and that you have a predefined tree_survey dataframe and past_years column to work with.
 
 
+#trees_overtime_eval_viz <- clean_matrix_eval_viz(trees_overtime_eval,"edu_recode")
 
-trees_overtime_eval_viz <- clean_matrix_eval_viz(trees_overtime_eval,"edu_recode")
 ###
 tree_benefits <- clean_matrix(tree_survey,"importance_of_benefits")
 tree_benefits_viz <- viz_matrix(tree_benefits,"Benefits of Trees")
@@ -554,22 +594,22 @@ data_tracts <- c(unique(tree_survey$census_tract_full))
 data_blocks <- c(unique(tree_survey$census_block_full))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
-svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
-svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+#svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+#svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
 eji <- eji[which(!is.na(eji$RPL_EBM)),]
-eji <- eji[which(eji$COUNTY == "Dane"),]
+eji <- eji[which(eji$COUNTY %in% c("Dane","Jefferson")),]
 
 # Calculate quartiles
 Q1 <- quantile(eji$RPL_EBM, 0.25)
 Q3 <- quantile(eji$RPL_EBM, 0.75)
 
 eji_response <- eji[which(eji$geoid %in% data_tracts),]
-eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Most","Least")
+eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Least","Most")
 eji_response_analysis <- eji_response %>%
   dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
 # Which indicators are important to include in the analysis? 
@@ -577,8 +617,8 @@ eji_response_analysis <- eji_response %>%
 # Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
 # Dictionary: https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
 # EJI -> Environmental Burden -> Air Pollution-> ALL (Ozone EPL_OZONE  ,PM2.5 EPL_PM  ,Disel Particulate Matter EPL_DSLPM, Air Toxic Cancer Risks EPL_TOTCR)
-  # SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter. 
-  # RPL_EBM_DOM1: Percentile rank of domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
+#   SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter. 
+#   RPL_EBM_DOM1: Percentile rank of domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
 # EJI -> Environmental Burden -> Built Environment -> (Recreational Parks)
 
 # SPL_EJI: Summation of the HVM, EBI, and SVI module percentile ranks 
@@ -587,19 +627,21 @@ eji_response_analysis <- eji_response %>%
 eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
 
 
-
 #https://www.epa.gov/ejscreen/understanding-ejscreen-results
-ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
-ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
+#ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+#ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
 
 
-
+#The first 2 digits represent the state FIPS (Federal Information Processing Standards) code.
+#The next 3 digits are for the county within that state.
+#Following 6 digits are for the census tract within the county.
+#The next 1 to 4 digits (of which you're interested in the first part) represent the block group or block, which are subdivisions of census tracts.
 ######### Decide which tracts are vulnerable. Make respondents in two groups.
 ```
 
-# Categorizing Vulnerability 
+### Categorizing Vulnerability 
 ```{r vulnerability, eval=TRUE, include=FALSE}
 # Summarize our data
 
@@ -613,22 +655,31 @@ summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
 library(sf)          # for handling spatial data
 library(tigris)
 options(tigris_use_cache = TRUE)
+options(scipen=999)
 
 
 # Load the shapefile
-wisconsin_tracts <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+#wisconsin_blocks <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+
+wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
 
 # Filter to include only your tracts
+#tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
 # Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
-target_tracts <- c("550250001001", "550250001002", "550250002011", "550250002012", "550250002021", "550250002022")
+target_tracts <- c(unique(tree_survey$census_tract_full))
 
 # Convert your 'geoid' values to character if they are not already, to ensure matching works
-wisconsin_tracts_filtered <- wisconsin_tracts %>%
+wisconsin_tracts_filtered <- wisconsin_tract %>%
     filter(as.character(GEOID) %in% target_tracts)
+
+eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid)
+
+wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid"))
 
 # Plot using ggplot2
 county_data <- ggplot() +
-  geom_sf(data = wisconsin_tracts_filtered, fill = "lightblue", color = "white") +
+  geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
+    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "RPL EJI Scale") + # Customize color scale as needed
   theme_minimal() +
    theme_bw() + theme(panel.border = element_blank(), 
                       panel.grid.major = element_blank(),
@@ -636,7 +687,7 @@ county_data <- ggplot() +
                       axis.line = element_blank(),
                       axis.text = element_blank(),
                       axis.ticks = element_blank()) +
-  labs(title = "Highlighted Census Tracts in Dane County, Wisconsin")
+  labs(title = "Environmental Burden Highlighted Census Tracts")
 ```
 
 ```{r}
@@ -650,12 +701,162 @@ In our analysis, we categorized vulnerability based on the Environmental Burden 
 datatable(summary_eji)
 ```
 
-```{r}
-
+```{r echo=FALSE}
+tree_survey$census_tract_full <- as.character(tree_survey$census_tract_full)
 # Group people into least/most vulnerable areas 
-
+tree_survey <- left_join(tree_survey, eji_response_analysis, by =c("census_tract_full"="geoid"))
 #tree_survey
 
+# Experiences with tree canopies
+tree_survey_experiences <- tree_survey[c(3,5,9,11,12,14,15,86)]
 
+tree_survey_experiences <- tree_survey_experiences[which(!is.na(tree_survey_experiences$vulnerable)),]
+vulnerable_q5 <- clean_matrix_eval(tree_survey_experiences,"past_years",vulnerable)
+vulnerable_q5_a <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),]
+vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),]
+vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),],"vulnerable")
+vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),],"vulnerable")
+
+clean_matrix_eval_chi <- function(questions_df) {
+  results_list <- list() # Initialize an empty list to store the results dataframes
+  
+  # Loop through each unique question in the questions dataframe
+  for(i in unique(questions_df$question)){
+    data <- questions_df %>% filter(question == i)
+    
+    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
+    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
+    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
+    chi_squared_test <- chisq.test(contingency_table)
+    
+    # Create a dataframe with the Chi-Squared test results
+    results_df <- data.frame(
+      question = i,
+      statistic = chi_squared_test$statistic,
+      pvalue = chi_squared_test$p.value,
+      degreeof = chi_squared_test$parameter
+    )
+    
+    # Store the results dataframe in the list
+    results_list[[i]] <- results_df
+  }
+  
+  # Combine all result dataframes in the list into a single dataframe
+  final_results_df <- do.call(rbind, results_list)
+  
+  return(final_results_df)
+}
+
+# Example usage:
+vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
+# print(results)
 ```
+
+
+2. **Over the past 10 years, the number of trees in my neighborhood has:**  
+   - Increased  
+   - Decreased  
+   - Stayed the same  
+   - Unsure
+   
+```{r}
+datatable(vulnerable_q5_a) 
+vulnerable_q5viz_a
+```
+   
+
+3. **Over the past 10 years, the overall health and quality of trees (both public and private) in your neighborhood has:**  
+   - Improved  
+   - Declined  
+   - Stayed the same
+
+```{r}
+datatable(vulnerable_q5_b) 
+vulnerable_q5viz_b
+```
+
+```{r}
+vulnerable_q5_chi
+```
+
+```{r echo=FALSE}
+vulnerable_q9 <- clean_multi_eval(tree_survey_experiences,tree_infrastructure_damage,vulnerable)
+vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Tree Related Damage in My Community")
+
+clean_multi_eval_chi <- function(dataframe) {
+  # Ensure 'n' is treated as numeric
+  dataframe$n <- as.numeric(dataframe$n)
+  
+  results <- dataframe %>%
+    group_by(question) %>%
+    summarise(Least = sum(n[vulnerable == "Least"]),
+              Most = sum(n[vulnerable == "Most"])) %>%
+    rowwise() %>%
+    do({
+      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      data.frame(question = .$question,
+                 statistic = round(chi_test_result$statistic, 3),
+                 pvalue = round(chi_test_result$p.value, 3),
+                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
+    }) %>%
+    ungroup()
+  
+  return(results)
+}
+
+vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
+```
+
+```{r}
+datatable(vulnerable_q9)
+vulnerable_q9_viz
+datatable(vulnerable_q9_chi)
+```
+
+```{r, include=FALSE}
+vulnerable_q11 <- clean_multi_eval(tree_survey_experiences,tree_values,vulnerable)
+vulnerable_q11_viz <- viz_clean_multi_eval(vulnerable_q11,"Tree Values")
+vulnerable_q11_chi <- clean_multi_eval_chi(vulnerable_q11)
+```
+
+```{r}
+datatable(vulnerable_q11)
+vulnerable_q11_viz
+datatable(vulnerable_q11_chi)
+```
+```{r, include=FALSE}
+vulnerable_q12 <- clean_multi_eval(tree_survey_experiences,areas_needing_trees,vulnerable)
+vulnerable_q12_viz <- viz_clean_multi_eval(vulnerable_q12,"Tree Needs")
+vulnerable_q12_chi <- clean_multi_eval_chi(vulnerable_q12)
+```
+
+```{r}
+datatable(vulnerable_q12)
+vulnerable_q12_viz
+datatable(vulnerable_q12_chi)
+```
+```{r, include=FALSE}
+vulnerable_q14 <- clean_multi_eval(tree_survey_experiences,tree_goals,vulnerable)
+vulnerable_q14_viz <- viz_clean_multi_eval(vulnerable_q14,"Tree Goals")
+vulnerable_q14_chi <- clean_multi_eval_chi(vulnerable_q14)
+```
+
+```{r}
+datatable(vulnerable_q14)
+vulnerable_q14_viz
+datatable(vulnerable_q14_chi)
+```
+
+```{r, include=FALSE}
+vulnerable_q15 <- clean_multi_eval(tree_survey_experiences,tree_support,vulnerable)
+vulnerable_q15_viz <- viz_clean_multi_eval(vulnerable_q15,"Tree Support")
+vulnerable_q15_chi <- clean_multi_eval_chi(vulnerable_q15)
+```
+
+```{r}
+datatable(vulnerable_q15)
+vulnerable_q15_viz
+datatable(vulnerable_q15_chi)
+```
+
 
