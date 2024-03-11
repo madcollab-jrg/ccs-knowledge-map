@@ -188,8 +188,6 @@ viz_box_multi <- function(dataframe,graph_title) {
 scale_fill_nejm()
 }
 
-
-
 names(air_survey)[5:14] <- c('air_quality_experience',
  'pollution_health_impact',
  'pollution_sources_identification',
@@ -280,21 +278,27 @@ pol_impact <- clean_multi(air_survey,pollution_health_impact)
 pol_impact_viz <- viz_box_multi(pol_impact,"Health Issues")
 
 pol_sources <- clean_multi(air_survey,pollution_sources_identification)
-pol_impact_viz <- viz_box_multi(pol_impact,"Pollution Sources Issues")
+pol_sources <- pol_sources[which(pol_sources$freq >0),]
+pol_sources_viz <- viz_box_multi(pol_sources,"Pollution Sources Issues")
 
 pol_changes <- clean_box(air_survey,quality_change_perception)
+pol_changes <- pol_changes[which(pol_changes$freq >0),]
 pol_changes_viz <- viz_box_multi(pol_changes,"Community Air Quality Changes")
 
 pol_contam <- clean_multi(air_survey,contaminants_awareness_knowledge)
+pol_contam <- pol_contam[which(pol_contam$freq >0),]
 pol_contam_viz <- viz_box_multi(pol_contam,"Awareness of Contaminants")
 
 pol_sensor <- clean_multi(air_survey,sensor_location_suggestions)
+pol_sensor <- pol_sensor[which(pol_sensor$freq >0),]
 pol_sensor_viz <- viz_box_multi(pol_sensor,"Location of Sensors")
 
 pol_alerts <- clean_multi(air_survey,alert_reception_preference)
+pol_alerts <- pol_alerts[which(pol_alerts$freq >0),]
 pol_alerts_viz <- viz_box_multi(pol_alerts,"Air Quality Alerts")
 
 pol_interest <- clean_box(air_survey,deployment_participation_interest)
+pol_interest <- pol_interest[which(pol_interest$freq >0),]
 pol_interest_viz <- viz_box_multi(pol_interest,"Deployment Interest")
 ```
 
@@ -316,7 +320,7 @@ pol_impact_viz
 **What do you think are the sources of air pollution in your community**
 ```{r}
 datatable(pol_sources)
-pol_impact_viz
+pol_sources_viz
 ```
 
 ### Community Air Quality Changes 
@@ -467,8 +471,6 @@ county_data <- ggplot() +
 county_data
 ```
 
-
-
 In our analysis, we categorized vulnerability based on the Environmental Burden Module (RPL_EBM) percentile ranks derived from the 2022 Environmental Justice Index. To do this, we first determined the 25th (Q1) and 75th (Q3) percentile values of the RPL_EBM distribution. These percentile values served as thresholds to categorize regions based on their environmental burden. Specifically, regions with an RPL_EBM value greater than the 75th percentile (Q3) were categorized as "Most Vulnerable", indicating that they are in the top quartile of environmental burden and, therefore, face higher vulnerability to environmental injustices. Conversely, regions not exceeding this threshold were categorized as "Least Vulnerable". This method of categorization allows us to identify areas with the most significant environmental challenges and prioritize them for interventions and resource allocation.
 
 ```{r}
@@ -477,5 +479,56 @@ datatable(summary_eji)
 
 
 
+```{r echo=FALSE}
+air_survey$census_tract_full <- as.character(air_survey$census_tract_full)
+# Group people into least/most vulnerable areas 
+air_survey <- left_join(air_survey, eji_response_analysis, by =c("census_tract_full"="geoid"))
+#tree_survey
+
+# Experiences with tree canopies
+air_survey_experiences <- air_survey[c(3,5,9,11,12,14,15,86)]
+air_survey_experiences <- air_survey_experiences[which(!is.na(air_survey_experiences$vulnerable)),]
+
+
+vulnerable_q5 <- clean_matrix_eval(tree_survey_experiences,"past_years",vulnerable)
+vulnerable_q5_a <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),]
+vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),]
+vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),],"vulnerable")
+vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),],"vulnerable")
+
+clean_matrix_eval_chi <- function(questions_df) {
+  results_list <- list() # Initialize an empty list to store the results dataframes
+  
+  # Loop through each unique question in the questions dataframe
+  for(i in unique(questions_df$question)){
+    data <- questions_df %>% filter(question == i)
+    
+    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
+    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
+    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
+    chi_squared_test <- chisq.test(contingency_table)
+    
+    # Create a dataframe with the Chi-Squared test results
+    results_df <- data.frame(
+      question = i,
+      statistic = chi_squared_test$statistic,
+      pvalue = chi_squared_test$p.value,
+      degreeof = chi_squared_test$parameter
+    )
+    
+    # Store the results dataframe in the list
+    results_list[[i]] <- results_df
+  }
+  
+  # Combine all result dataframes in the list into a single dataframe
+  final_results_df <- do.call(rbind, results_list)
+  
+  return(final_results_df)
+}
+
+# Example usage:
+vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
+# print(results)
+```
 
 
