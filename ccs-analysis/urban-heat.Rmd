@@ -16,7 +16,10 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(DT)
-
+library(ggsci)
+library(gridExtra)
+library(stringr)
+library(broom) # For tidy chi-squared test results
 # Import all datasets
 heat_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv")
 heat_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_map.csv")
@@ -38,13 +41,13 @@ clean_matrix <- function(dataframe, column_name) {
   return(summary_data)
 }
 
-
 clean_box <- function(data, response) {
   summary_data <- data %>%
     group_by({{ response }}) %>%
     summarise(count = n()) %>%
     mutate(freq = round(count / sum(count), digits = 2)*100)
-  
+    names(summary_data)[1] <- "response"
+
   return(summary_data)
 }
 
@@ -57,22 +60,48 @@ clean_multi <- function(data, response) {
     group_by({{ response }}) %>%
     summarise(count = n()) %>%
     mutate(freq = round(count / sum(count), digits = 2) * 100)
-  
+      names(summary_data)[1] <- "response"
+
   return(summary_data)
+}
+
+
+# Viz functions
+viz_matrix <- function(dataframe, graph_title) {
+  ggplot(dataframe, aes(x=question, y=freq, fill=answer)) +
+    geom_bar(stat="identity", position="stack") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Question",
+         y="Frequency (%)",
+         fill="Answer") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+scale_fill_nejm()
+}
+
+viz_box_multi <- function(dataframe,graph_title) {
+  # Order the dataframe by decreasing frequency
+  ordered_df <- dataframe %>%
+    arrange(desc(freq))
+  
+  # Create the bar chart
+  ggplot(ordered_df, aes(x=reorder(response, -freq), y=freq)) +
+    geom_bar(stat="identity", fill="blue") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    theme(axis.text.x = element_text(angle=45, hjust=1))+
+scale_fill_nejm()
 }
 ```
 
 ## Urban Heat (UH)
 ```{r uh-setup, include=FALSE, cache=TRUE}
-
-# Run all analysis for the AQ survey here
-
-```
-
-- Description of survey and the questions asked
-
-### UH Analysis
-```{r uh-analysis-report, echo=TRUE}
 
 # Report the analysis of survey items here
 # Report the analysis of survey items here
@@ -85,37 +114,54 @@ names(heat_survey)[5:12] <- c("urban_heat_experience",
     "heat_information_sources",
     "community_heat_participation",
     "heat_education_needs")
+
+
+summer_activity_frequency <- clean_matrix(heat_survey, summer_activity_frequency)
+summer_activity_frequency_viz <- viz_matrix(summer_activity_frequency, "Summer Activity Frequency")
+
+personal_heat_actions <- clean_multi(heat_survey, personal_heat_actions)
+personal_heat_actions_viz <- viz_box_multi(personal_heat_actions, "Personal Heat Actions")
+
+heat_information_sources <- clean_multi(heat_survey, heat_information_sources)
+heat_information_sources_viz <- viz_box_multi(heat_information_sources,"Heat Information Sources")
+
+community_heat_participation <- clean_multi(heat_survey, community_heat_participation)
+community_heat_participation_viz <- viz_box_multi(community_heat_participation, "Community Heat Participation")
+```
+
+- Description of survey and the questions asked
+
+### UH Analysis
+```{r uh-analysis-report, echo=TRUE}
+
 ```
 
 ### Please rate how frequently you have done each of the following during summer months and during extreme heat.
 ```{r}
-summer_activity_frequency <- clean_matrix(heat_survey, summer_activity_frequency)
 datatable(summer_activity_frequency)
+summer_activity_frequency_viz
 ```
 
 
 ### Which of the following personal steps have you taken to reduce your contribution to urban heat and reduce greenhouse emissions?
 ```{r}
-personal_heat_actions <- clean_multi(heat_survey, personal_heat_actions)
 datatable(personal_heat_actions)
+personal_heat_actions_viz
 ```
 
 
 ### Where do you currently go for information about heat (waves)? And how do you usually learn about extremely hot weather?
 ```{r}
-heat_information_sources <- clean_multi(heat_survey, heat_information_sources)
 datatable(heat_information_sources)
+heat_information_sources_viz
 ```
 
 
 ### Are you interested in participating in community-based efforts to address urban heat in your neighborhood?
 ```{r}
-community_heat_participation <- clean_multi(heat_survey, community_heat_participation)
 datatable(community_heat_participation)
+community_heat_participation_viz
 ```
-
-
-
 
  
 ### UH Map
