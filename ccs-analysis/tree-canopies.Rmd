@@ -187,18 +187,58 @@ viz_box_multi <- function(dataframe,graph_title) {
 scale_fill_nejm()
 }
 
+### STATS ANALYSIS
+clean_matrix_eval_chi <- function(questions_df) {
+  results_list <- list() # Initialize an empty list to store the results dataframes
+  
+  # Loop through each unique question in the questions dataframe
+  for(i in unique(questions_df$question)){
+    data <- questions_df %>% filter(question == i)
+    
+    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
+    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
+    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
+    chi_squared_test <- chisq.test(contingency_table)
+    
+    # Create a dataframe with the Chi-Squared test results
+    results_df <- data.frame(
+      question = i,
+      statistic = chi_squared_test$statistic,
+      pvalue = chi_squared_test$p.value,
+      degreeof = chi_squared_test$parameter
+    )
+    
+    # Store the results dataframe in the list
+    results_list[[i]] <- results_df
+  }
+  
+  # Combine all result dataframes in the list into a single dataframe
+  final_results_df <- do.call(rbind, results_list)
+  
+  return(final_results_df)
+}
 
 
-
-
-
-### Functions for DAta VISUALIZATION 
-# Define the visualization function
-
-
-
-
-
+clean_multi_eval_chi <- function(dataframe) {
+  # Ensure 'n' is treated as numeric
+  dataframe$n <- as.numeric(dataframe$n)
+  
+  results <- dataframe %>%
+    group_by(question) %>%
+    summarise(Least = sum(n[vulnerable == "Least"]),
+              Most = sum(n[vulnerable == "Most"])) %>%
+    rowwise() %>%
+    do({
+      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      data.frame(question = .$question,
+                 statistic = round(chi_test_result$statistic, 3),
+                 pvalue = round(chi_test_result$p.value, 3),
+                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
+    }) %>%
+    ungroup()
+  
+  return(results)
+}
 
 new_names <- c(
   "past_years","importance_of_benefits","agreement_about_trees","neighborhood_street_trees","tree_infrastructure_damage","tree_quality_life","tree_values","areas_needing_trees","preferred_tree_types","tree_goals","tree_support")
@@ -734,38 +774,10 @@ vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable
 vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),],"vulnerable")
 vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),],"vulnerable")
 
-clean_matrix_eval_chi <- function(questions_df) {
-  results_list <- list() # Initialize an empty list to store the results dataframes
-  
-  # Loop through each unique question in the questions dataframe
-  for(i in unique(questions_df$question)){
-    data <- questions_df %>% filter(question == i)
-    
-    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
-    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
-    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
-    chi_squared_test <- chisq.test(contingency_table)
-    
-    # Create a dataframe with the Chi-Squared test results
-    results_df <- data.frame(
-      question = i,
-      statistic = chi_squared_test$statistic,
-      pvalue = chi_squared_test$p.value,
-      degreeof = chi_squared_test$parameter
-    )
-    
-    # Store the results dataframe in the list
-    results_list[[i]] <- results_df
-  }
-  
-  # Combine all result dataframes in the list into a single dataframe
-  final_results_df <- do.call(rbind, results_list)
-  
-  return(final_results_df)
-}
-
 # Example usage:
-vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
+vulnerable_q5_chi_a <- clean_matrix_eval_chi(vulnerable_q5_a)
+vulnerable_q5_chi_b <- clean_matrix_eval_chi(vulnerable_q5_b)
+
 # print(results)
 ```
 
@@ -779,6 +791,7 @@ vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
 ```{r}
 datatable(vulnerable_q5_a) 
 vulnerable_q5viz_a
+datatable(vulnerable_q5_chi_a)
 ```
    
 
@@ -790,37 +803,12 @@ vulnerable_q5viz_a
 ```{r}
 datatable(vulnerable_q5_b) 
 vulnerable_q5viz_b
-```
-
-```{r}
-vulnerable_q5_chi
+datatable(vulnerable_q5_chi_b)
 ```
 
 ```{r echo=FALSE}
 vulnerable_q9 <- clean_multi_eval(tree_survey_experiences,tree_infrastructure_damage,vulnerable)
 vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Tree Related Damage in My Community")
-
-clean_multi_eval_chi <- function(dataframe) {
-  # Ensure 'n' is treated as numeric
-  dataframe$n <- as.numeric(dataframe$n)
-  
-  results <- dataframe %>%
-    group_by(question) %>%
-    summarise(Least = sum(n[vulnerable == "Least"]),
-              Most = sum(n[vulnerable == "Most"])) %>%
-    rowwise() %>%
-    do({
-      chi_test_result <- chisq.test(c(.$Least, .$Most))
-      data.frame(question = .$question,
-                 statistic = round(chi_test_result$statistic, 3),
-                 pvalue = round(chi_test_result$p.value, 3),
-                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
-    }) %>%
-    ungroup()
-  
-  return(results)
-}
-
 vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
 ```
 
