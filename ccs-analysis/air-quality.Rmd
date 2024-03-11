@@ -23,10 +23,16 @@ library(stringr)
 air_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_survey.csv")
 air_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_map.csv")
 
+# remove dupes
+air_survey <- air_survey %>%
+  distinct(Contribution.ID, .keep_all = TRUE)
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
-### Functions for MATRIX QUESTIONS
+### ### ### ### ### ### ### ### ### ## 
+### Functions for MATRIX QUESTIONS ### 
+### ### ### ### ### ### ### ### ### ##
+
 clean_matrix <- function(dataframe, column_name) {
   cleaned_data <- dataframe %>%
     separate_rows({{ column_name }}, sep = "; ") %>%
@@ -41,61 +47,6 @@ clean_matrix <- function(dataframe, column_name) {
   return(summary_data)
 }
 
-clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
-  cleaned_data <- dataframe %>%
-    separate_rows({{ column_name }}, sep = "; ") %>%
-    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
-  cleaned_data$answer <- as.factor(cleaned_data$answer)
-  
-  summary_data <- cleaned_data %>%
-    group_by(question, answer, {{demographic_var}}) %>%
-    summarise(n = n()) %>%
-    mutate(freq = round((n / sum(n)),digits=2     )*100)
-  
-  return(summary_data)
-}
-
-clean_matrix_eval_viz <- function(dataframe, demographic_var) {
-  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
-    geom_bar(position = "fill") +
-    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
-    scale_y_continuous(labels = scales::percent_format()) +
-    theme_minimal() +
-    coord_flip() +
-    theme(axis.text.x = element_text(hjust = 1)) +
-scale_fill_nejm()
-}
-
-
-
-### Functions for BOX QUESTIONS
-clean_box <- function(data, response) {
-  summary_data <- data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2)*100)
-    names(summary_data)[1] <- "response"
-
-  return(summary_data)
-}
-
-
-clean_multi <- function(data, response) {
-  cleaned_data <- data %>%
-    separate_rows({{ response }}, sep = "; ")
-  
-  summary_data <- cleaned_data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2) * 100)
-      names(summary_data)[1] <- "response"
-
-  return(summary_data)
-}
-
-
-### Functions for DAta VISUALIZATION 
-# Define the visualization function
 viz_matrix <- function(dataframe, graph_title) {
   ggplot(dataframe, aes(x=question, y=freq, fill=answer)) +
     geom_bar(stat="identity", position="stack") +
@@ -110,6 +61,22 @@ viz_matrix <- function(dataframe, graph_title) {
 scale_fill_nejm()
 }
 
+## clean_matrix with variable
+clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
+  cleaned_data <- dataframe %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
+  cleaned_data$answer <- as.factor(cleaned_data$answer)
+  
+  summary_data <- cleaned_data %>%
+    group_by( {{demographic_var}},question,answer) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
+
+## clean_matrix with variable
 clean_matrix_eval_viz <- function(dataframe, demographic_var) {
   ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
     geom_bar(position = "fill") +
@@ -121,6 +88,87 @@ clean_matrix_eval_viz <- function(dataframe, demographic_var) {
 scale_fill_nejm()
 }
 
+
+
+### ### ### ### ### ### ### ### ### 
+### Functions for BOX QUESTIONS ### 
+### ### ### ### ### ### ### ### ### 
+
+clean_box <- function(data, response) {
+  summary_data <- data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2)*100)
+    names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+
+
+### ### ### ### ### ### ### ### ### #
+### Functions for MULTI QUESTIONS ### 
+### ### ### ### ### ### ### ### ### #
+
+clean_multi <- function(data, response) {
+  cleaned_data <- data %>%
+    separate_rows({{ response }}, sep = "; ")
+  
+  summary_data <- cleaned_data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / dim(data)[1], digits = 2) * 100)
+      names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+clean_multi_eval <- function(data, column_name, demographic_var) {
+
+# Calculate the total number of responses per vulnerable category
+people <- data %>%
+  group_by({{demographic_var}}) %>%
+  summarise(total = n())
+
+
+# Clean the data by separating rows and columns as required
+cleaned_data <- data %>%
+  separate_rows({{ column_name }}, sep = "; ") %>%
+  separate({{ column_name }}, into = c("question"), sep = " - ")
+print(cleaned_data)
+
+
+# Calculate the summary data including frequencies
+summary_data <- cleaned_data %>%
+  #group_by({{demographic_var}}, question) %>%
+  group_by(vulnerable, question) %>%
+  summarise(n = n(), .groups = 'drop')
+
+summary_data <- merge(summary_data,people, by = "vulnerable")
+
+summary_data <- summary_data  %>%
+  mutate(freq = round((n / total), digits = 2) * 100)
+
+return(summary_data)
+}
+
+viz_clean_multi_eval <- function(dataframe,graph_title) {
+ 
+  # Create the bar chart
+   # Create the bar chart with differentiation for 'vulnerable' levels within each 'question'
+  ggplot(dataframe, aes(x=reorder(question, -freq), y=freq, fill=vulnerable)) +
+    geom_bar(stat="identity", position="dodge") + # Use 'position=dodge' to place bars side by side
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 40 characters
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    scale_fill_brewer(palette="Set1") + # Use a Brewer palette for distinguishable colors
+    theme(axis.text.x = element_text(angle=45, hjust=1))
+}
+
+####
 
 viz_box_multi <- function(dataframe,graph_title) {
   # Order the dataframe by decreasing frequency
@@ -140,6 +188,8 @@ viz_box_multi <- function(dataframe,graph_title) {
 scale_fill_nejm()
 }
 
+
+
 names(air_survey)[5:14] <- c('air_quality_experience',
  'pollution_health_impact',
  'pollution_sources_identification',
@@ -151,9 +201,79 @@ names(air_survey)[5:14] <- c('air_quality_experience',
  'alert_reception_preference',
  'deployment_participation_interest')
 
+## Questions to reconcile different text deployment_participation_interest, alert_reception_preference
+
 ```
 
-# Analysis
+
+# Air Quality Survey
+
+1 **Do you feel you are experiencing air quality problems in your neighborhood? If so, what are the specific air quality problems, and how are they impacting you, your family, or your neighbors?**  (Open-ended)
+  
+2. **Have you or anyone you know experienced the following health issues related to poor air quality?** (Multi-choice)
+  - Respiratory Issues  
+  - Asthma  
+  - Lung Cancer
+  
+3. **What do you think are the sources of air pollution in your community?** (Multi-choice)
+  - Stationary sources (e.g., power plants, industrial facilities and factories, oil refineries)  
+  - Mobile sources (e.g., cars, buses, trains)  
+  - Natural sources (e.g., wind-blown dust)  
+  - Pollution producing sites from agricultural areas, cities and wood-burning appliances  
+ 
+4. **Have you noticed any changes in air quality in your community over the past 5 years?** (Select Box)
+  - Yes, air quality has improved  
+  - No, air quality has decreased  
+  - I do not feel any changes in the air quality
+
+5. **Do you feel that vulnerable populations (e.g., low-income individuals, children, elderly individuals) are disproportionately affected by air pollution in your community?** (Open-ended)
+   
+
+5. **Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?** (Multi-choice)
+   - Yes  
+   - No
+
+6. **If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?** (Multi-choice)
+   - Shopping area  
+   - Schools  
+   - No, but I wish we did.  
+   - No and I prefer not having them.
+
+9. **Have you done anything to improve the air quality in your home or neighborhood? If so, what did you do? If not, what prevents you from taking action?** (Long text)
+
+
+10. **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?)**  (Multi-choice) 
+    - Attending the community outreach event  
+    - Connect with local working group to be the messenger to deliver this information to your neighborhood  
+
+
+# Indices
+These indices provide a composite score reflecting various factors, including economic, health, and environmental indicators, which can significantly affect community perceptions.
+
+## [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)
+```{r}
+#datatable(svi_response)
+```
+
+## [Environmental Justice Index Indicators](https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html)
+```{r}
+#datatable(eji_response)
+```
+
+## [Environmental Justice Index Indicators](https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
+```{r}
+#datatable(ejscreen_response)
+```
+
+# Analysis 
+
+Comparative Analysis - Use comparative statistics (t-tests, ANOVA) to determine if there are statistically significant differences in responses between demographic groups, geographic locations, or SVI/EJI categories. For example, comparing the importance of tree benefits between communities with high vs. low vulnerability scores.
+
+Regression Analysis - Conduct regression analyses (linear regression, logistic regression) to examine the relationship between demographic or SVI/EJI indicators and specific perceptions or attitudes. This can help identify factors that most strongly predict positive or negative perceptions. For example, if people from low vulnerability areas are more/less likely to report issues. 
+
+Correlation Analysis - Explore correlations between SVI/EJI scores and survey responses to see if higher vulnerability or environmental injustice scores are associated with specific perceptions or concerns about trees and green spaces.
+
+
 ```{r, include=FALSE}
 
 pol_impact <- clean_multi(air_survey,pollution_health_impact)
@@ -178,6 +298,8 @@ pol_interest <- clean_box(air_survey,deployment_participation_interest)
 pol_interest_viz <- viz_box_multi(pol_interest,"Deployment Interest")
 ```
 
+
+# Air Quality Analysis
 
 ## Response Summary
 
@@ -249,6 +371,7 @@ pol_interest_viz
 #   )
 
 data_tracts <- c(unique(tree_survey$census_tract_full))
+data_blocks <- c(unique(tree_survey$census_block_full))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
 svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
@@ -283,8 +406,6 @@ eji_response_analysis <- eji_response %>%
 
 eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
 
-
-
 #https://www.epa.gov/ejscreen/understanding-ejscreen-results
 ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
 ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
@@ -300,30 +421,45 @@ summary_eji <- eji_response_analysis %>%
   group_by(vulnerable) %>%
   summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
 
+summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
+
 
 library(sf)          # for handling spatial data
 library(tigris)
 options(tigris_use_cache = TRUE)
+options(scipen=999)
 
 
 # Load the shapefile
-wisconsin_tracts <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+#wisconsin_blocks <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+
+wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
 
 # Filter to include only your tracts
+#tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
 # Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
-target_tracts <- c("550250001001", "550250001002", "550250002011", "550250002012", "550250002021", "550250002022")
-
+target_tracts <- c(unique(tree_survey$census_tract_full))
 
 # Convert your 'geoid' values to character if they are not already, to ensure matching works
-wisconsin_tracts_filtered <- wisconsin_tracts %>%
+wisconsin_tracts_filtered <- wisconsin_tract %>%
     filter(as.character(GEOID) %in% target_tracts)
+
+eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid)
+
+wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid"))
 
 # Plot using ggplot2
 county_data <- ggplot() +
-  geom_sf(data = wisconsin_tracts_filtered, fill = "lightblue", color = "white") +
+  geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
+    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "RPL EJI Scale") + # Customize color scale as needed
   theme_minimal() +
-  labs(title = "Highlighted Census Tracts in Dane County, Wisconsin")
-
+   theme_bw() + theme(panel.border = element_blank(), 
+                      panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(), 
+                      axis.line = element_blank(),
+                      axis.text = element_blank(),
+                      axis.ticks = element_blank()) +
+  labs(title = "Environmental Burden Highlighted Census Tracts")
 ```
 
 
@@ -332,10 +468,14 @@ county_data
 ```
 
 
+
 In our analysis, we categorized vulnerability based on the Environmental Burden Module (RPL_EBM) percentile ranks derived from the 2022 Environmental Justice Index. To do this, we first determined the 25th (Q1) and 75th (Q3) percentile values of the RPL_EBM distribution. These percentile values served as thresholds to categorize regions based on their environmental burden. Specifically, regions with an RPL_EBM value greater than the 75th percentile (Q3) were categorized as "Most Vulnerable", indicating that they are in the top quartile of environmental burden and, therefore, face higher vulnerability to environmental injustices. Conversely, regions not exceeding this threshold were categorized as "Least Vulnerable". This method of categorization allows us to identify areas with the most significant environmental challenges and prioritize them for interventions and resource allocation.
 
 ```{r}
 datatable(summary_eji)
 ```
+
+
+
 
 

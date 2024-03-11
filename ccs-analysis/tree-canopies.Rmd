@@ -68,7 +68,7 @@ clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
   cleaned_data$answer <- as.factor(cleaned_data$answer)
   
   summary_data <- cleaned_data %>%
-    group_by(question, answer, {{demographic_var}}) %>%
+    group_by( {{demographic_var}},question,answer) %>%
     summarise(n = n()) %>%
     mutate(freq = round((n / sum(n)),digits=2     )*100)
   
@@ -116,7 +116,7 @@ clean_multi <- function(data, response) {
   summary_data <- cleaned_data %>%
     group_by({{ response }}) %>%
     summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2) * 100)
+    mutate(freq = round(count / dim(data)[1], digits = 2) * 100)
       names(summary_data)[1] <- "response"
 
   return(summary_data)
@@ -124,16 +124,31 @@ clean_multi <- function(data, response) {
 
 clean_multi_eval <- function(data, column_name, demographic_var) {
 
-  cleaned_data <- data %>%
-    separate_rows({{ column_name }}, sep = "; ") %>%
-    separate({{ column_name }}, into = c("question"), sep = " - ")
+# Calculate the total number of responses per vulnerable category
+people <- data %>%
+  group_by({{demographic_var}}) %>%
+  summarise(total = n())
 
-  summary_data <- cleaned_data %>%
-    group_by(question, {{demographic_var}}) %>%
-    summarise(n = n()) %>%
-    mutate(freq = round((n / sum(n)),digits=2     )*100)
-  
-  return(summary_data)
+
+# Clean the data by separating rows and columns as required
+cleaned_data <- data %>%
+  separate_rows({{ column_name }}, sep = "; ") %>%
+  separate({{ column_name }}, into = c("question"), sep = " - ")
+print(cleaned_data)
+
+
+# Calculate the summary data including frequencies
+summary_data <- cleaned_data %>%
+  #group_by({{demographic_var}}, question) %>%
+  group_by(vulnerable, question) %>%
+  summarise(n = n(), .groups = 'drop')
+
+summary_data <- merge(summary_data,people, by = "vulnerable")
+
+summary_data <- summary_data  %>%
+  mutate(freq = round((n / total), digits = 2) * 100)
+
+return(summary_data)
 }
 
 viz_clean_multi_eval <- function(dataframe,graph_title) {
@@ -385,14 +400,16 @@ tree_damage_viz <- viz_box_multi(tree_damage,"Trree")
 
 ###
 tree_value <- clean_multi(tree_survey,tree_values)
+tree_value <- tree_value[which(tree_value$freq>0),]
 tree_value_viz <- viz_box_multi(tree_value,"Trree")
 
 ###
 tree_area_need <- clean_multi(tree_survey,areas_needing_trees)
-ttree_area_need_viz <- viz_box_multi(tree_area_need,"Trree")
+tree_area_need_viz <- viz_box_multi(tree_area_need,"Trree")
 
 ###
 tree_types <- clean_multi(tree_survey,preferred_tree_types)
+tree_types <- tree_types[which(tree_types$freq>0),]
 tree_types_viz <- viz_box_multi(tree_types,"Trree")
 
 ###
@@ -538,7 +555,7 @@ tree_value_viz
     - Other (please specify)
 ```{r}
 datatable(tree_area_need)
-ttree_area_need_viz
+tree_area_need_viz
 ```
 
 ### Desired Types of Trees
