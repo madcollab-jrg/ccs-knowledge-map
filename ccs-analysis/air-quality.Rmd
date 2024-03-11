@@ -29,6 +29,7 @@ air_survey <- air_survey %>%
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
+
 ### ### ### ### ### ### ### ### ### ## 
 ### Functions for MATRIX QUESTIONS ### 
 ### ### ### ### ### ### ### ### ### ##
@@ -78,16 +79,15 @@ clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
 
 ## clean_matrix with variable
 clean_matrix_eval_viz <- function(dataframe, demographic_var) {
-  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
-    geom_bar(position = "fill") +
-    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
-    scale_y_continuous(labels = scales::percent_format()) +
+   ggplot(dataframe, aes(x = !!sym(demographic_var), y = freq, fill = answer)) +
+    geom_bar(stat = "identity", position = "fill") +  # Use 'fill' to stack the bars to 100%
+    scale_y_continuous(labels = scales::percent_format()) +  # Use percent format for y-axis labels
+    labs(y = "Percentage", x = "Vulnerability Level", fill = "Answer") +
+    coord_flip() +  # Flip the axes to have vulnerability level on the y-axis
     theme_minimal() +
-    coord_flip() +
     theme(axis.text.x = element_text(hjust = 1)) +
-scale_fill_nejm()
+ scale_fill_nejm()
 }
-
 
 
 ### ### ### ### ### ### ### ### ### 
@@ -102,6 +102,42 @@ clean_box <- function(data, response) {
     names(summary_data)[1] <- "response"
 
   return(summary_data)
+}
+
+clean_box_eval <- function(data, column_name, demographic_var) {
+
+# Calculate the total number of responses per vulnerable category
+people <- air_survey_experiences %>%
+  group_by({{demographic_var}}) %>%
+  summarise(total = n())
+
+# Calculate the summary data including frequencies
+summary_data <- air_survey_experiences %>%
+    group_by({{demographic_var}}, {{column_name}}) %>%
+    summarise(n = n()) 
+
+summary_data <- merge(summary_data,people, by = "vulnerable")
+
+summary_data <- summary_data  %>%
+  mutate(freq = round((n / total), digits = 2) * 100)
+names(summary_data)[2] <- "question"
+return(summary_data)
+}
+
+viz_clean_box_eval <- function(dataframe,graph_title) {
+ 
+  # Create the bar chart
+   # Create the bar chart with differentiation for 'vulnerable' levels within each 'question'
+  ggplot(dataframe, aes(x=reorder(question, -freq), y=freq, fill=vulnerable)) +
+    geom_bar(stat="identity", position="dodge") + # Use 'position=dodge' to place bars side by side
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 40 characters
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    scale_fill_brewer(palette="Set1") + # Use a Brewer palette for distinguishable colors
+    theme(axis.text.x = element_text(angle=45, hjust=1))
 }
 
 
@@ -186,6 +222,59 @@ viz_box_multi <- function(dataframe,graph_title) {
          y="Frequency (%)") +
     theme(axis.text.x = element_text(angle=45, hjust=1))+
 scale_fill_nejm()
+}
+
+### STATS ANALYSIS
+clean_matrix_eval_chi <- function(questions_df) {
+  results_list <- list() # Initialize an empty list to store the results dataframes
+  
+  # Loop through each unique question in the questions dataframe
+  for(i in unique(questions_df$question)){
+    data <- questions_df %>% filter(question == i)
+    
+    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
+    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
+    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
+    chi_squared_test <- chisq.test(contingency_table)
+    
+    # Create a dataframe with the Chi-Squared test results
+    results_df <- data.frame(
+      question = i,
+      statistic = chi_squared_test$statistic,
+      pvalue = chi_squared_test$p.value,
+      degreeof = chi_squared_test$parameter
+    )
+    
+    # Store the results dataframe in the list
+    results_list[[i]] <- results_df
+  }
+  
+  # Combine all result dataframes in the list into a single dataframe
+  final_results_df <- do.call(rbind, results_list)
+  
+  return(final_results_df)
+}
+
+
+clean_multi_eval_chi <- function(dataframe) {
+  # Ensure 'n' is treated as numeric
+  dataframe$n <- as.numeric(dataframe$n)
+  
+  results <- dataframe %>%
+    group_by(question) %>%
+    summarise(Least = sum(n[vulnerable == "Least"]),
+              Most = sum(n[vulnerable == "Most"])) %>%
+    rowwise() %>%
+    do({
+      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      data.frame(question = .$question,
+                 statistic = round(chi_test_result$statistic, 3),
+                 pvalue = round(chi_test_result$p.value, 3),
+                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
+    }) %>%
+    ungroup()
+  
+  return(results)
 }
 
 names(air_survey)[5:14] <- c('air_quality_experience',
@@ -302,7 +391,6 @@ pol_interest <- pol_interest[which(pol_interest$freq >0),]
 pol_interest_viz <- viz_box_multi(pol_interest,"Deployment Interest")
 ```
 
-
 # Air Quality Analysis
 
 ## Response Summary
@@ -374,8 +462,8 @@ pol_interest_viz
 #     census_block_full = paste0(state_fips, county_code, census_tract, census_block),
 #   )
 
-data_tracts <- c(unique(tree_survey$census_tract_full))
-data_blocks <- c(unique(tree_survey$census_block_full))
+data_tracts <- c(unique(air_survey$census_tract_full))
+data_blocks <- c(unique(air_survey$census_block_full))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
 svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
@@ -386,7 +474,7 @@ svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
 eji <- eji[which(!is.na(eji$RPL_EBM)),]
-eji <- eji[which(eji$COUNTY == "Dane"),]
+eji <- eji[which(eji$COUNTY == c("Dane","Jefferson")),]
 
 # Calculate quartiles
 Q1 <- quantile(eji$RPL_EBM, 0.25)
@@ -442,7 +530,7 @@ wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography
 # Filter to include only your tracts
 #tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
 # Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
-target_tracts <- c(unique(tree_survey$census_tract_full))
+target_tracts <- c(unique(air_survey$census_tract_full))
 
 # Convert your 'geoid' values to character if they are not already, to ensure matching works
 wisconsin_tracts_filtered <- wisconsin_tract %>%
@@ -478,57 +566,81 @@ datatable(summary_eji)
 ```
 
 
-
 ```{r echo=FALSE}
-air_survey$census_tract_full <- as.character(air_survey$census_tract_full)
+air_survey$census_tract_full <- as.character(air_survey$census_tract_full) # CHANGE NAME
 # Group people into least/most vulnerable areas 
-air_survey <- left_join(air_survey, eji_response_analysis, by =c("census_tract_full"="geoid"))
+air_survey <- left_join(air_survey, eji_response_analysis, by =c("census_tract_full"="geoid")) # CHANGE NAME
 #tree_survey
 
-# Experiences with tree canopies
-air_survey_experiences <- air_survey[c(3,5,9,11,12,14,15,86)]
-air_survey_experiences <- air_survey_experiences[which(!is.na(air_survey_experiences$vulnerable)),]
+air_survey_experiences <- air_survey[which(!is.na(air_survey$vulnerable)),]
+# Experiences with airquality
 
+vulnerable_q2 <- clean_multi_eval(air_survey_experiences,pollution_health_impact,vulnerable)
+vulnerable_q2_viz <- viz_clean_multi_eval(vulnerable_q2,"Pollution Health Impacts")
+vulnerable_q2_chi <- clean_multi_eval_chi(vulnerable_q2)
 
-vulnerable_q5 <- clean_matrix_eval(tree_survey_experiences,"past_years",vulnerable)
-vulnerable_q5_a <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),]
-vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),]
-vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),],"vulnerable")
-vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),],"vulnerable")
+vulnerable_q3 <- clean_multi_eval(air_survey_experiences,pollution_sources_identification,vulnerable)
+vulnerable_q3_viz <- viz_clean_multi_eval(vulnerable_q3,"Pollution Sources Issues")
+vulnerable_q3_chi <- clean_multi_eval_chi(vulnerable_q3)
 
-clean_matrix_eval_chi <- function(questions_df) {
-  results_list <- list() # Initialize an empty list to store the results dataframes
-  
-  # Loop through each unique question in the questions dataframe
-  for(i in unique(questions_df$question)){
-    data <- questions_df %>% filter(question == i)
-    
-    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
-    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
-    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
-    chi_squared_test <- chisq.test(contingency_table)
-    
-    # Create a dataframe with the Chi-Squared test results
-    results_df <- data.frame(
-      question = i,
-      statistic = chi_squared_test$statistic,
-      pvalue = chi_squared_test$p.value,
-      degreeof = chi_squared_test$parameter
-    )
-    
-    # Store the results dataframe in the list
-    results_list[[i]] <- results_df
-  }
-  
-  # Combine all result dataframes in the list into a single dataframe
-  final_results_df <- do.call(rbind, results_list)
-  
-  return(final_results_df)
-}
+vulnerable_q4 <- clean_multi_eval(air_survey_experiences,quality_change_perception,vulnerable)
+vulnerable_q4_viz <- viz_clean_multi_eval(vulnerable_q4,"Community Air Quality Changes")
+vulnerable_q4_chi <- clean_multi_eval_chi(vulnerable_q4)
 
-# Example usage:
-vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
-# print(results)
+vulnerable_q6 <- clean_multi_eval(air_survey_experiences,contaminants_awareness_knowledge,vulnerable)
+vulnerable_q6_viz <- viz_clean_multi_eval(vulnerable_q6,"Awareness of Contaminants")
+vulnerable_q6_chi <- clean_multi_eval_chi(vulnerable_q6)
+
+vulnerable_q7 <- clean_multi_eval(air_survey_experiences,sensor_location_suggestions,vulnerable)
+vulnerable_q7_viz <- viz_clean_multi_eval(vulnerable_q7,"Location of Sensors")
+vulnerable_q7_chi <- clean_multi_eval_chi(vulnerable_q7)
+
+vulnerable_q9 <- clean_multi_eval(air_survey_experiences,alert_reception_preference,vulnerable)
+vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Air Quality Alerts")
+vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
+
+vulnerable_q10 <-clean_box_eval(air_survey_experiences,deployment_participation_interest,vulnerable)
+vulnerable_q10_viz <- viz_clean_box_eval(vulnerable_q10,"Deployment Interest")
 ```
 
+```{r}
+datatable(vulnerable_q2)
+vulnerable_q2_viz
+datatable(vulnerable_q2_chi)
+```
 
+```{r}
+datatable(vulnerable_q3)
+vulnerable_q3_viz
+datatable(vulnerable_q3_chi)
+```
+
+```{r}
+datatable(vulnerable_q4)
+vulnerable_q4_viz
+datatable(vulnerable_q4_chi)
+```
+
+```{r}
+datatable(vulnerable_q6)
+vulnerable_q6_viz
+datatable(vulnerable_q6_chi)
+```
+
+```{r}
+datatable(vulnerable_q7)
+vulnerable_q7_viz
+datatable(vulnerable_q7_chi)
+```
+
+```{r}
+datatable(vulnerable_q9)
+vulnerable_q9_viz
+datatable(vulnerable_q9_chi)
+```
+
+```{r}
+datatable(vulnerable_q10)
+vulnerable_q10_viz
+datatable(vulnerable_q10_chi)
+```

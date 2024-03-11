@@ -26,6 +26,9 @@ library(broom) # For tidy chi-squared test results
 tree_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_survey.csv")
 tree_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_map.csv")
 
+tree_survey <- tree_survey %>%
+  distinct(Contribution.ID, .keep_all = TRUE)
+
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
 ### ### ### ### ### ### ### ### ### ## 
@@ -77,16 +80,15 @@ clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
 
 ## clean_matrix with variable
 clean_matrix_eval_viz <- function(dataframe, demographic_var) {
-  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
-    geom_bar(position = "fill") +
-    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
-    scale_y_continuous(labels = scales::percent_format()) +
+   ggplot(dataframe, aes(x = !!sym(demographic_var), y = freq, fill = answer)) +
+    geom_bar(stat = "identity", position = "fill") +  # Use 'fill' to stack the bars to 100%
+    scale_y_continuous(labels = scales::percent_format()) +  # Use percent format for y-axis labels
+    labs(y = "Percentage", x = "Vulnerability Level", fill = "Answer") +
+    coord_flip() +  # Flip the axes to have vulnerability level on the y-axis
     theme_minimal() +
-    coord_flip() +
     theme(axis.text.x = element_text(hjust = 1)) +
-scale_fill_nejm()
+ scale_fill_nejm()
 }
-
 
 
 ### ### ### ### ### ### ### ### ### 
@@ -102,6 +104,27 @@ clean_box <- function(data, response) {
 
   return(summary_data)
 }
+
+clean_box_eval <- function(data, column_name, demographic_var) {
+
+# Calculate the total number of responses per vulnerable category
+people <- air_survey_experiences %>%
+  group_by({{demographic_var}}) %>%
+  summarise(total = n())
+
+# Calculate the summary data including frequencies
+summary_data <- air_survey_experiences %>%
+    group_by({{demographic_var}}, {{column_name}}) %>%
+    summarise(n = n()) 
+
+summary_data <- merge(summary_data,people, by = "vulnerable")
+
+summary_data <- summary_data  %>%
+  mutate(freq = round((n / total), digits = 2) * 100)
+
+return(summary_data)
+}
+
 
 
 
@@ -736,7 +759,7 @@ wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_an
 # Plot using ggplot2
 county_data <- ggplot() +
   geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
-    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "RPL EJI Scale") + # Customize color scale as needed
+    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "EJI ranking") + # Customize color scale as needed
   theme_minimal() +
    theme_bw() + theme(panel.border = element_blank(), 
                       panel.grid.major = element_blank(),
@@ -769,14 +792,12 @@ tree_survey_experiences <- tree_survey[c(3,5,9,11,12,14,15,86)]
 
 tree_survey_experiences <- tree_survey_experiences[which(!is.na(tree_survey_experiences$vulnerable)),]
 vulnerable_q5 <- clean_matrix_eval(tree_survey_experiences,"past_years",vulnerable)
+vulnerable_q5$answer <- factor(vulnerable_q5$answer, levels = rev(c("Decreased", "Stayed the same", "Increased", "I do not know")))
+
 vulnerable_q5_a <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),]
 vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),]
-vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),],"vulnerable")
-vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),],"vulnerable")
-
-# Example usage:
-vulnerable_q5_chi_a <- clean_matrix_eval_chi(vulnerable_q5_a)
-vulnerable_q5_chi_b <- clean_matrix_eval_chi(vulnerable_q5_b)
+vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5_a,"vulnerable")
+vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5_b,"vulnerable")
 
 # print(results)
 ```
@@ -791,7 +812,7 @@ vulnerable_q5_chi_b <- clean_matrix_eval_chi(vulnerable_q5_b)
 ```{r}
 datatable(vulnerable_q5_a) 
 vulnerable_q5viz_a
-datatable(vulnerable_q5_chi_a)
+#datatable(vulnerable_q5_chi_a)
 ```
    
 
@@ -803,7 +824,7 @@ datatable(vulnerable_q5_chi_a)
 ```{r}
 datatable(vulnerable_q5_b) 
 vulnerable_q5viz_b
-datatable(vulnerable_q5_chi_b)
+#datatable(vulnerable_q5_chi_b)
 ```
 
 ```{r echo=FALSE}
