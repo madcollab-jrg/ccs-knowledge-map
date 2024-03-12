@@ -448,19 +448,19 @@ datatable(pol_interest)
 pol_interest_viz
 ```
 
-## Place Analysis for Tree Canopies
+
+## Place Analysis for Air Quality
 ```{r place-analysis, include=FALSE, cache=FALSE}
 
-# The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
 
-# tree_survey <- tree_survey %>%
-#   mutate(
-#     county_code = sprintf("%03d", as.integer(county_fips)),
-#     census_tract = sprintf("%06d", as.integer(census_tract)),
-#     census_block = sprintf("%04d", as.integer(census_block)),
-#     census_tract_full = paste0(state_fips, county_code, census_tract),
-#     census_block_full = paste0(state_fips, county_code, census_tract, census_block),
-#   )
+air_survey <- air_survey %>%
+  mutate(
+    county_code = sprintf("%03d", as.integer(county_fips)),
+    census_tract = sprintf("%06d", as.integer(census_tract)),
+    census_block = sprintf("%04d", as.integer(census_block)),
+    census_tract_full = paste0(state_fips, county_code, census_tract),
+    census_block_full = paste0(state_fips, county_code, census_tract, census_block),
+  )
 
 data_tracts <- c(unique(air_survey$census_tract_full))
 data_blocks <- c(unique(air_survey$census_block_full))
