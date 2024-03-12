@@ -26,6 +26,9 @@ library(broom) # For tidy chi-squared test results
 tree_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_survey.csv")
 tree_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/tree-canopy/tree_map.csv")
 
+tree_survey <- tree_survey %>%
+  distinct(Contribution.ID, .keep_all = TRUE)
+
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
 ### ### ### ### ### ### ### ### ### ## 
@@ -77,16 +80,15 @@ clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
 
 ## clean_matrix with variable
 clean_matrix_eval_viz <- function(dataframe, demographic_var) {
-  ggplot(dataframe, aes_string(x = demographic_var, fill = "answer")) +
-    geom_bar(position = "fill") +
-    labs(y = "Percentage", x = "Demographic Group", fill = "Answer") +
-    scale_y_continuous(labels = scales::percent_format()) +
+   ggplot(dataframe, aes(x = !!sym(demographic_var), y = freq, fill = answer)) +
+    geom_bar(stat = "identity", position = "fill") +  # Use 'fill' to stack the bars to 100%
+    scale_y_continuous(labels = scales::percent_format()) +  # Use percent format for y-axis labels
+    labs(y = "Percentage", x = "Vulnerability Level", fill = "Answer") +
+    coord_flip() +  # Flip the axes to have vulnerability level on the y-axis
     theme_minimal() +
-    coord_flip() +
     theme(axis.text.x = element_text(hjust = 1)) +
-scale_fill_nejm()
+ scale_fill_nejm()
 }
-
 
 
 ### ### ### ### ### ### ### ### ### 
@@ -102,6 +104,27 @@ clean_box <- function(data, response) {
 
   return(summary_data)
 }
+
+clean_box_eval <- function(data, column_name, demographic_var) {
+
+# Calculate the total number of responses per vulnerable category
+people <- air_survey_experiences %>%
+  group_by({{demographic_var}}) %>%
+  summarise(total = n())
+
+# Calculate the summary data including frequencies
+summary_data <- air_survey_experiences %>%
+    group_by({{demographic_var}}, {{column_name}}) %>%
+    summarise(n = n()) 
+
+summary_data <- merge(summary_data,people, by = "vulnerable")
+
+summary_data <- summary_data  %>%
+  mutate(freq = round((n / total), digits = 2) * 100)
+
+return(summary_data)
+}
+
 
 
 
@@ -187,18 +210,58 @@ viz_box_multi <- function(dataframe,graph_title) {
 scale_fill_nejm()
 }
 
+### STATS ANALYSIS
+clean_matrix_eval_chi <- function(questions_df) {
+  results_list <- list() # Initialize an empty list to store the results dataframes
+  
+  # Loop through each unique question in the questions dataframe
+  for(i in unique(questions_df$question)){
+    data <- questions_df %>% filter(question == i)
+    
+    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
+    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
+    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
+    chi_squared_test <- chisq.test(contingency_table)
+    
+    # Create a dataframe with the Chi-Squared test results
+    results_df <- data.frame(
+      question = i,
+      statistic = chi_squared_test$statistic,
+      pvalue = chi_squared_test$p.value,
+      degreeof = chi_squared_test$parameter
+    )
+    
+    # Store the results dataframe in the list
+    results_list[[i]] <- results_df
+  }
+  
+  # Combine all result dataframes in the list into a single dataframe
+  final_results_df <- do.call(rbind, results_list)
+  
+  return(final_results_df)
+}
 
 
-
-
-
-### Functions for DAta VISUALIZATION 
-# Define the visualization function
-
-
-
-
-
+clean_multi_eval_chi <- function(dataframe) {
+  # Ensure 'n' is treated as numeric
+  dataframe$n <- as.numeric(dataframe$n)
+  
+  results <- dataframe %>%
+    group_by(question) %>%
+    summarise(Least = sum(n[vulnerable == "Least"]),
+              Most = sum(n[vulnerable == "Most"])) %>%
+    rowwise() %>%
+    do({
+      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      data.frame(question = .$question,
+                 statistic = round(chi_test_result$statistic, 3),
+                 pvalue = round(chi_test_result$p.value, 3),
+                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
+    }) %>%
+    ungroup()
+  
+  return(results)
+}
 
 new_names <- c(
   "past_years","importance_of_benefits","agreement_about_trees","neighborhood_street_trees","tree_infrastructure_damage","tree_quality_life","tree_values","areas_needing_trees","preferred_tree_types","tree_goals","tree_support")
@@ -696,7 +759,7 @@ wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_an
 # Plot using ggplot2
 county_data <- ggplot() +
   geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
-    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "RPL EJI Scale") + # Customize color scale as needed
+    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "EJI ranking") + # Customize color scale as needed
   theme_minimal() +
    theme_bw() + theme(panel.border = element_blank(), 
                       panel.grid.major = element_blank(),
@@ -729,43 +792,13 @@ tree_survey_experiences <- tree_survey[c(3,5,9,11,12,14,15,86)]
 
 tree_survey_experiences <- tree_survey_experiences[which(!is.na(tree_survey_experiences$vulnerable)),]
 vulnerable_q5 <- clean_matrix_eval(tree_survey_experiences,"past_years",vulnerable)
+vulnerable_q5$answer <- factor(vulnerable_q5$answer, levels = rev(c("Decreased", "Stayed the same", "Increased", "I do not know")))
+
 vulnerable_q5_a <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),]
 vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),]
-vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),],"vulnerable")
-vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),],"vulnerable")
+vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5_a,"vulnerable")
+vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5_b,"vulnerable")
 
-clean_matrix_eval_chi <- function(questions_df) {
-  results_list <- list() # Initialize an empty list to store the results dataframes
-  
-  # Loop through each unique question in the questions dataframe
-  for(i in unique(questions_df$question)){
-    data <- questions_df %>% filter(question == i)
-    
-    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
-    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
-    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
-    chi_squared_test <- chisq.test(contingency_table)
-    
-    # Create a dataframe with the Chi-Squared test results
-    results_df <- data.frame(
-      question = i,
-      statistic = chi_squared_test$statistic,
-      pvalue = chi_squared_test$p.value,
-      degreeof = chi_squared_test$parameter
-    )
-    
-    # Store the results dataframe in the list
-    results_list[[i]] <- results_df
-  }
-  
-  # Combine all result dataframes in the list into a single dataframe
-  final_results_df <- do.call(rbind, results_list)
-  
-  return(final_results_df)
-}
-
-# Example usage:
-vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
 # print(results)
 ```
 
@@ -779,6 +812,7 @@ vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
 ```{r}
 datatable(vulnerable_q5_a) 
 vulnerable_q5viz_a
+#datatable(vulnerable_q5_chi_a)
 ```
    
 
@@ -790,37 +824,12 @@ vulnerable_q5viz_a
 ```{r}
 datatable(vulnerable_q5_b) 
 vulnerable_q5viz_b
-```
-
-```{r}
-vulnerable_q5_chi
+#datatable(vulnerable_q5_chi_b)
 ```
 
 ```{r echo=FALSE}
 vulnerable_q9 <- clean_multi_eval(tree_survey_experiences,tree_infrastructure_damage,vulnerable)
 vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Tree Related Damage in My Community")
-
-clean_multi_eval_chi <- function(dataframe) {
-  # Ensure 'n' is treated as numeric
-  dataframe$n <- as.numeric(dataframe$n)
-  
-  results <- dataframe %>%
-    group_by(question) %>%
-    summarise(Least = sum(n[vulnerable == "Least"]),
-              Most = sum(n[vulnerable == "Most"])) %>%
-    rowwise() %>%
-    do({
-      chi_test_result <- chisq.test(c(.$Least, .$Most))
-      data.frame(question = .$question,
-                 statistic = round(chi_test_result$statistic, 3),
-                 pvalue = round(chi_test_result$p.value, 3),
-                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
-    }) %>%
-    ungroup()
-  
-  return(results)
-}
-
 vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
 ```
 
