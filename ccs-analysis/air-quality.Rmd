@@ -642,5 +642,5 @@ datatable(vulnerable_q9_chi)
 ```{r}
 datatable(vulnerable_q10)
 vulnerable_q10_viz
-datatable(vulnerable_q10_chi)
+#datatable(vulnerable_q10_chi)
 ```
