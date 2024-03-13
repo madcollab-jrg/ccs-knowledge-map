@@ -1,0 +1,229 @@
+---
+title: 'CCS Knowledge Map Results: EJ'
+author: "Corey Jackson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(DT)
+library(ggsci)
+library(gridExtra)
+library(stringr)
+library(broom) # For tidy chi-squared test results
+potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
+                     330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
+                     346, 348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359, 360, 361, 
+                     362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 374, 376, 378, 379, 380,
+                     381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399)
+
+
+# Import all datasets
+ej_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-survey/ej_survey.csv")
+ej_report <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-report/ej_report.csv")
+
+# Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
+
+# Cleaning functions
+clean_matrix <- function(dataframe, column_name) {
+  cleaned_data <- dataframe %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
+  cleaned_data$answer <- as.factor(cleaned_data$answer)
+  
+  summary_data <- cleaned_data %>%
+    group_by(question, answer) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
+
+clean_box <- function(data, response) {
+  summary_data <- data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2)*100)
+    names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+
+clean_multi <- function(data, response) {
+  cleaned_data <- data %>%
+    separate_rows({{ response }}, sep = "; ")
+  
+  summary_data <- cleaned_data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2) * 100)
+      names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+
+# Viz functions
+viz_matrix <- function(dataframe, graph_title) {
+  ggplot(dataframe, aes(x=question, y=freq, fill=answer)) +
+    geom_bar(stat="identity", position="stack") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Question",
+         y="Frequency (%)",
+         fill="Answer") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+scale_fill_nejm()
+}
+
+viz_box_multi <- function(dataframe,graph_title) {
+  # Order the dataframe by decreasing frequency
+  ordered_df <- dataframe %>%
+    arrange(desc(freq))
+  
+  # Create the bar chart
+  ggplot(ordered_df, aes(x=reorder(response, -freq), y=freq)) +
+    geom_bar(stat="identity", fill="blue") +
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 5 words
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    theme(axis.text.x = element_text(angle=45, hjust=1))+
+scale_fill_nejm()
+}
+```
+
+# Environmental Justics Survey Descriptions
+
+## EJ Stories 
+```{r ej-stories-setup, include=FALSE, cache=TRUE}
+
+```
+
+- Description of survey and the questions asked
+
+
+## EJ Solutions
+```{r ej-solutions-setup, include=FALSE, cache=TRUE}
+names(ej_survey)[5:17] <- c("personal_justice_interpretation",
+    "impactful_ej_issue",
+    "personal_health_issue",
+    "agreement_level_statements",
+    "statements_agreement_level",
+    "policy_change_need",
+    "entity_responsibility_rating",
+    "action_effectiveness_ranking",
+    "technology_climate_potential",
+    "community_technology_willingness",
+    "technology_equity_responsibility",
+    "community_action_collaboration",
+    "individual_support_steps")
+
+personal_justice_interpretation <- clean_multi(ej_survey,personal_justice_interpretation)
+personal_justice_interpretation_viz <- viz_box_multi(personal_justice_interpretation,"Personal Justice Interpretation")
+
+impactful_ej_issue <- clean_multi(ej_survey,impactful_ej_issue)
+impactful_ej_issue_viz <- viz_box_multi(impactful_ej_issue,"Impactful Ej Issue")
+
+agreement_level_statements <- clean_matrix(ej_survey,agreement_level_statements)
+agreement_level_statements_viz <- viz_matrix(agreement_level_statements,"Agreement Level Statements")
+
+statements_agreement_level <- clean_matrix(ej_survey,statements_agreement_level)
+statements_agreement_level_viz <- viz_matrix(statements_agreement_level, "Statements Agreement Level")
+
+policy_change_need <- clean_multi(ej_survey,policy_change_need)
+policy_change_need_viz <- viz_box_multi(policy_change_need,"Policy Change Need")
+
+entity_responsibility_rating <- clean_matrix(ej_survey,entity_responsibility_rating)
+entity_responsibility_rating_viz <- viz_matrix(entity_responsibility_rating,"Entity Responsibility Rating")
+
+technology_climate_potential <- clean_multi(ej_survey,technology_climate_potential)
+technology_climate_potential_viz <- viz_box_multi(technology_climate_potential,"Technology Climate Potential")
+
+community_technology_willingness <- clean_multi(ej_survey,community_technology_willingness)
+community_technology_willingness_viz <- viz_box_multi(community_technology_willingness,"Community Technology Willingness")
+
+# technology_equity_responsibility <- clean_matrix(ej_survey,technology_equity_responsibility)
+# technology_equity_responsibility_viz <- viz_matrix(technology_equity_responsibility,"Technology Equity Responsibility")
+technology_equity_responsibility <- clean_multi(ej_survey,technology_equity_responsibility)
+technology_equity_responsibility_viz <- viz_box_multi(technology_equity_responsibility,"Technology Equity Responsibility")
+
+
+```
+
+
+### What does the term "environmental justice" mean to you?
+```{r}
+datatable(personal_justice_interpretation)
+personal_justice_interpretation_viz
+```
+
+### Which environmental justice issue do you think has the most significant impact on public health?
+```{r}
+datatable(impactful_ej_issue)
+impactful_ej_issue_viz
+```
+
+### Please rate how much do you agree/disagree with the statements
+```{r}
+datatable(agreement_level_statements)
+agreement_level_statements_viz
+```
+
+### Please rate how much do you agree/disagree with the statements
+```{r}
+datatable(statements_agreement_level)
+statements_agreement_level_viz
+```
+
+### What is the most important policy change needed to address environmental justice in the United States? (select up to 3)
+```{r}
+datatable(policy_change_need)
+policy_change_need_viz
+```
+
+### Rate the following entities on their responsibility for addressing environmental justice issues
+```{r}
+datatable(entity_responsibility_rating)
+entity_responsibility_rating_viz
+```
+
+### To what extent do you believe that new technology has the potential to slow down climate change?
+```{r}
+datatable(technology_climate_potential)
+technology_climate_potential_viz
+```
+
+### If there was new technology to slow down climate change, how willing would you be to use it in your community?
+```{r}
+datatable(community_technology_willingness)
+community_technology_willingness_viz
+```
+
+### Who should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?
+```{r}
+#ej_survey
+technology_equity_responsibility_viz <- viz_box_multi(technology_equity_responsibility,"Technology Equity Responsibility")
+technology_equity_responsibility_viz
+```
+
+```{r}
+datatable(technology_equity_responsibility)
+technology_equity_responsibility_viz
+```
+
+
+
+
+- Description of survey and the questions asked
+
+# Meta Summary

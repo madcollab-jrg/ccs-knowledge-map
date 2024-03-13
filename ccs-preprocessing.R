@@ -265,6 +265,8 @@ write.csv(ccs_actions_NA,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/
 ut_demographics <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ut_demo/demographicsUT.csv") # move to Zoonvierse Datasets folder
 colnames(ut_demographics) <- gsub("Contact - ", "", colnames(ut_demographics))
 
+
+
 # Concatenate Home address for lookup
 # UT DATA NEEDS TO BE CLEANED TO MATCH CCS KM
 ut_demographics$address <- paste(ut_demographics$`Primary Address - Address Line 1`, 
@@ -347,7 +349,20 @@ participant_geo <- ccs_participants %>%
 #GET ZIP CODES
 participant_geo$zip <- substr(participant_geo$matched_address, nchar(participant_geo$matched_address) - 4, nchar(participant_geo$matched_address))
 
+# GET DEMOGRAPHICS FROM THE MANUALLY CLEANED DATASET 
+census_manualadd <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/geo_manual_check_updated.csv") # move to Zoonvierse Datasets folder
+census_manualadd[,c(24)] <- NULL
+census_manualadd <- census_manualadd %>%
+  mutate(zip = str_extract(input_address, "\\b\\d{5}\\b"))
 
+
+# replace data where in census_manualadd
+replace_ids <- census_manualadd$id...1[which(census_manualadd$match_indicator == "No_Match" & !is.na(census_manualadd$state_fips))]
+participant_geo <- participant_geo[which(!participant_geo$id...1 %in% replace_ids),]
+census_manualadd_new <- census_manualadd[which(census_manualadd$id...1 %in% replace_ids),]
+
+participant_geo <- rbind(participant_geo,census_manualadd_new)
+remove(census_manualadd_new,replace_ids)
 ########## CONVERT VARIABLES TO MAPPING WITH CENSUS DATA 
 
 # There are fewer categories in census data, need to reduce 
@@ -386,9 +401,35 @@ participant_geo <- participant_geo %>%
   ))
   
 
-participant_geo$census_tract_full <- paste(participant_geo$state_fips, participant_geo$county_fips,participant_geo$census_tract, sep="")
-participant_geo$census_block_full <- paste(participant_geo$state_fips, participant_geo$county_fips,participant_geo$census_tract,participant_geo$census_block, sep="")
+# Function to pad numbers with leading zeros if necessary
+pad_zero <- function(x, n) {
+  sprintf(paste0("%0", n, "d"), as.numeric(x))
+}
 
+# Create the full codes using mutate
+participant_geo <- participant_geo %>%
+  mutate(
+    census_tract_full = ifelse(state_fips != "NA", paste0(pad_zero(state_fips, 2), pad_zero(county_fips, 3), pad_zero(census_tract, 6)), NA),
+    census_block_full = ifelse(state_fips != "NA", paste0(census_tract_full, pad_zero(census_block, 4)), NA),
+    congress_district = ifelse(state_fips != "NA", paste0(pad_zero(state_fips, 2), pad_zero(county_fips, 3)))
+  )
+
+
+congress_districts <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/congressdistrict_match.csv") 
+congress_districts$GEOID20 <- format(congress_districts$GEOID20, scientific = FALSE)
+participant_geo <- merge(participant_geo,congress_districts[,c("GEOID20","NAMELSAD","district_GEOID","CDSESSN")], by.x ="census_block_full", by.y = "GEOID20", all.x=TRUE) 
+
+
+assembly_districts <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/assemblydistrict_match.csv") 
+names(assembly_districts)[c(5,17,18)] <- c("census_tract_full","assembly_geoid","assembley_name")
+participant_geo <- merge(participant_geo,assembly_districts[,c("census_tract_full","SLDUST","assembly_geoid","assembley_name")], 
+                         by ="census_tract_full", all.x=TRUE) 
+
+# merge congress_districts and assembly_districts by 
+
+
+#participant_geo$census_tract_full <- paste(participant_geo$state_fips, participant_geo$county_fips,participant_geo$census_tract, sep="")
+#participant_geo$census_block_full <- paste(participant_geo$state_fips, participant_geo$county_fips,participant_geo$census_tract,participant_geo$census_block, sep="")
 
 tree_survey <- merge(tree_survey, participant_geo, by.x = "Member Username" , by.y = "username", all.x = TRUE)  
 tree_map <- merge(tree_map, participant_geo, by.x = "Member Username" , by.y = "username", all.x = TRUE)  
@@ -402,6 +443,11 @@ ej_story <- merge(ej_story, participant_geo, by.x = "Member Username" , by.y = "
 
 #######################
 ##### TRANSLATION ##### 
+#######################
+
+
+#######################
+##### ADD NEW DATA ####
 #######################
 
 
@@ -426,7 +472,20 @@ questions_tree_survey <- data.frame(names(tree_survey)[4:14])
 questions_heat_survey <- data.frame(names(heat_survey)[4:11])
 questions_air_survey <- data.frame(names(air_survey)[4:13])
 
-# Add actual names of county, tract, and block to populate the filters
+# Add actual names of county, tract, and block to populate the filters 
+
+
+###### NEED TO GET NAMES OF CONGRESSIONAL DISTRICTS ETC
+congressdistrict_names <- read_csv("/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_age.csv") 
+congressdistrict_names <- congressdistrict_names[,c(2:3)]
+
+wiassembly_lowernames <- read_csv("/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower_age.csv") 
+wiassembly_lowernames <- wiassembly_lowernames[,c(2:3)]
+
+wiassembly_uppernames <- read_csv("/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper_age.csv") 
+wiassembly_uppernames <- wiassembly_uppernames[,c(2:3)]
+
+
 census_names <- read_csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv") 
 
 census_values <- participant_geo %>% 
@@ -440,6 +499,9 @@ write.csv(questions_tree_survey,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filt
 write.csv(questions_heat_survey,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/heat_questions.csv")
 write.csv(questions_air_survey,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/air_questions.csv")
 write.csv(census_values,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/census_values.csv")
+write.csv(congressdistrict_names,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/congress_values.csv")
+write.csv(wiassembly_lowernames,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/wiassembly_lower.csv")
+write.csv(wiassembly_uppernames,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/wiassembly_upper.csv")
 
 
 

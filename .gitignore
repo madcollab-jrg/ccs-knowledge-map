@@ -13,3 +13,11 @@ cleaning-ccs-responses.html
 .Rhistory
 cleaning-ccs-responses copy.html
 Rplot.pdf
+*.html
+*.RData
+*.rdb
+*.rdx
+*.png
+*.html
+*.png
+*.png
