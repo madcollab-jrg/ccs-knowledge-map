@@ -41,6 +41,7 @@ surveyInputId <- c(
   "Air Quality Map" = "air_quality_map_qs",
   "Tree Canopy Map" = "tree_canopy_map_qs",
   "Urban Heat Map" = "urban_heat_map_qs",
+  "Carbon Concerns" = "carbon_survey_qs",
   "Carbon Survey" = "carbon_survey_qs",
   "Energy Survey" = "energy_survey_qs",
   "General Survey" = "general_survey_qs",
@@ -55,6 +56,7 @@ has_results <- c(
   "Urban Heat Survey" = TRUE,
   "Air Quality Map" = TRUE, "Tree Canopy Map" = FALSE, "Urban Heat Map" = FALSE,
   "Carbon Survey" = TRUE,
+  "Carbon Concerns" = TRUE,
   "Energy Survey" = TRUE, "General Survey" = TRUE,
   "Heat Health Survey" = TRUE,
   "Trees Greenery Survey" = TRUE
@@ -304,6 +306,7 @@ server <- function(input, output, session) {
       req(input$survey)
       req(input$demographic)
       q_num <- question_number()
+      print(q_num)
       get_question_type(input$survey, q_num)
     }
   )

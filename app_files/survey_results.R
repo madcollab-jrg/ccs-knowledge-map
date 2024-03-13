@@ -22,6 +22,9 @@ library(SnowballC)
 library(plotly)
 library(wordcloud)
 library(wordcloud2)
+library(stm)
+library(topicmodels)
+library(tm)
 
 survey_results_ui <- function() {
   # print(demographic_desc)
@@ -50,6 +53,164 @@ make_color_mapping <- function(column, options) {
   return(color_mapping)
 }
 
+# text_questions <- function(survey_data, demographic_variable) {
+#   # Import stoplist
+#   malletwords <-
+#     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
+#       character(),
+#       quote = ""
+#     )
+
+#   # Extract example question and demographic data
+#   example_open <- survey_data
+#   names(example_open)[2] <- "response"
+
+#   example_open$response_cleaned <- tolower(gsub(
+#     "[[:punct:]]", " ",
+#     example_open$response
+#   ))
+#   example_open$response_cleaned <- removeWords(
+#     example_open$response_cleaned,
+#     c(stopwords("english"), malletwords)
+#   )
+#   example_open$response_cleaned <-
+#     lemmatize_words(example_open$response_cleaned)
+
+#   ###### BIGRAMS
+#   bigram_response <- example_open %>%
+#     unnest_tokens(unigram,
+#       response_cleaned,
+#       token = "ngrams", n = 2
+#     )
+
+#   bigram_response.m <- bigram_response %>%
+#     pivot_longer(!`Contribution.ID`:Gender,
+#       names_to = "tokens",
+#       values_to = "word"
+#     )
+
+#   # Summarize data by demographic factors - Gender,
+#   # Hispanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth,
+#   # Annual Household Income level, Education Level
+#   bigram_summary <- bigram_response.m %>%
+#     group_by(!!sym(demographic_variable), word) %>%
+#     summarise(count = n()) %>%
+#     mutate(freq = round(count / sum(count), digits = 2))
+
+#   # Filter data for plot
+#   filtered_data <- bigram_summary %>%
+#     filter(freq >= 0.02)
+
+#   print(filtered_data)
+
+#   legendtext <- switch(demographic_variable,
+#     "Gender" = "Gender",
+#     "income_recode" = "Income Groups",
+#     "edu_recode" = "Education Levels",
+#     "Year.of.Birth" = "Age Group",
+#     "Unknown Demographic" = "Unknown Demographic"
+#   )
+#   # Create ggplot object for word cloud
+#   word_cloud_plot <- ggplot(filtered_data, aes(
+#     x = 1, y = 1, label = word,
+#     size = count,
+#     # color = freq
+#     color = !!as.name(demographic_variable)
+#   )) +
+#     geom_text(aes(size = count, color = !!as.name(demographic_variable)),
+#       position = position_jitter(width = 0.1, height = 0.1)
+#     ) +
+#     labs(color = legendtext) +
+#     scale_size(range = c(2, 20)) +
+#     scale_color_brewer(palette = "Set2") + # Use a gradient color scale
+#     theme_void() + # Remove grid lines and axes
+#     theme(
+#       plot.margin = margin(5, 5, 5, 5), # Adjust plot margins
+#       panel.grid = element_blank(), # Remove grid lines
+#       panel.border = element_blank(), # Remove panel border
+#       axis.text = element_blank(), # Remove axis text
+#       axis.ticks = element_blank() # Remove axis ticks
+#     )
+
+#   # Convert ggplot object to plotly
+#   word_cloud_plotly <- ggplotly(word_cloud_plot)
+
+#   return(word_cloud_plotly)
+# }
+
+# text_questions <- function(survey_data, demographic_variable) {
+#   # Import stoplist
+#   malletwords <-
+#     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
+#       character(),
+#       quote = ""
+#     )
+
+#   # Extract example question and demographic data
+#   example_open <- survey_data
+#   names(example_open)[2] <- "response"
+
+#   example_open$response_cleaned <- tolower(gsub(
+#     "[[:punct:]]", " ",
+#     example_open$response
+#   ))
+#   example_open$response_cleaned <- removeWords(
+#     example_open$response_cleaned,
+#     c(stopwords("english"), malletwords)
+#   )
+#   example_open$response_cleaned <-
+#     lemmatize_words(example_open$response_cleaned)
+
+#   ###### BIGRAMS
+#   bigram_response <- example_open %>%
+#     unnest_tokens(unigram,
+#       response_cleaned,
+#       token = "ngrams", n = 2
+#     )
+
+#   bigram_response.m <- bigram_response %>%
+#     pivot_longer(!`Contribution.ID`:Gender,
+#       names_to = "tokens",
+#       values_to = "word"
+#     )
+
+#   # Summarize data by demographic factors - Gender,
+#   # Hispanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth,
+#   # Annual Household Income level, Education Level
+#   bigram_summary <- bigram_response.m %>%
+#     group_by(!!sym(demographic_variable), word) %>%
+#     summarise(count = n()) %>%
+#     mutate(freq = round(count / sum(count), digits = 2)) %>%
+#     arrange(desc(freq)) %>%
+#     group_by(!!sym(demographic_variable)) %>%
+#     top_n(8)
+
+#   print(bigram_summary)
+
+#   legendtext <- switch(demographic_variable,
+#     "Gender" = "Gender",
+#     "income_recode" = "Income Groups",
+#     "edu_recode" = "Education Levels",
+#     "Year.of.Birth" = "Age Group",
+#     "Unknown Demographic" = "Unknown Demographic"
+#   )
+
+#   bigram_summary <- bigram_summary %>%
+#     filter(freq >= 0.05)
+
+
+#   # Create structured topic model bar chart
+#   structured_topic_model_plot <- ggplot(bigram_summary, aes(
+#     x = reorder(word, -freq), y = freq, fill = !!as.name(demographic_variable)
+#   )) +
+#     geom_bar(stat = "identity") +
+#     labs(x = "Word", y = "Frequency", fill = legendtext) +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#     ggtitle("Structured Topic Model")
+
+#   return(structured_topic_model_plot)
+# }
+
 text_questions <- function(survey_data, demographic_variable) {
   # Import stoplist
   malletwords <-
@@ -73,66 +234,145 @@ text_questions <- function(survey_data, demographic_variable) {
   example_open$response_cleaned <-
     lemmatize_words(example_open$response_cleaned)
 
-  ###### BIGRAMS
-  bigram_response <- example_open %>%
-    unnest_tokens(unigram,
-      response_cleaned,
-      token = "ngrams", n = 2
-    )
+  # Create a corpus
+  corpus <- Corpus(VectorSource(example_open$response_cleaned))
 
-  bigram_response.m <- bigram_response %>%
-    pivot_longer(!`Contribution.ID`:Gender,
-      names_to = "tokens",
-      values_to = "word"
-    )
+  # Create a document-term matrix
+  dtm <- DocumentTermMatrix(corpus)
 
-  # Summarize data by demographic factors - Gender,
-  # Hispanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth,
-  # Annual Household Income level, Education Level
-  bigram_summary <- bigram_response.m %>%
-    group_by(!!sym(demographic_variable), word) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2))
-
-  # Filter data for plot
-  filtered_data <- bigram_summary %>%
-    filter(freq >= 0.02)
-
-  # print(filtered_data)
-
-  legendtext <- switch(demographic_variable,
-    "Gender" = "Gender",
-    "income_recode" = "Income Groups",
-    "edu_recode" = "Education Levels",
-    "Year.of.Birth" = "Age Group",
-    "Unknown Demographic" = "Unknown Demographic"
+  # Fit structured topic model
+  stm_model <- stm(
+    texts = example_open$response_cleaned,
+    data = example_open,
+    K = 8,
+    prevalence = ~.,
+    max.em.its = 25,
+    seed = 1
   )
-  # Create ggplot object for word cloud
-  word_cloud_plot <- ggplot(filtered_data, aes(
-    x = 1, y = 1, label = word,
-    size = count,
-    # color = freq
-    color = !!as.name(demographic_variable)
-  )) +
-    geom_text(aes(size = count, color = !!as.name(demographic_variable)),
-      position = position_jitter(width = 0.1, height = 0.1)
-    ) +
-    labs(color = legendtext) +
-    scale_size(range = c(2, 20)) +
-    scale_color_brewer(palette = "Set2") + # Use a gradient color scale
-    theme_void() + # Remove grid lines and axes
-    theme(
-      plot.margin = margin(5, 5, 5, 5), # Adjust plot margins
-      panel.grid = element_blank(), # Remove grid lines
-      panel.border = element_blank(), # Remove panel border
-      axis.text = element_blank(), # Remove axis text
-      axis.ticks = element_blank() # Remove axis ticks
+
+  # Extract top words for each topic
+  top_words <- labelTopics(stm_model, n = 10)
+
+  # Create dataframe with top words and topics
+  top_words_df <- data.frame(
+    topic = rep(1:8, each = 10),
+    word = unlist(top_words),
+    stringsAsFactors = FALSE
+  )
+
+  # Create structured topic model plot
+  stm_plot <- ggplot(top_words_df, aes(x = reorder(word, -topic), y = topic)) +
+    geom_point(size = 3, aes(color = as.factor(topic))) +
+    scale_color_discrete(name = "Topic") +
+    labs(x = "Word", y = "Topic") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    ggtitle("Structured Topic Model")
+
+  return(stm_plot)
+}
+
+perform_topic_modeling <- function(
+    survey_data, demographic_variable,
+    num_topics = 8) {
+  # Import stoplist
+  malletwords <-
+    scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
+      character(),
+      quote = ""
     )
 
-  # Convert ggplot object to plotly
-  word_cloud_plotly <- ggplotly(word_cloud_plot)
+  # Extract example question and demographic data
+  example_open <- survey_data
+  names(example_open)[2] <- "response"
 
-  return(word_cloud_plotly)
+  example_open$response_cleaned <- tolower(gsub(
+    "[[:punct:]]", " ",
+    example_open$response
+  ))
+  example_open$response_cleaned <- removeWords(
+    example_open$response_cleaned,
+    c(stopwords("english"), malletwords)
+  )
+  example_open$response_cleaned <-
+    lemmatize_words(example_open$response_cleaned)
+
+  survey_data <- example_open
+
+  # Preprocess the text data
+  processed_texts <- textProcessor(
+    documents = survey_data$response,
+    metadata = survey_data
+  )
+  out <- prepDocuments(
+    processed_texts$documents, processed_texts$vocab,
+    processed_texts$meta
+  )
+  docs <- out$documents
+  vocab <- out$vocab
+  meta <- out$meta
+
+  # Fit the STM model
+  num_topics <- 2 # Choose an appropriate number of topics
+  topic_model <- stm(
+    documents = docs, vocab = vocab,
+    K = num_topics, data = meta, max.em.its = 300, init.type = "Spectral"
+  )
+
+  print("***********")
+  top_words <- labelTopics(topic_model)
+  print(top_words)
+
+  topic_words <- top_words$prob
+  topics1 <- topic_words[1, ]
+  topics2 <- topic_words[2, ]
+
+  topics1 <- paste(topics1, collapse = ", ")
+  topics2 <- paste(topics2, collapse = ", ")
+
+  topics1 <- paste("Topic 1 - ", topics1)
+  topics2 <- paste("Topic 2 - ", topics2)
+
+  print(topics1)
+  print(topics2)
+
+  print("***********")
+
+
+  # Get document-topic matrix
+  doc_topic_matrix <- topic_model$theta
+
+  # Convert matrix to data frame
+  doc_topic_df <- as.data.frame(doc_topic_matrix)
+  doc_topic_df$Document <- rownames(doc_topic_df)
+
+  # Melt the data frame for plotting
+  doc_topic_melted <- reshape2::melt(doc_topic_df, id.vars = "Document")
+
+  # print(doc_topic_melted)
+
+  # Get top words associated with each topic
+  # top_words <- terms(topic_model, 10)
+
+  # print(top_words)
+
+  scatter_plot <- plot_ly() %>%
+    add_trace(
+      x = 1:nrow(doc_topic_matrix), y = doc_topic_matrix[, 1], mode = "markers",
+      name = topics1,
+      marker = list(color = "#007dcb")
+    ) %>%
+    add_trace(
+      x = 1:nrow(doc_topic_matrix), y = doc_topic_matrix[, 2], mode = "markers",
+      name = topics2, marker = list(color = "#e39400")
+    ) %>%
+    layout(
+      title = "Topic Modelling",
+      xaxis = list(title = "Document Index"),
+      yaxis = list(title = "Proportion of Topic"),
+      showlegend = TRUE
+    )
+
+  return(scatter_plot)
 }
 
 matrix_questions <- function(example_matrix, demographic_variable, q_type) {
@@ -294,7 +534,6 @@ multi_choice_questions <- function(
 
   multi_summary <- multi_summary[, -ncol(multi_summary)]
 
-
   # Manually wrap labels
   wrap_labels <- function(labels, max_length = 20, ellipsis_length = 2) {
     ifelse(nchar(labels) > max_length, paste0(substr(
@@ -304,7 +543,7 @@ multi_choice_questions <- function(
   }
   multi_summary$wrapped_labels <- wrap_labels(multi_summary$response)
 
-  # print(multi_summary)
+  print(multi_summary)
 
   # based on demographics determine the variables
   switch(demographic_variable,
@@ -368,7 +607,11 @@ multi_choice_questions <- function(
         showlegend = FALSE
       )
     )
-  # print(multi_visualization)
+
+  print("---------")
+
+  print(multi_visualization)
+  print("---------")
 
   return(multi_visualization)
 }
@@ -485,9 +728,15 @@ resulting_graphics <- function(
   # Populate the survey results boxes with the required graphics
   reaction <- observeEvent(input$run_report, {
     req(input$survey)
+    print(question_type())
     q_type <- question_type()
     survey_flag <- is_survey()
+    print(q_type)
     message(q_type)
+    print(input$survey)
+    print(survey_flag)
+    print("1243")
+
     if (q_type != "Ranking" & survey_flag) {
       # Unsure how rank type questions are suppose to be displayed
       question_num <- question() # column number of question
@@ -545,6 +794,7 @@ resulting_graphics <- function(
 
       # data needed to make graphics by survey
       data_for_visualization <- NA
+      print(input$survey)
       if (input$survey == "Urban Heat Survey") {
         data_for_visualization <- data[, c(2, question_num + 3, 45:53, 22, 19)]
       } else if (input$survey == "Tree Canopy Survey") {
@@ -555,9 +805,20 @@ resulting_graphics <- function(
         data_for_visualization <- data[, c(2, question_num + 3, 28:58, 27, 24)]
       } else if (input$survey == "General Survey") {
         data_for_visualization <- data[, c(1, question_num + 1, 25:28, 24)]
-      } else if (input$survey == "Carbon Survey") {
-        data_for_visualization <- data[, c(1, question_num + 1, 6:9, 5)]
-      } else if (input$survey == "Energy Survey") {
+      } else if (input$survey == "Carbon Concerns") {
+        data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Tree Knowledge") {
+        data_for_visualization <- data[, c(1, question_num + 1, 7:10, 6)]
+        # data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Energy Concerns") {
+        data_for_visualization <- data[, c(1, question_num + 1, 5:8, 4)]
+        # data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "General Survey") {
+        data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Health Impacts") {
+        data_for_visualization <- data[, c(1, question_num + 1, 10:13, 9)]
+        # data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Energy Concerns") {
         data_for_visualization <- data[, c(1, question_num + 1, 5:8, 4)]
       } else if (input$survey == "Heat Health Survey") {
         data_for_visualization <- data[, c(1, question_num + 1, 10:13, 9)]
@@ -565,6 +826,7 @@ resulting_graphics <- function(
         data_for_visualization <- data[, c(1, question_num + 1, 7:10, 6)]
       }
 
+      # print("okok")
       # print based on question type
       message(q_type)
       if (q_type == "matrix") {
@@ -608,7 +870,11 @@ resulting_graphics <- function(
             age_var
           ))
         } else if (demographic_desc == "gender") {
-          output$survey_results <- renderPlotly(text_questions(
+          # output$survey_results <- renderPlotly(text_questions(
+          #   data_for_visualization,
+          #   gender_var
+          # ))
+          output$survey_results <- renderPlotly(perform_topic_modeling(
             data_for_visualization,
             gender_var
           ))
