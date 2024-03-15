@@ -235,8 +235,8 @@ clean_matrix_eval_chi <- function(questions_df) {
     # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
     # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
     contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
-    chi_squared_test <- chisq.test(contingency_table)
-    
+    chi_squared_test <- chisq.test(contingency_table,correct = TRUE)
+
     # Create a dataframe with the Chi-Squared test results
     results_df <- data.frame(
       question = i,
@@ -266,7 +266,8 @@ clean_multi_eval_chi <- function(dataframe) {
               Most = sum(n[vulnerable == "Most"])) %>%
     rowwise() %>%
     do({
-      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      chi_test_result <- chisq.test(c(.$Least, .$Most),correct = TRUE)
+
       data.frame(question = .$question,
                  statistic = round(chi_test_result$statistic, 3),
                  pvalue = round(chi_test_result$p.value, 3),
@@ -276,6 +277,37 @@ clean_multi_eval_chi <- function(dataframe) {
   
   return(results)
 }
+
+clean_multi_eval_fisher <- function(dataframe) {
+  # Ensure 'n' is treated as numeric
+  dataframe$n <- as.numeric(dataframe$n)
+  
+  # Load necessary library
+  library(dplyr)
+  
+  results <- dataframe %>%
+    group_by(question) %>%
+    summarise(Least = sum(n[vulnerable == "Least"]),
+              Most = sum(n[vulnerable == "Most"])) %>%
+    rowwise() %>%
+    do({
+      # Apply Fisher's Exact Test
+      fisher_test_result <- fisher.test(matrix(c(.$Least, .$Most), nrow = 2))
+      
+      # Create a result data frame
+      data.frame(question = .$question,
+                 # Fisher's test does not always return a statistic, hence a conditional check
+                 statistic = ifelse(!is.null(fisher_test_result$statistic), 
+                                    round(fisher_test_result$statistic, 3), NA),
+                 pvalue = round(fisher_test_result$p.value, 3),
+                 # Fisher's test does not return degrees of freedom, hence NA is assigned
+                 degreeof = NA)
+    }) %>%
+    ungroup()
+  
+  return(results)
+}
+
 
 
 names(ej_survey)[5:17] <- c("personal_justice_interpretation",
@@ -457,11 +489,12 @@ ej_survey$census_tract_full <- as.character(ej_survey$census_tract_full)
 ej_survey <- left_join(ej_survey, eji_response_analysis, by =c("census_tract_full"="geoid"))
 ej_survey_experiences <- ej_survey
 
+#https://statsandr.com/blog/fisher-s-exact-test-in-r-independence-test-for-a-small-sample/#fishers-exact-test-in-r
 ### Add Questions analysis
 vulnerable_q1 <- clean_multi_eval(ej_survey_experiences,personal_justice_interpretation,vulnerable)
 vulnerable_q1 <- vulnerable_q1[which(!is.na(vulnerable_q1$vulnerable)),]
 vulnerable_q1_viz <- viz_clean_multi_eval(vulnerable_q1,"Personal Justice Interpretation")
-vulnerable_q1_chi <- clean_multi_eval_chi(vulnerable_q1)
+#vulnerable_q1_chi <- clean_multi_eval_chi(vulnerable_q1)
 
 vulnerable_q2 <- clean_multi_eval(ej_survey_experiences,impactful_ej_issue,vulnerable)
 vulnerable_q2 <- vulnerable_q2[which(!is.na(vulnerable_q2$vulnerable)),]
@@ -509,11 +542,6 @@ vulnerable_q11_chi <- clean_multi_eval_chi(vulnerable_q11)
 ```
 
 1  **What does the term "environmental justice" mean to you?**  
-- The development of green technologies and renewable energy sources  
-- The fair treatment and involvement of all people in environmental laws, policies, and practices  
-- Only addressing environmental issues in low-income communities  
-- Equal access to environmental resources for all  
-
 ```{r}
 datatable(vulnerable_q1)
 vulnerable_q1_viz
@@ -521,12 +549,6 @@ datatable(vulnerable_q1_chi)
 ```
 
 2. **Which environmental justice issue do you think has the most significant impact on public health?** Required
- 
-  - Climate change  
-  - Access to clean water  
-  - Air pollution  
-  - Exposure to toxic substances  
-  - Other (please specify)  
 ```{r}
 datatable(vulnerable_q2)
 vulnerable_q2_viz
@@ -587,15 +609,6 @@ datatable(vulnerable_q10_chi)
 ```
 
 11. **Who do you think should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?** Required  
-
-  - Public officials  
-  - Technology companies  
-  - Oil and Gas companies  
-  - Scientists  
-  - Non-governmental organizations
-  - Individuals
-  - Other (please specify)
-
 ```{r}
 datatable(vulnerable_q11)
 vulnerable_q11_viz
