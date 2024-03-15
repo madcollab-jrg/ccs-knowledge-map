@@ -781,7 +781,7 @@ In our analysis, we categorized vulnerability based on the Environmental Burden 
 datatable(summary_eji)
 ```
 
-```{r echo=FALSE}
+```{r include=FALSE, warning=FALSE}
 tree_survey$census_tract_full <- as.character(tree_survey$census_tract_full)
 # Group people into least/most vulnerable areas 
 tree_survey <- left_join(tree_survey, eji_response_analysis, by =c("census_tract_full"="geoid"))
@@ -827,7 +827,7 @@ vulnerable_q5viz_b
 #datatable(vulnerable_q5_chi_b)
 ```
 
-```{r echo=FALSE}
+```{r include = FALSE, warning=FALSE}
 vulnerable_q9 <- clean_multi_eval(tree_survey_experiences,tree_infrastructure_damage,vulnerable)
 vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Tree Related Damage in My Community")
 vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
@@ -839,7 +839,7 @@ vulnerable_q9_viz
 datatable(vulnerable_q9_chi)
 ```
 
-```{r, include=FALSE}
+```{r, include = FALSE, warning=FALSE}
 vulnerable_q11 <- clean_multi_eval(tree_survey_experiences,tree_values,vulnerable)
 vulnerable_q11_viz <- viz_clean_multi_eval(vulnerable_q11,"Tree Values")
 vulnerable_q11_chi <- clean_multi_eval_chi(vulnerable_q11)
@@ -850,7 +850,7 @@ datatable(vulnerable_q11)
 vulnerable_q11_viz
 datatable(vulnerable_q11_chi)
 ```
-```{r, include=FALSE}
+```{r, include=FALSE, echo=FALSE, warning=FALSE}
 vulnerable_q12 <- clean_multi_eval(tree_survey_experiences,areas_needing_trees,vulnerable)
 vulnerable_q12_viz <- viz_clean_multi_eval(vulnerable_q12,"Tree Needs")
 vulnerable_q12_chi <- clean_multi_eval_chi(vulnerable_q12)
