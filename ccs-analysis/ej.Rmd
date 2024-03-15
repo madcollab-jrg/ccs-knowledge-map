@@ -28,6 +28,10 @@ ej_report <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-report/ej_r
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ### ### ### ### ### ### ### ### ### ## 
 ### Functions for MATRIX QUESTIONS ### 
 ### ### ### ### ### ### ### ### ### ##
@@ -118,6 +122,7 @@ summary_data <- merge(summary_data,people, by = "vulnerable")
 
 summary_data <- summary_data  %>%
   mutate(freq = round((n / total), digits = 2) * 100)
+<<<<<<< Updated upstream
 names(summary_data)[2] <- "question"
 return(summary_data)
 }
@@ -137,6 +142,12 @@ viz_clean_box_eval <- function(dataframe,graph_title) {
     scale_fill_brewer(palette="Set1") + # Use a Brewer palette for distinguishable colors
     theme(axis.text.x = element_text(angle=45, hjust=1))
 }
+=======
+
+return(summary_data)
+}
+
+>>>>>>> Stashed changes
 
 
 
@@ -202,6 +213,22 @@ viz_clean_multi_eval <- function(dataframe,graph_title) {
     theme(axis.text.x = element_text(angle=45, hjust=1))
 }
 
+<<<<<<< Updated upstream
+=======
+clean_matrix_eval_viz_all <- function(dataframe) {
+   ggplot(dataframe, aes(x = vulnerable, y = freq, fill = answer)) +
+    geom_bar(stat = "identity", position = "fill") +  # Use 'fill' to stack the bars to 100%
+    scale_y_continuous(labels = scales::percent_format()) +  # Use percent format for y-axis labels
+    labs(y = "Percentage", x = "Vulnerability Level", fill = "Answer") +
+    facet_wrap(~ question, scales = "free", ncol = 1) +  # Facet by the question variable
+    coord_flip() +  # Flip the axes to have vulnerability level on the y-axis
+    theme_minimal() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+    scale_fill_nejm() +
+    theme(strip.text.y = element_text(angle = 0))  # Make facet labels horizontal
+}
+
+>>>>>>> Stashed changes
 ####
 
 viz_box_multi <- function(dataframe,graph_title) {
@@ -288,6 +315,34 @@ names(ej_survey)[5:17] <- c("personal_justice_interpretation",
     "technology_equity_responsibility",
     "community_action_collaboration",
     "individual_support_steps")
+```
+
+# Environmental Justice Survey 
+
+- Add questions here
+
+# Indices
+These indices provide a composite score reflecting various factors, including economic, health, and environmental indicators, which can significantly affect community perceptions.
+
+## [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)
+```{r}
+#datatable(svi_response)
+```
+
+## [Environmental Justice Index Indicators](https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html)
+```{r}
+#datatable(eji_response)
+```
+
+## [Environmental Justice Index Indicators](https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
+```{r}
+#datatable(ejscreen_response)
+```
+
+# Analysis 
+
+## EJ Solutions
+```{r ej-solutions-setup, include=FALSE, cache=TRUE}
 
 ```
 
@@ -335,8 +390,6 @@ community_technology_willingness <- clean_multi(ej_survey,community_technology_w
 community_technology_willingness <- community_technology_willingness[which(community_technology_willingness$freq >0),]
 community_technology_willingness_viz <- viz_box_multi(community_technology_willingness,"Community Technology Willingness")
 
-# technology_equity_responsibility <- clean_matrix(ej_survey,technology_equity_responsibility)
-# technology_equity_responsibility_viz <- viz_matrix(technology_equity_responsibility,"Technology Equity Responsibility")
 technology_equity_responsibility <- clean_multi(ej_survey,technology_equity_responsibility)
 technology_equity_responsibility <- community_technology_willingness[which(community_technology_willingness$freq >0),]
 technology_equity_responsibility_viz <- viz_box_multi(technology_equity_responsibility,"Technology Equity Responsibility")
@@ -401,9 +454,284 @@ technology_equity_responsibility_viz
 
 
 
+## Place Analysis for Tree Canopies
+```{r place-analysis, include=FALSE, cache=FALSE}
 
-- Description of survey and the questions asked
+# The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
 
+# tree_survey <- tree_survey %>%
+#   mutate(
+#     county_code = sprintf("%03d", as.integer(county_fips)),
+#     census_tract = sprintf("%06d", as.integer(census_tract)),
+#     census_block = sprintf("%04d", as.integer(census_block)),
+#     census_tract_full = paste0(state_fips, county_code, census_tract),
+#     census_block_full = paste0(state_fips, county_code, census_tract, census_block),
+#   )
+
+data_tracts <- c(unique(ej_survey$census_tract_full))
+data_blocks <- c(unique(ej_survey$census_block_full))
+
+# https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
+#svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+#svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+
+# Which variables are important to include in the analysis?
+
+#https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
+eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+eji <- eji[which(!is.na(eji$RPL_EBM)),]
+eji <- eji[which(eji$COUNTY %in% c("Dane","Jefferson")),]
+
+# Calculate quartiles
+Q1 <- quantile(eji$RPL_EBM, 0.25)
+Q3 <- quantile(eji$RPL_EBM, 0.75)
+
+eji_response <- eji[which(eji$geoid %in% data_tracts),]
+eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Least","Most")
+eji_response_analysis <- eji_response %>%
+  dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
+# Which indicators are important to include in the analysis? 
+
+# Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
+# Dictionary: https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
+# EJI -> Environmental Burden -> Air Pollution-> ALL (Ozone EPL_OZONE  ,PM2.5 EPL_PM  ,Disel Particulate Matter EPL_DSLPM, Air Toxic Cancer Risks EPL_TOTCR)
+#   SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter. 
+#   RPL_EBM_DOM1: Percentile rank of domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
+# EJI -> Environmental Burden -> Built Environment -> (Recreational Parks)
+
+# SPL_EJI: Summation of the HVM, EBI, and SVI module percentile ranks 
+# RPL_EJI: Percentile ranks of SPL_EJI
+
+eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
+
+
+#https://www.epa.gov/ejscreen/understanding-ejscreen-results
+#ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+#ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
+
+# Which variables are important to include in the analysis?
+
+
+#The first 2 digits represent the state FIPS (Federal Information Processing Standards) code.
+#The next 3 digits are for the county within that state.
+#Following 6 digits are for the census tract within the county.
+#The next 1 to 4 digits (of which you're interested in the first part) represent the block group or block, which are subdivisions of census tracts.
+######### Decide which tracts are vulnerable. Make respondents in two groups.
+```
+
+### Categorizing Vulnerability 
+```{r vulnerability, eval=TRUE, include=FALSE}
+# Summarize our data
+
+summary_eji <- eji_response_analysis %>%
+  group_by(vulnerable) %>%
+  summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
+
+summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
+
+
+library(sf)          # for handling spatial data
+library(tigris)
+options(tigris_use_cache = TRUE)
+options(scipen=999)
+
+
+# Load the shapefile
+#wisconsin_blocks <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+
+wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
+
+# Filter to include only your tracts
+#tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
+# Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
+target_tracts <- c(unique(ej_survey$census_tract_full))
+
+# Convert your 'geoid' values to character if they are not already, to ensure matching works
+wisconsin_tracts_filtered <- wisconsin_tract %>%
+    filter(as.character(GEOID) %in% target_tracts)
+
+eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid)
+
+wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid"))
+
+# Plot using ggplot2
+county_data <- ggplot() +
+  geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
+    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "EJI ranking") + # Customize color scale as needed
+  theme_minimal() +
+   theme_bw() + theme(panel.border = element_blank(), 
+                      panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(), 
+                      axis.line = element_blank(),
+                      axis.text = element_blank(),
+                      axis.ticks = element_blank()) +
+  labs(title = "Environmental Burden Highlighted Census Tracts")
+```
+
+```{r}
+county_data
+```
+
+In our analysis, we categorized vulnerability based on the Environmental Burden Module (RPL_EBM) percentile ranks derived from the 2022 Environmental Justice Index. To do this, we first determined the 25th (Q1) and 75th (Q3) percentile values of the RPL_EBM distribution. These percentile values served as thresholds to categorize regions based on their environmental burden. Specifically, regions with an RPL_EBM value greater than the 75th percentile (Q3) were categorized as "Most Vulnerable", indicating that they are in the top quartile of environmental burden and, therefore, face higher vulnerability to environmental injustices. Conversely, regions not exceeding this threshold were categorized as "Least Vulnerable". This method of categorization allows us to identify areas with the most significant environmental challenges and prioritize them for interventions and resource allocation.
+
+```{r}
+datatable(summary_eji)
+```
+
+
+```{r include=FALSE, warning=FALSE}
+ej_survey$census_tract_full <- as.character(ej_survey$census_tract_full)
+# Group people into least/most vulnerable areas 
+ej_survey <- left_join(ej_survey, eji_response_analysis, by =c("census_tract_full"="geoid"))
+ej_survey_experiences <- ej_survey
+
+### Add Questions analysis
+vulnerable_q1 <- clean_multi_eval(ej_survey_experiences,personal_justice_interpretation,vulnerable)
+vulnerable_q1 <- vulnerable_q1[which(!is.na(vulnerable_q1$vulnerable)),]
+vulnerable_q1_viz <- viz_clean_multi_eval(vulnerable_q1,"Personal Justice Interpretation")
+vulnerable_q1_chi <- clean_multi_eval_chi(vulnerable_q1)
+
+vulnerable_q2 <- clean_multi_eval(ej_survey_experiences,impactful_ej_issue,vulnerable)
+vulnerable_q2 <- vulnerable_q2[which(!is.na(vulnerable_q2$vulnerable)),]
+vulnerable_q2_viz <- viz_clean_multi_eval(vulnerable_q2,"Impactful EJ Issue")
+vulnerable_q2_chi <- clean_multi_eval_chi(vulnerable_q2)
+
+vulnerable_q4 <- clean_matrix_eval(ej_survey_experiences,agreement_level_statements,vulnerable)
+vulnerable_q4$answer <- factor(vulnerable_q4$answer, levels = rev(c("Strongly Agree", "Agree", "Neither Agree nor disagree", "Disagree","Strongly Disagree")))
+vulnerable_q4 <- vulnerable_q4[which(!is.na(vulnerable_q4$vulnerable)),]
+vulnerable_q4_viz <- clean_matrix_eval_viz_all(vulnerable_q4)
+vulnerable_q4_chi <- clean_matrix_eval_chi(vulnerable_q4)
+
+vulnerable_q5 <- clean_matrix_eval(ej_survey_experiences,statements_agreement_level,vulnerable)
+vulnerable_q5$answer <- factor(vulnerable_q5$answer, levels = rev(c("Strongly Agree", "Agree", "Neither Agree nor disagree", "Disagree","Strongly Disagree")))
+vulnerable_q5 <- vulnerable_q5[which(!is.na(vulnerable_q5$vulnerable)),]
+vulnerable_q5_viz <- clean_matrix_eval_viz_all(vulnerable_q5)
+vulnerable_q5_chi <- clean_matrix_eval_chi(vulnerable_q5)
+
+vulnerable_q6 <- clean_multi_eval(ej_survey_experiences,policy_change_need,vulnerable)
+vulnerable_q6 <- vulnerable_q6[which(!is.na(vulnerable_q6$vulnerable)),]
+vulnerable_q6_viz <- viz_clean_multi_eval(vulnerable_q6,"Policy Change Need")
+vulnerable_q6_chi <- clean_multi_eval_chi(vulnerable_q6)
+
+vulnerable_q7 <- clean_matrix_eval(ej_survey_experiences,entity_responsibility_rating,vulnerable)
+vulnerable_q7$answer <- factor(vulnerable_q7$answer, levels = rev(c("Highly responsible", "Moderately responsible", "Somewhat responsible", "Not responsible","Unsure")))
+vulnerable_q7 <- vulnerable_q7[which(!is.na(vulnerable_q7$vulnerable)),]
+vulnerable_q7_viz <- clean_matrix_eval_viz_all(vulnerable_q7)
+vulnerable_q7_chi <- clean_matrix_eval_chi(vulnerable_q7)
+
+vulnerable_q9 <- clean_multi_eval(ej_survey_experiences,technology_climate_potential,vulnerable)
+vulnerable_q9 <- vulnerable_q9[which(!is.na(vulnerable_q9$vulnerable)),]
+vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Technology Climate Potential")
+vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
+
+vulnerable_q10 <- clean_multi_eval(ej_survey_experiences,community_technology_willingness,vulnerable)
+vulnerable_q10 <- vulnerable_q10[which(!is.na(vulnerable_q10$vulnerable)),]
+vulnerable_q10_viz <- viz_clean_multi_eval(vulnerable_q10,"Community Technology Willingness")
+vulnerable_q10_chi <- clean_multi_eval_chi(vulnerable_q10)
+
+vulnerable_q11 <- clean_multi_eval(ej_survey_experiences,technology_equity_responsibility,vulnerable)
+vulnerable_q11 <- vulnerable_q11[which(!is.na(vulnerable_q11$vulnerable)),]
+vulnerable_q11_viz <- viz_clean_multi_eval(vulnerable_q11,"Technology Equity Responsibility")
+vulnerable_q11_chi <- clean_multi_eval_chi(vulnerable_q11)
+
+```
+
+1  **What does the term "environmental justice" mean to you?**  
+- The development of green technologies and renewable energy sources  
+- The fair treatment and involvement of all people in environmental laws, policies, and practices  
+- Only addressing environmental issues in low-income communities  
+- Equal access to environmental resources for all  
+
+```{r}
+datatable(vulnerable_q1)
+vulnerable_q1_viz
+datatable(vulnerable_q1_chi)
+```
+
+2. **Which environmental justice issue do you think has the most significant impact on public health?** Required
+ 
+  - Climate change  
+  - Access to clean water  
+  - Air pollution  
+  - Exposure to toxic substances  
+  - Other (please specify)  
+```{r}
+datatable(vulnerable_q2)
+vulnerable_q2_viz
+datatable(vulnerable_q2_chi)
+```
+
+3. **Which of the environmental issues below do you think has the most impact on your health? (Please drag items to the box on the right)** Required
+```{r}
+
+```
+
+4. **Please rate how much do you agree/disagree with the statements:** Required
+```{r}
+datatable(vulnerable_q4)
+vulnerable_q4_viz
+datatable(vulnerable_q4_chi)
+```
+
+5. **Please rate how much do you agree/disagree with the statements:** Required
+```{r}
+datatable(vulnerable_q5)
+vulnerable_q5_viz
+datatable(vulnerable_q5_chi)
+```
+
+6. **What is the most important policy change needed to address environmental justice in the United States?** (Select up to 3) Required
+```{r}
+datatable(vulnerable_q6)
+vulnerable_q6_viz
+datatable(vulnerable_q6_chi)
+```
+
+7. **Rate the following entities on their responsibility for addressing environmental justice issues:**
+```{r}
+datatable(vulnerable_q7)
+vulnerable_q7_viz
+datatable(vulnerable_q7_chi)
+```
+
+8. **Rank the following actions in order of effectiveness in addressing environmental injustice (1 being most effective, 4 being least effective):** Required
+```{r}
+
+
+```
+
+9. **To what extent do you believe that new technology has the potential to slow down climate change?** Required
+```{r}
+datatable(vulnerable_q9)
+vulnerable_q9_viz
+datatable(vulnerable_q9_chi)
+```
+
+10 **If there was new technology to slow down climate change, how willing would you be to use it in your community?** Required
+```{r}
+datatable(vulnerable_q10)
+vulnerable_q10_viz
+datatable(vulnerable_q10_chi)
+```
+
+11. **Who do you think should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?** Required  
+
+  - Public officials  
+  - Technology companies  
+  - Oil and Gas companies  
+  - Scientists  
+  - Non-governmental organizations
+  - Individuals
+  - Other (please specify)
+
+```{r}
+datatable(vulnerable_q11)
+vulnerable_q11_viz
+datatable(vulnerable_q11_chi)
+```
+
+
+<<<<<<< Updated upstream
 ## Place Analysis for Environmental Justice
 ```{r place-analysis, include=FALSE, cache=FALSE}
 
@@ -655,3 +983,5 @@ datatable(vulnerable_technology_equity_responsibility_chi)
 
 
 # Meta Summary
+=======
+>>>>>>> Stashed changes

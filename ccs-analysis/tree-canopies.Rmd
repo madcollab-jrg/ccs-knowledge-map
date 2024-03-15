@@ -827,6 +827,7 @@ vulnerable_q5viz_b
 #datatable(vulnerable_q5_chi_b)
 ```
 
+
 ```{r include = FALSE, warning=FALSE}
 vulnerable_q9 <- clean_multi_eval(tree_survey_experiences,tree_infrastructure_damage,vulnerable)
 vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Tree Related Damage in My Community")
