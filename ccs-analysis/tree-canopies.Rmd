@@ -190,6 +190,19 @@ viz_clean_multi_eval <- function(dataframe,graph_title) {
     theme(axis.text.x = element_text(angle=45, hjust=1))
 }
 
+clean_matrix_eval_viz_all <- function(dataframe) {
+   ggplot(dataframe, aes(x = vulnerable, y = freq, fill = answer)) +
+    geom_bar(stat = "identity", position = "fill") +  # Use 'fill' to stack the bars to 100%
+    scale_y_continuous(labels = scales::percent_format()) +  # Use percent format for y-axis labels
+    labs(y = "Percentage", x = "Vulnerability Level", fill = "Answer") +
+    facet_wrap(~ question, scales = "free", ncol = 1) +  # Facet by the question variable
+    coord_flip() +  # Flip the axes to have vulnerability level on the y-axis
+    theme_minimal() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+    scale_fill_nejm() +
+    theme(strip.text.y = element_text(angle = 0))  # Make facet labels horizontal
+}
+
 ####
 
 viz_box_multi <- function(dataframe,graph_title) {
@@ -283,8 +296,6 @@ colnames(tree_survey)[5:15] <- new_names
    - Declined  
    - Stayed the same
 
-2. **How would you rate the overall care and maintenance of trees in your neighborhood?**  
-   (Open-ended response)
 
 3. **Please rate your level of agreement with each of the following statements:**  
    - Trees are important for maintaining a healthy community environment.  
@@ -788,31 +799,35 @@ tree_survey <- left_join(tree_survey, eji_response_analysis, by =c("census_tract
 #tree_survey
 
 # Experiences with tree canopies
-tree_survey_experiences <- tree_survey[c(3,5,9,11,12,14,15,86)]
-
+tree_survey_experiences <- tree_survey
 tree_survey_experiences <- tree_survey_experiences[which(!is.na(tree_survey_experiences$vulnerable)),]
-vulnerable_q5 <- clean_matrix_eval(tree_survey_experiences,"past_years",vulnerable)
-vulnerable_q5$answer <- factor(vulnerable_q5$answer, levels = rev(c("Decreased", "Stayed the same", "Increased", "I do not know")))
 
-vulnerable_q5_a <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),]
-vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),]
-vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5_a,"vulnerable")
-vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5_b,"vulnerable")
 
-# print(results)
+vulnerable_q1 <- clean_matrix_eval(tree_survey_experiences, past_years,vulnerable)
+vulnerable_q1 <- vulnerable_q1[which(!is.na(vulnerable_q1$vulnerable)),]
+vulnerable_q1$answer <- factor(vulnerable_q1$answer, levels = rev(c("Decreased", "Stayed the same", "Increased", "I do not know")))
+vulnerable_q1_viz <- clean_matrix_eval_viz_all(vulnerable_q1)
+vulnerable_q1_chi <- clean_matrix_eval_chi(vulnerable_q1)
+
+vulnerable_q1 <- clean_matrix_eval(tree_survey_experiences, importance_of_benefits,vulnerable)
+vulnerable_q1 <- vulnerable_q1[which(!is.na(vulnerable_q1$vulnerable)),]
+vulnerable_q1$answer <- factor(vulnerable_q1$answer, levels = rev(c("Decreased", "Stayed the same", "Increased", "I do not know")))
+vulnerable_q1_viz <- clean_matrix_eval_viz_all(vulnerable_q1)
+vulnerable_q1_chi <- clean_matrix_eval_chi(vulnerable_q1)
+
+
+
+```
+
+1. **Over the past 10 years**, Required
+```{r}
+
 ```
 
 
-2. **Over the past 10 years, the number of trees in my neighborhood has:**  
-   - Increased  
-   - Decreased  
-   - Stayed the same  
-   - Unsure
-   
+2. **Please rate the importance of each of the following benefits of trees:** Required  
 ```{r}
-datatable(vulnerable_q5_a) 
-vulnerable_q5viz_a
-#datatable(vulnerable_q5_chi_a)
+
 ```
    
 

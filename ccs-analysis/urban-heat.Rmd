@@ -30,6 +30,8 @@ heat_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/h
 heat_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_map.csv")
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
+heat_survey <- heat_survey %>%
+  distinct(Contribution.ID, .keep_all = TRUE)
 
 
 ### ### ### ### ### ### ### ### ### ## 
