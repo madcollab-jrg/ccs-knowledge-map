@@ -28,7 +28,10 @@ ej_report <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/ej-report/ej_r
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
-# Cleaning functions
+### ### ### ### ### ### ### ### ### ## 
+### Functions for MATRIX QUESTIONS ### 
+### ### ### ### ### ### ### ### ### ##
+
 clean_matrix <- function(dataframe, column_name) {
   cleaned_data <- dataframe %>%
     separate_rows({{ column_name }}, sep = "; ") %>%
@@ -43,32 +46,6 @@ clean_matrix <- function(dataframe, column_name) {
   return(summary_data)
 }
 
-clean_box <- function(data, response) {
-  summary_data <- data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2)*100)
-    names(summary_data)[1] <- "response"
-
-  return(summary_data)
-}
-
-
-clean_multi <- function(data, response) {
-  cleaned_data <- data %>%
-    separate_rows({{ response }}, sep = "; ")
-  
-  summary_data <- cleaned_data %>%
-    group_by({{ response }}) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2) * 100)
-      names(summary_data)[1] <- "response"
-
-  return(summary_data)
-}
-
-
-# Viz functions
 viz_matrix <- function(dataframe, graph_title) {
   ggplot(dataframe, aes(x=question, y=freq, fill=answer)) +
     geom_bar(stat="identity", position="stack") +
@@ -82,6 +59,150 @@ viz_matrix <- function(dataframe, graph_title) {
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
 scale_fill_nejm()
 }
+
+## clean_matrix with variable
+clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
+  cleaned_data <- dataframe %>%
+    separate_rows({{ column_name }}, sep = "; ") %>%
+    separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
+  cleaned_data$answer <- as.factor(cleaned_data$answer)
+  
+  summary_data <- cleaned_data %>%
+    group_by( {{demographic_var}},question,answer) %>%
+    summarise(n = n()) %>%
+    mutate(freq = round((n / sum(n)),digits=2     )*100)
+  
+  return(summary_data)
+}
+
+## clean_matrix with variable
+clean_matrix_eval_viz <- function(dataframe, demographic_var) {
+   ggplot(dataframe, aes(x = !!sym(demographic_var), y = freq, fill = answer)) +
+    geom_bar(stat = "identity", position = "fill") +  # Use 'fill' to stack the bars to 100%
+    scale_y_continuous(labels = scales::percent_format()) +  # Use percent format for y-axis labels
+    labs(y = "Percentage", x = "Vulnerability Level", fill = "Answer") +
+    coord_flip() +  # Flip the axes to have vulnerability level on the y-axis
+    theme_minimal() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+ scale_fill_nejm()
+}
+
+
+### ### ### ### ### ### ### ### ### 
+### Functions for BOX QUESTIONS ### 
+### ### ### ### ### ### ### ### ### 
+
+clean_box <- function(data, response) {
+  summary_data <- data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / sum(count), digits = 2)*100)
+    names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+clean_box_eval <- function(data, column_name, demographic_var) {
+
+# Calculate the total number of responses per vulnerable category
+people <- air_survey_experiences %>%
+  group_by({{demographic_var}}) %>%
+  summarise(total = n())
+
+# Calculate the summary data including frequencies
+summary_data <- air_survey_experiences %>%
+    group_by({{demographic_var}}, {{column_name}}) %>%
+    summarise(n = n()) 
+
+summary_data <- merge(summary_data,people, by = "vulnerable")
+
+summary_data <- summary_data  %>%
+  mutate(freq = round((n / total), digits = 2) * 100)
+names(summary_data)[2] <- "question"
+return(summary_data)
+}
+
+viz_clean_box_eval <- function(dataframe,graph_title) {
+ 
+  # Create the bar chart
+   # Create the bar chart with differentiation for 'vulnerable' levels within each 'question'
+  ggplot(dataframe, aes(x=reorder(question, -freq), y=freq, fill=vulnerable)) +
+    geom_bar(stat="identity", position="dodge") + # Use 'position=dodge' to place bars side by side
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 40 characters
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    scale_fill_brewer(palette="Set1") + # Use a Brewer palette for distinguishable colors
+    theme(axis.text.x = element_text(angle=45, hjust=1))
+}
+
+
+
+### ### ### ### ### ### ### ### ### #
+### Functions for MULTI QUESTIONS ### 
+### ### ### ### ### ### ### ### ### #
+
+clean_multi <- function(data, response) {
+  cleaned_data <- data %>%
+    separate_rows({{ response }}, sep = "; ")
+  
+  summary_data <- cleaned_data %>%
+    group_by({{ response }}) %>%
+    summarise(count = n()) %>%
+    mutate(freq = round(count / dim(data)[1], digits = 2) * 100)
+      names(summary_data)[1] <- "response"
+
+  return(summary_data)
+}
+
+clean_multi_eval <- function(data, column_name, demographic_var) {
+
+# Calculate the total number of responses per vulnerable category
+people <- data %>%
+  group_by({{demographic_var}}) %>%
+  summarise(total = n())
+
+
+# Clean the data by separating rows and columns as required
+cleaned_data <- data %>%
+  separate_rows({{ column_name }}, sep = "; ") %>%
+  separate({{ column_name }}, into = c("question"), sep = " - ")
+print(cleaned_data)
+
+
+# Calculate the summary data including frequencies
+summary_data <- cleaned_data %>%
+  #group_by({{demographic_var}}, question) %>%
+  group_by(vulnerable, question) %>%
+  summarise(n = n(), .groups = 'drop')
+
+summary_data <- merge(summary_data,people, by = "vulnerable")
+
+summary_data <- summary_data  %>%
+  mutate(freq = round((n / total), digits = 2) * 100)
+
+return(summary_data)
+}
+
+viz_clean_multi_eval <- function(dataframe,graph_title) {
+ 
+  # Create the bar chart
+   # Create the bar chart with differentiation for 'vulnerable' levels within each 'question'
+  ggplot(dataframe, aes(x=reorder(question, -freq), y=freq, fill=vulnerable)) +
+    geom_bar(stat="identity", position="dodge") + # Use 'position=dodge' to place bars side by side
+    theme_minimal() +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 40)) + # Wrap labels to a width of 40 characters
+    coord_flip() +
+    labs(title=graph_title,
+         x="Response",
+         y="Frequency (%)") +
+    scale_fill_brewer(palette="Set1") + # Use a Brewer palette for distinguishable colors
+    theme(axis.text.x = element_text(angle=45, hjust=1))
+}
+
+####
 
 viz_box_multi <- function(dataframe,graph_title) {
   # Order the dataframe by decreasing frequency
@@ -100,20 +221,60 @@ viz_box_multi <- function(dataframe,graph_title) {
     theme(axis.text.x = element_text(angle=45, hjust=1))+
 scale_fill_nejm()
 }
-```
 
-# Environmental Justics Survey Descriptions
+### STATS ANALYSIS
+clean_matrix_eval_chi <- function(questions_df) {
+  results_list <- list() # Initialize an empty list to store the results dataframes
+  
+  # Loop through each unique question in the questions dataframe
+  for(i in unique(questions_df$question)){
+    data <- questions_df %>% filter(question == i)
+    
+    # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
+    # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
+    contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
+    chi_squared_test <- chisq.test(contingency_table)
+    
+    # Create a dataframe with the Chi-Squared test results
+    results_df <- data.frame(
+      question = i,
+      statistic = chi_squared_test$statistic,
+      pvalue = chi_squared_test$p.value,
+      degreeof = chi_squared_test$parameter
+    )
+    
+    # Store the results dataframe in the list
+    results_list[[i]] <- results_df
+  }
+  
+  # Combine all result dataframes in the list into a single dataframe
+  final_results_df <- do.call(rbind, results_list)
+  
+  return(final_results_df)
+}
 
-## EJ Stories 
-```{r ej-stories-setup, include=FALSE, cache=TRUE}
 
-```
+clean_multi_eval_chi <- function(dataframe) {
+  # Ensure 'n' is treated as numeric
+  dataframe$n <- as.numeric(dataframe$n)
+  
+  results <- dataframe %>%
+    group_by(question) %>%
+    summarise(Least = sum(n[vulnerable == "Least"]),
+              Most = sum(n[vulnerable == "Most"])) %>%
+    rowwise() %>%
+    do({
+      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      data.frame(question = .$question,
+                 statistic = round(chi_test_result$statistic, 3),
+                 pvalue = round(chi_test_result$p.value, 3),
+                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
+    }) %>%
+    ungroup()
+  
+  return(results)
+}
 
-- Description of survey and the questions asked
-
-
-## EJ Solutions
-```{r ej-solutions-setup, include=FALSE, cache=TRUE}
 names(ej_survey)[5:17] <- c("personal_justice_interpretation",
     "impactful_ej_issue",
     "personal_health_issue",
@@ -128,33 +289,56 @@ names(ej_survey)[5:17] <- c("personal_justice_interpretation",
     "community_action_collaboration",
     "individual_support_steps")
 
+```
+
+# Environmental Justics Survey Descriptions
+
+## EJ Stories 
+```{r ej-stories-setup, include=FALSE, cache=TRUE}
+
+```
+
+- Description of survey and the questions asked
+
+
+## EJ Solutions
+```{r ej-solutions-setup, include=FALSE, cache=TRUE}
 personal_justice_interpretation <- clean_multi(ej_survey,personal_justice_interpretation)
+personal_justice_interpretation <- personal_justice_interpretation[which(personal_justice_interpretation$freq >0),]
 personal_justice_interpretation_viz <- viz_box_multi(personal_justice_interpretation,"Personal Justice Interpretation")
 
 impactful_ej_issue <- clean_multi(ej_survey,impactful_ej_issue)
+impactful_ej_issue <- impactful_ej_issue[which(impactful_ej_issue$freq >0),]
 impactful_ej_issue_viz <- viz_box_multi(impactful_ej_issue,"Impactful Ej Issue")
 
 agreement_level_statements <- clean_matrix(ej_survey,agreement_level_statements)
+agreement_level_statements <- agreement_level_statements[which(agreement_level_statements$freq >0),]
 agreement_level_statements_viz <- viz_matrix(agreement_level_statements,"Agreement Level Statements")
 
 statements_agreement_level <- clean_matrix(ej_survey,statements_agreement_level)
+statements_agreement_level <- statements_agreement_level[which(statements_agreement_level$freq >0),]
 statements_agreement_level_viz <- viz_matrix(statements_agreement_level, "Statements Agreement Level")
 
 policy_change_need <- clean_multi(ej_survey,policy_change_need)
+policy_change_need <- policy_change_need[which(policy_change_need$freq >0),]
 policy_change_need_viz <- viz_box_multi(policy_change_need,"Policy Change Need")
 
 entity_responsibility_rating <- clean_matrix(ej_survey,entity_responsibility_rating)
+entity_responsibility_rating <- entity_responsibility_rating[which(entity_responsibility_rating$freq >0),]
 entity_responsibility_rating_viz <- viz_matrix(entity_responsibility_rating,"Entity Responsibility Rating")
 
 technology_climate_potential <- clean_multi(ej_survey,technology_climate_potential)
+technology_climate_potential <- technology_climate_potential[which(technology_climate_potential$freq >0),]
 technology_climate_potential_viz <- viz_box_multi(technology_climate_potential,"Technology Climate Potential")
 
 community_technology_willingness <- clean_multi(ej_survey,community_technology_willingness)
+community_technology_willingness <- community_technology_willingness[which(community_technology_willingness$freq >0),]
 community_technology_willingness_viz <- viz_box_multi(community_technology_willingness,"Community Technology Willingness")
 
 # technology_equity_responsibility <- clean_matrix(ej_survey,technology_equity_responsibility)
 # technology_equity_responsibility_viz <- viz_matrix(technology_equity_responsibility,"Technology Equity Responsibility")
 technology_equity_responsibility <- clean_multi(ej_survey,technology_equity_responsibility)
+technology_equity_responsibility <- community_technology_willingness[which(community_technology_willingness$freq >0),]
 technology_equity_responsibility_viz <- viz_box_multi(technology_equity_responsibility,"Technology Equity Responsibility")
 
 
@@ -211,12 +395,6 @@ community_technology_willingness_viz
 
 ### Who should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?
 ```{r}
-#ej_survey
-technology_equity_responsibility_viz <- viz_box_multi(technology_equity_responsibility,"Technology Equity Responsibility")
-technology_equity_responsibility_viz
-```
-
-```{r}
 datatable(technology_equity_responsibility)
 technology_equity_responsibility_viz
 ```
@@ -225,5 +403,255 @@ technology_equity_responsibility_viz
 
 
 - Description of survey and the questions asked
+
+## Place Analysis for Environmental Justice
+```{r place-analysis, include=FALSE, cache=FALSE}
+
+
+# ej_survey <- ej_survey %>%
+#   mutate(
+#     county_code = sprintf("%03d", as.integer(county_fips)),
+#     census_tract = sprintf("%06d", as.integer(census_tract)),
+#     census_block = sprintf("%04d", as.integer(census_block)),
+#     census_tract_full = paste0(state_fips, county_code, census_tract),
+#     census_block_full = paste0(state_fips, county_code, census_tract, census_block),
+#   )
+
+data_tracts <- c(unique(ej_survey$census_tract_full))
+data_blocks <- c(unique(ej_survey$census_block_full))
+
+# https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
+svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+
+# Which variables are important to include in the analysis?
+
+#https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
+eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+eji <- eji[which(!is.na(eji$RPL_EBM)),]
+eji <- eji[which(eji$COUNTY == c("Dane","Jefferson")),]
+
+# Calculate quartiles
+Q1 <- quantile(eji$RPL_EBM, 0.25)
+Q3 <- quantile(eji$RPL_EBM, 0.75)
+
+eji_response <- eji[which(eji$geoid %in% data_tracts),]
+eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Most","Least")
+eji_response_analysis <- eji_response %>%
+  dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
+# Which indicators are important to include in the analysis? 
+
+# Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
+# Dictionary: https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
+# EJI -> Environmental Burden -> Air Pollution-> ALL (Ozone EPL_OZONE  ,PM2.5 EPL_PM  ,Disel Particulate Matter EPL_DSLPM, Air Toxic Cancer Risks EPL_TOTCR)
+  # SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter. 
+  # RPL_EBM_DOM1: Percentile rank of domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
+# EJI -> Environmental Burden -> Built Environment -> (Recreational Parks)
+
+# SPL_EJI: Summation of the HVM, EBI, and SVI module percentile ranks 
+# RPL_EJI: Percentile ranks of SPL_EJI
+
+eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
+
+#https://www.epa.gov/ejscreen/understanding-ejscreen-results
+ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
+
+# Which variables are important to include in the analysis?
+```
+
+# Categorizing Vulnerability 
+```{r vulnerability, eval=TRUE, include=FALSE}
+# Summarize our data
+
+summary_eji <- eji_response_analysis %>%
+  group_by(vulnerable) %>%
+  summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
+
+summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
+
+
+library(sf)          # for handling spatial data
+library(tigris)
+options(tigris_use_cache = TRUE)
+options(scipen=999)
+
+
+# Load the shapefile
+#wisconsin_blocks <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+
+wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
+
+# Filter to include only your tracts
+#tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
+# Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
+target_tracts <- c(unique(air_survey$census_tract_full))
+
+# Convert your 'geoid' values to character if they are not already, to ensure matching works
+wisconsin_tracts_filtered <- wisconsin_tract %>%
+    filter(as.character(GEOID) %in% target_tracts)
+
+eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid)
+
+wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid"))
+
+# Plot using ggplot2
+county_data <- ggplot() +
+  geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
+    scale_fill_gradient(low = "lightblue", high = "darkblue", name = "RPL EJI Scale") + # Customize color scale as needed
+  theme_minimal() +
+   theme_bw() + theme(panel.border = element_blank(), 
+                      panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(), 
+                      axis.line = element_blank(),
+                      axis.text = element_blank(),
+                      axis.ticks = element_blank()) +
+  labs(title = "Environmental Burden Highlighted Census Tracts")
+```
+
+
+```{r}
+county_data
+```
+
+In our analysis, we categorized vulnerability based on the Environmental Burden Module (RPL_EBM) percentile ranks derived from the 2022 Environmental Justice Index. To do this, we first determined the 25th (Q1) and 75th (Q3) percentile values of the RPL_EBM distribution. These percentile values served as thresholds to categorize regions based on their environmental burden. Specifically, regions with an RPL_EBM value greater than the 75th percentile (Q3) were categorized as "Most Vulnerable", indicating that they are in the top quartile of environmental burden and, therefore, face higher vulnerability to environmental injustices. Conversely, regions not exceeding this threshold were categorized as "Least Vulnerable". This method of categorization allows us to identify areas with the most significant environmental challenges and prioritize them for interventions and resource allocation.
+
+```{r}
+datatable(summary_eji)
+```
+
+```{r include=FALSE, warning=FALSE, }
+ej_survey$census_tract_full <- as.character(ej_survey$census_tract_full) # CHANGE NAME
+# Group people into least/most vulnerable areas 
+ej_survey <- left_join(ej_survey, eji_response_analysis, by =c("census_tract_full"="geoid")) # CHANGE NAME
+#tree_survey
+
+ej_survey_experiences <- ej_survey[which(!is.na(ej_survey$vulnerable)),]
+# Experiences with ej
+
+# Q1
+vulnerable_personal_justice_interpretation <- clean_multi_eval(ej_survey,personal_justice_interpretation,vulnerable)
+vulnerable_personal_justice_interpretation_viz <- viz_clean_multi_eval(vulnerable_personal_justice_interpretation,"Personal Justice Interpretation")
+vulnerable_personal_justice_interpretation_chi <- clean_multi_eval_chi(vulnerable_personal_justice_interpretation)
+
+# Q2
+vulnerable_impactful_ej_issue <- clean_multi_eval(ej_survey,impactful_ej_issue,vulnerable)
+vulnerable_impactful_ej_issue_viz <- viz_clean_multi_eval(vulnerable_impactful_ej_issue,"Impactful Ej Issue")
+vulnerable_impactful_ej_issue_chi <- clean_multi_eval_chi(vulnerable_impactful_ej_issue)
+
+
+# Q4
+vulnerable_agreement_level_statements <- clean_matrix_eval(ej_survey,agreement_level_statements,vulnerable)
+vulnerable_agreement_level_statements_viz <- clean_matrix_eval_viz(vulnerable_agreement_level_statements,"Agreement Level Statements")
+vulnerable_agreement_level_statements_chi <- clean_matrix_eval_chi(vulnerable_agreement_level_statements)
+
+
+# Q5
+vulnerable_statements_agreement_level <- clean_matrix_eval(ej_survey,statements_agreement_level,vulnerable)
+vulnerable_statements_agreement_level_viz <- clean_matrix_eval_viz(vulnerable_statements_agreement_level, "Statements Agreement Level")
+vulnerable_statements_agreement_level_chi <- clean_matrix_eval_chi(vulnerable_statements_agreement_level)
+
+# Q6
+vulnerable_policy_change_need <- clean_multi_eval(ej_survey,policy_change_need,vulnerable)
+vulnerable_policy_change_need_viz <- viz_clean_multi_eval(vulnerable_policy_change_need,"Policy Change Need")
+vulnerable_policy_change_need_chi <- clean_multi_eval_chi(vulnerable_policy_change_need)
+
+# Q7
+vulnerable_entity_responsibility_rating <- clean_matrix_eval(ej_survey,entity_responsibility_rating,vulnerable)
+vulnerable_entity_responsibility_rating_viz <- clean_matrix_eval_viz(vulnerable_entity_responsibility_rating,"Entity Responsibility Rating")
+vulnerable_entity_responsibility_rating_chi <- clean_matrix_eval_chi(vulnerable_entity_responsibility_rating)
+
+# Q9
+vulnerable_technology_climate_potential <- clean_multi_eval(ej_survey,technology_climate_potential,vulnerable)
+vulnerable_technology_climate_potential_viz <- viz_clean_multi_eval(vulnerable_technology_climate_potential,"Technology Climate Potential")
+vulnerable_technology_climate_potential_chi <- clean_multi_eval_chi(vulnerable_technology_climate_potential)
+
+
+# Q10
+vulnerable_community_technology_willingness <- clean_multi_eval(ej_survey,community_technology_willingness,vulnerable)
+vulnerable_community_technology_willingness_viz <- viz_clean_multi_eval(vulnerable_community_technology_willingness,"Community Technology Willingness")
+vulnerable_personal_justice_interpretation_chi <- clean_multi_eval_chi(vulnerable_community_technology_willingness)
+
+# Q11
+vulnerable_technology_equity_responsibility <- clean_multi_eval(ej_survey,technology_equity_responsibility,vulnerable)
+vulnerable_technology_equity_responsibility_viz <- viz_clean_multi_eval(vulnerable_technology_equity_responsibility,"Technology Equity Responsibility")
+vulnerable_technology_equity_responsibility_chi <- clean_multi_eval_chi(vulnerable_technology_equity_responsibility)
+
+```
+
+
+1. **What does the term "environmental justice" mean to you?** (Multi-Choice)
+```{r}
+datatable(vulnerable_personal_justice_interpretation)
+vulnerable_personal_justice_interpretation_viz
+datatable(vulnerable_personal_justice_interpretation_chi)
+```
+
+2. **Which environmental justice issue do you think has the most significant impact on public health?** (Multi-Choice)
+```{r}
+datatable(vulnerable_impactful_ej_issue)
+vulnerable_impactful_ej_issue_viz
+datatable(vulnerable_impactful_ej_issue_chi)
+```
+
+4. **Please rate how much do you agree/disagree with the statements** (Matrix)
+```{r}
+# Q4
+datatable(vulnerable_agreement_level_statements)
+vulnerable_agreement_level_statements_viz
+datatable(vulnerable_agreement_level_statements_chi)
+```
+
+5. **Please rate how much do you agree/disagree with the statements** (Matrix)
+```{r}
+# Q5
+datatable(vulnerable_statements_agreement_level)
+vulnerable_statements_agreement_level_viz
+datatable(vulnerable_statements_agreement_level_chi)
+```
+
+
+6. **What is the most important policy change needed to address environmental justice in the United States? (select up to 3)** (Multi-Choice)
+```{r}
+# Q6
+datatable(vulnerable_policy_change_need)
+vulnerable_policy_change_need_viz
+datatable(vulnerable_policy_change_need_chi)
+```
+
+7. **Rate the following entities on their responsibility for addressing environmental justice issues** (Matrix)
+```{r}
+# Q7
+datatable(vulnerable_entity_responsibility_rating)
+vulnerable_entity_responsibility_rating_viz
+datatable(vulnerable_entity_responsibility_rating_chi)
+```
+
+9. **To what extent do you believe that new technology has the potential to slow down climate change?** (Multi-Choice)
+```{r}
+# Q9
+datatable(vulnerable_technology_climate_potential)
+vulnerable_technology_climate_potential_viz
+datatable(vulnerable_technology_climate_potential_chi)
+```
+
+10. **If there was new technology to slow down climate change, how willing would you be to use it in your community?** (Multi-Choice)
+```{r}
+# Q10
+datatable(vulnerable_community_technology_willingness)
+vulnerable_community_technology_willingness_viz
+datatable(vulnerable_personal_justice_interpretation_chi)
+```
+
+11. **Who should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?** (Multi-Choice)
+```{r}
+# Q11
+datatable(vulnerable_technology_equity_responsibility)
+vulnerable_technology_equity_responsibility_viz
+datatable(vulnerable_technology_equity_responsibility_chi)
+```
+
+
+
 
 # Meta Summary
