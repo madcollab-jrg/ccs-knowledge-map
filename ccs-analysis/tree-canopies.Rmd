@@ -265,7 +265,7 @@ clean_multi_eval_chi <- function(dataframe) {
               Most = sum(n[vulnerable == "Most"])) %>%
     rowwise() %>%
     do({
-      chi_test_result <- chisq.test(c(.$Least, .$Most), correct = TRUE)
+      chi_test_result <- chisq.test(c(.$Least, .$Most),correct = TRUE)
       data.frame(question = .$question,
                  statistic = round(chi_test_result$statistic, 3),
                  pvalue = round(chi_test_result$p.value, 3),
@@ -276,11 +276,65 @@ clean_multi_eval_chi <- function(dataframe) {
   return(results)
 }
 
+perform_topic_modeling <- function(df, attribute_name) {
+
+    # Lists to store plots and thoughts data frames
+  plots_list <- list()
+  thoughts_list <- list()
+  
+  for (attr_val in unique(df[[attribute_name]])) {
+
+  
+  
+    sub_df <- df[which(df[[attribute_name]] == attr_val),]
+
+    # Repeat the preprocessing and topic modeling steps for sub_df
+    processed_texts <- textProcessor(documents=sub_df$text_column, metadata=sub_df)
+    out <- prepDocuments(processed_texts$documents, processed_texts$vocab, processed_texts$meta)
+    docs <- out$documents
+    vocab <- out$vocab
+    meta <- out$meta
+
+    # Fit the topic model for the subgroup
+    topic_model <- stm(documents=docs, vocab=vocab, K=3, data=meta, max.em.its=10, init.type="Spectral")
+    
+    # Create a new plot window, plot, and then store the plot using recordPlot
+    plot_name <- paste0(attribute_name, "_", attr_val, "_plot")
+    plot.new()
+    plot(topic_model, type="summary", main=paste("Topic Model Summary -", attr_val, "Vulnerable"))
+    plots_list[[plot_name]] <- recordPlot()
+    dev.off()  # Close the plotting window
+    
+    # Extract and store thoughts in the list
+    thoughts_name <- paste0(attribute_name, "_", attr_val, "_thoughts")
+    thoughts <- findThoughts(topic_model, texts=sub_df$text_column[which(row_number(sub_df) %in% row_number(out$meta))], n=1)
+    
+    # Create a dataframe for thoughts and add attribute information
+    thoughts_sub_df <- data.frame(stack(thoughts$docs))
+    names(thoughts_sub_df)[1:2] <- c("Attribute","Thoughts")
+    thoughts_sub_df$type <- attr_val
+    
+    # Add to the list of thoughts dataframes
+    thoughts_list[[thoughts_name]] <- thoughts_sub_df  
+  }
+  
+     # Combine all thoughts data frames into one
+  all_thoughts_df <- do.call("rbind", thoughts_list)
+  
+  # Return a list containing both the plots and the combined thoughts dataframe
+  return(list("plots" = plots_list, "thoughts" = all_thoughts_df))
+
+}
+
+
 new_names <- c(
   "past_years","importance_of_benefits","agreement_about_trees","neighborhood_street_trees","tree_infrastructure_damage","tree_quality_life","tree_values","areas_needing_trees","preferred_tree_types","tree_goals","tree_support")
 
 # Selecting the columns to rename by their position using the colnames function
 colnames(tree_survey)[5:15] <- new_names
+
+##A chi-square test revealed highly significant differences in the types of challenges parents face when trying to enforce an activity constraint compared to a context constraint (χ2(8) = 51.7, p <.001). Post-hoc contingency-table analysis revealed that
+# specifically, parents are more likely to report that they have few or no challenges if they are trying to enforce an activity constraint (Z = 4.00, p < .001), and they are more likely to
 ```
 
 # Tree Canopy Survey
@@ -826,7 +880,11 @@ vulnerable_q5 <- vulnerable_q5[which(!is.na(vulnerable_q5$vulnerable)),]
 vulnerable_q5_viz <- viz_clean_multi_eval(vulnerable_q5,"Tree Related Damage in My Community")
 vulnerable_q5_chi <- clean_multi_eval_chi(vulnerable_q5)
 
-# 6 open-ended
+vulnerable_q6 <- data.frame(tree_survey_experiences$tree_quality_life,tree_survey_experiences$vulnerable)
+names(vulnerable_q6)[1:2] <- c("text_column","vulnerable")
+vulnerable_q6_stm <- perform_topic_modeling(vulnerable_q6, "vulnerable")
+vulnerable_q6_stm_thoughts <-  data.frame(vulnerable_q6_stm$thoughts)
+rownames(vulnerable_q6_stm_thoughts) <- 1:dim(vulnerable_q6_stm_thoughts)[1]
 
 vulnerable_q7 <- clean_multi_eval(tree_survey_experiences,tree_values,vulnerable)
 vulnerable_q7 <- vulnerable_q7[which(!is.na(vulnerable_q7$vulnerable)),]
@@ -865,14 +923,12 @@ datatable(vulnerable_q1_chi)
 ```{r}
 datatable(vulnerable_q2)
 vulnerable_q2_viz
-datatable(vulnerable_q2_chi)
 ```
    
 3. **Please rate your level of agreement with each of the following statements:** Required  
 ```{r}
 datatable(vulnerable_q3)
 vulnerable_q3_viz
-datatable(vulnerable_q3_chi)
 ```
 
 4. **Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grow over the road)** Required
@@ -889,9 +945,15 @@ datatable(vulnerable_q5_chi)
 
 6. **How do trees impact your quality of life and the quality of your community?** Required
 ```{r}
-datatable(vulnerable_q6)
-vulnerable_q6_viz
-datatable(vulnerable_q6_chi)
+vulnerable_q6_stm$plots$vulnerable_Least_plot
+```
+
+```{r }
+vulnerable_q6_stm$plots$vulnerable_Most_plot
+```
+
+```{r }
+datatable(vulnerable_q6_stm_thoughts)
 ```
 
 7. **Which aspects of trees do you value? Select all that apply.** Required
