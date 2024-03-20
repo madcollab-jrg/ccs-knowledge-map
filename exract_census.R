@@ -235,6 +235,14 @@ censuscongress_genderedu <- censuscongress_genderedu %>% select(-contains("NAME"
 censuscongress_genderedu <- censuscongress_genderedu %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_TOTAL = sum(male_white_total+female_white_total),
+    WHITE_FEMALE = sum(female_white_total), 
+    WHITE_MALE = sum(male_white_total),
+    WHITE_LESS_HS_TOTAL = sum(male_white_less_hs+female_white_less_hs),
+    WHITE_HS_TOTAL = sum(male_white_hs_grad+female_white_hs_grad),
+    WHITE_SOME_COLLEGE_TOTAL = sum(male_white_some_college+female_white_some_college),
+    WHITE_COLLEGE_TOTAL = sum(male_white_bs+female_white_bs),
+    
     BLACK_TOTAL = sum(male_black_total+female_black_total),
     BLACK_FEMALE = sum(female_black_total), 
     BLACK_MALE = sum(male_black_total),
@@ -242,6 +250,55 @@ censuscongress_genderedu <- censuscongress_genderedu %>%
     BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
     BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
     BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    AI_AN_TOTAL = sum(male_aian_total+female_aian_total),
+    AI_AN_FEMALE = sum(female_aian_total), 
+    AI_AN_MALE = sum(male_aian_total),
+    AI_AN_LESS_HS_TOTAL = sum(male_aian_less_hs+female_aian_less_hs),
+    AI_AN_HS_TOTAL = sum(male_aian_hs_grad+female_aian_hs_grad),
+    AI_AN_SOME_COLLEGE_TOTAL = sum(male_aian_some_college+female_aian_some_college),
+    AI_AN_COLLEGE_TOTAL = sum(male_aian_bs+female_aian_bs),
+    
+    ASIAN_TOTAL = sum(male_asian_total+female_asian_total),
+    ASIAN_FEMALE = sum(female_asian_total), 
+    ASIAN_MALE = sum(male_asian_total),
+    ASIAN_LESS_HS_TOTAL = sum(male_asian_less_hs+female_asian_less_hs),
+    ASIAN_HS_TOTAL = sum(male_asian_hs_grad+female_asian_hs_grad),
+    ASIAN_SOME_COLLEGE_TOTAL = sum(male_asian_some_college+female_asian_some_college),
+    ASIAN_COLLEGE_TOTAL = sum(male_asian_bs+female_asian_bs),
+    
+    NHPI_TOTAL = sum(male_nhpi_total+female_nhpi_total),
+    NHPI_FEMALE = sum(female_nhpi_total), 
+    NHPI_MALE = sum(male_nhpi_total),
+    NHPI_LESS_HS_TOTAL = sum(male_nhpi_less_hs+female_nhpi_less_hs),
+    NHPI_HS_TOTAL = sum(male_nhpi_hs_grad+female_nhpi_hs_grad),
+    NHPI_SOME_COLLEGE_TOTAL = sum(male_nhpi_some_college+female_nhpi_some_college),
+    NHPI_COLLEGE_TOTAL = sum(male_nhpi_bs+female_nhpi_bs),
+    
+    OTHER_TOTAL = sum(male_other_total+female_other_total),
+    OTHER_FEMALE = sum(female_other_total), 
+    OTHER_MALE = sum(male_other_total),
+    OTHER_LESS_HS_TOTAL = sum(male_other_less_hs+female_other_less_hs),
+    OTHER_HS_TOTAL = sum(male_other_hs_grad+female_other_hs_grad),
+    OTHER_SOME_COLLEGE_TOTAL = sum(male_other_some_college+female_other_some_college),
+    OTHER_COLLEGE_TOTAL = sum(male_other_bs+female_other_bs),
+    
+    MIXED_TOTAL = sum(male_mixed_total+female_mixed_total),
+    MIXED_FEMALE = sum(female_mixed_total), 
+    MIXED_MALE = sum(male_mixed_total),
+    MIXED_LESS_HS_TOTAL = sum(male_mixed_less_hs+female_mixed_less_hs),
+    MIXED_HS_TOTAL = sum(male_mixed_hs_grad+female_mixed_hs_grad),
+    MIXED_SOME_COLLEGE_TOTAL = sum(male_mixed_some_college+female_mixed_some_college),
+    MIXED_COLLEGE_TOTAL = sum(male_mixed_bs+female_mixed_bs),
+    
+    W_NOTHISP_TOTAL = sum(male_w_nothisp_total+female_w_nothisp_total),
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_total), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_total),
+    W_NOTHISP_LESS_HS_TOTAL = sum(male_w_nothisp_less_hs+female_w_nothisp_less_hs),
+    W_NOTHISP_HS_TOTAL = sum(male_w_nothisp_hs_grad+female_w_nothisp_hs_grad),
+    W_NOTHISP_SOME_COLLEGE_TOTAL = sum(male_w_nothisp_some_college+female_w_nothisp_some_college),
+    W_NOTHISP_COLLEGE_TOTAL = sum(male_w_nothisp_bs+female_w_nothisp_bs),
+    
     HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
     HISP_FEMALE = sum(female_hisp_total), 
     HISP_MALE = sum(male_hisp_total),
@@ -250,17 +307,33 @@ censuscongress_genderedu <- censuscongress_genderedu %>%
     HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
     HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
     
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
-    UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
-    UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
-    UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
-    UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+NHPI_TOTAL+
+                      OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    ALL_FEMALE_TOTAL = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+
+                             OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE),
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+
+                     OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_LESS_HS_TOTAL = sum(WHITE_LESS_HS_TOTAL+BLACK_LESS_HS_TOTAL+AI_AN_LESS_HS_TOTAL+ASIAN_LESS_HS_TOTAL+NHPI_LESS_HS_TOTAL+
+                              OTHER_LESS_HS_TOTAL+MIXED_LESS_HS_TOTAL+W_NOTHISP_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    ALL_HS_TOTAL = sum(WHITE_HS_TOTAL+BLACK_HS_TOTAL+AI_AN_HS_TOTAL+ASIAN_HS_TOTAL+NHPI_HS_TOTAL+
+                         OTHER_HS_TOTAL+MIXED_HS_TOTAL+W_NOTHISP_HS_TOTAL+HISP_HS_TOTAL),
+    ALL_SOME_COLLEGE_TOTAL = sum(WHITE_SOME_COLLEGE_TOTAL+BLACK_SOME_COLLEGE_TOTAL+AI_AN_SOME_COLLEGE_TOTAL+
+                                   ASIAN_SOME_COLLEGE_TOTAL+NHPI_SOME_COLLEGE_TOTAL+OTHER_SOME_COLLEGE_TOTAL+
+                                   MIXED_SOME_COLLEGE_TOTAL+W_NOTHISP_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    ALL_COLLEGE_TOTAL = sum(WHITE_COLLEGE_TOTAL+BLACK_COLLEGE_TOTAL+AI_AN_COLLEGE_TOTAL+ASIAN_COLLEGE_TOTAL+NHPI_COLLEGE_TOTAL+
+                              OTHER_COLLEGE_TOTAL+MIXED_COLLEGE_TOTAL+W_NOTHISP_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
     
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    # UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    # UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    # UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    # UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    # 
   )
 # export
-write.csv(censuscongress_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_genderedu.csv")
+write.csv(censuscongress_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_genderedu2.csv")
 
 ############# state legislative district (upper chamber) ############# 
 
@@ -470,6 +543,14 @@ censusstatelegislative_upper_genderedu <- censusstatelegislative_upper_genderedu
 censusstatelegislative_upper_genderedu <- censusstatelegislative_upper_genderedu %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_TOTAL = sum(male_white_total+female_white_total),
+    WHITE_FEMALE = sum(female_white_total), 
+    WHITE_MALE = sum(male_white_total),
+    WHITE_LESS_HS_TOTAL = sum(male_white_less_hs+female_white_less_hs),
+    WHITE_HS_TOTAL = sum(male_white_hs_grad+female_white_hs_grad),
+    WHITE_SOME_COLLEGE_TOTAL = sum(male_white_some_college+female_white_some_college),
+    WHITE_COLLEGE_TOTAL = sum(male_white_bs+female_white_bs),
+    
     BLACK_TOTAL = sum(male_black_total+female_black_total),
     BLACK_FEMALE = sum(female_black_total), 
     BLACK_MALE = sum(male_black_total),
@@ -477,6 +558,55 @@ censusstatelegislative_upper_genderedu <- censusstatelegislative_upper_genderedu
     BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
     BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
     BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    AI_AN_TOTAL = sum(male_aian_total+female_aian_total),
+    AI_AN_FEMALE = sum(female_aian_total), 
+    AI_AN_MALE = sum(male_aian_total),
+    AI_AN_LESS_HS_TOTAL = sum(male_aian_less_hs+female_aian_less_hs),
+    AI_AN_HS_TOTAL = sum(male_aian_hs_grad+female_aian_hs_grad),
+    AI_AN_SOME_COLLEGE_TOTAL = sum(male_aian_some_college+female_aian_some_college),
+    AI_AN_COLLEGE_TOTAL = sum(male_aian_bs+female_aian_bs),
+    
+    ASIAN_TOTAL = sum(male_asian_total+female_asian_total),
+    ASIAN_FEMALE = sum(female_asian_total), 
+    ASIAN_MALE = sum(male_asian_total),
+    ASIAN_LESS_HS_TOTAL = sum(male_asian_less_hs+female_asian_less_hs),
+    ASIAN_HS_TOTAL = sum(male_asian_hs_grad+female_asian_hs_grad),
+    ASIAN_SOME_COLLEGE_TOTAL = sum(male_asian_some_college+female_asian_some_college),
+    ASIAN_COLLEGE_TOTAL = sum(male_asian_bs+female_asian_bs),
+    
+    NHPI_TOTAL = sum(male_nhpi_total+female_nhpi_total),
+    NHPI_FEMALE = sum(female_nhpi_total), 
+    NHPI_MALE = sum(male_nhpi_total),
+    NHPI_LESS_HS_TOTAL = sum(male_nhpi_less_hs+female_nhpi_less_hs),
+    NHPI_HS_TOTAL = sum(male_nhpi_hs_grad+female_nhpi_hs_grad),
+    NHPI_SOME_COLLEGE_TOTAL = sum(male_nhpi_some_college+female_nhpi_some_college),
+    NHPI_COLLEGE_TOTAL = sum(male_nhpi_bs+female_nhpi_bs),
+    
+    OTHER_TOTAL = sum(male_other_total+female_other_total),
+    OTHER_FEMALE = sum(female_other_total), 
+    OTHER_MALE = sum(male_other_total),
+    OTHER_LESS_HS_TOTAL = sum(male_other_less_hs+female_other_less_hs),
+    OTHER_HS_TOTAL = sum(male_other_hs_grad+female_other_hs_grad),
+    OTHER_SOME_COLLEGE_TOTAL = sum(male_other_some_college+female_other_some_college),
+    OTHER_COLLEGE_TOTAL = sum(male_other_bs+female_other_bs),
+    
+    MIXED_TOTAL = sum(male_mixed_total+female_mixed_total),
+    MIXED_FEMALE = sum(female_mixed_total), 
+    MIXED_MALE = sum(male_mixed_total),
+    MIXED_LESS_HS_TOTAL = sum(male_mixed_less_hs+female_mixed_less_hs),
+    MIXED_HS_TOTAL = sum(male_mixed_hs_grad+female_mixed_hs_grad),
+    MIXED_SOME_COLLEGE_TOTAL = sum(male_mixed_some_college+female_mixed_some_college),
+    MIXED_COLLEGE_TOTAL = sum(male_mixed_bs+female_mixed_bs),
+    
+    W_NOTHISP_TOTAL = sum(male_w_nothisp_total+female_w_nothisp_total),
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_total), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_total),
+    W_NOTHISP_LESS_HS_TOTAL = sum(male_w_nothisp_less_hs+female_w_nothisp_less_hs),
+    W_NOTHISP_HS_TOTAL = sum(male_w_nothisp_hs_grad+female_w_nothisp_hs_grad),
+    W_NOTHISP_SOME_COLLEGE_TOTAL = sum(male_w_nothisp_some_college+female_w_nothisp_some_college),
+    W_NOTHISP_COLLEGE_TOTAL = sum(male_w_nothisp_bs+female_w_nothisp_bs),
+    
     HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
     HISP_FEMALE = sum(female_hisp_total), 
     HISP_MALE = sum(male_hisp_total),
@@ -485,17 +615,33 @@ censusstatelegislative_upper_genderedu <- censusstatelegislative_upper_genderedu
     HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
     HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
     
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
-    UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
-    UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
-    UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
-    UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+NHPI_TOTAL+
+                      OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    ALL_FEMALE_TOTAL = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+
+                             OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE),
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+
+                     OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_LESS_HS_TOTAL = sum(WHITE_LESS_HS_TOTAL+BLACK_LESS_HS_TOTAL+AI_AN_LESS_HS_TOTAL+ASIAN_LESS_HS_TOTAL+NHPI_LESS_HS_TOTAL+
+                              OTHER_LESS_HS_TOTAL+MIXED_LESS_HS_TOTAL+W_NOTHISP_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    ALL_HS_TOTAL = sum(WHITE_HS_TOTAL+BLACK_HS_TOTAL+AI_AN_HS_TOTAL+ASIAN_HS_TOTAL+NHPI_HS_TOTAL+
+                         OTHER_HS_TOTAL+MIXED_HS_TOTAL+W_NOTHISP_HS_TOTAL+HISP_HS_TOTAL),
+    ALL_SOME_COLLEGE_TOTAL = sum(WHITE_SOME_COLLEGE_TOTAL+BLACK_SOME_COLLEGE_TOTAL+AI_AN_SOME_COLLEGE_TOTAL+
+                                   ASIAN_SOME_COLLEGE_TOTAL+NHPI_SOME_COLLEGE_TOTAL+OTHER_SOME_COLLEGE_TOTAL+
+                                   MIXED_SOME_COLLEGE_TOTAL+W_NOTHISP_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    ALL_COLLEGE_TOTAL = sum(WHITE_COLLEGE_TOTAL+BLACK_COLLEGE_TOTAL+AI_AN_COLLEGE_TOTAL+ASIAN_COLLEGE_TOTAL+NHPI_COLLEGE_TOTAL+
+                              OTHER_COLLEGE_TOTAL+MIXED_COLLEGE_TOTAL+W_NOTHISP_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
     
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    # UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    # UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    # UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    # UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    # 
   )
 # export
-write.csv(censusstatelegislative_upper_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper_genderedu.csv")
+write.csv(censusstatelegislative_upper_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper_genderedu2.csv")
 
 ############# state legislative district (lower chamber) ############# 
 
@@ -705,6 +851,14 @@ censusstatelegislative_lower_genderedu <- censusstatelegislative_lower_genderedu
 censusstatelegislative_lower_genderedu <- censusstatelegislative_lower_genderedu %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_TOTAL = sum(male_white_total+female_white_total),
+    WHITE_FEMALE = sum(female_white_total), 
+    WHITE_MALE = sum(male_white_total),
+    WHITE_LESS_HS_TOTAL = sum(male_white_less_hs+female_white_less_hs),
+    WHITE_HS_TOTAL = sum(male_white_hs_grad+female_white_hs_grad),
+    WHITE_SOME_COLLEGE_TOTAL = sum(male_white_some_college+female_white_some_college),
+    WHITE_COLLEGE_TOTAL = sum(male_white_bs+female_white_bs),
+    
     BLACK_TOTAL = sum(male_black_total+female_black_total),
     BLACK_FEMALE = sum(female_black_total), 
     BLACK_MALE = sum(male_black_total),
@@ -712,6 +866,55 @@ censusstatelegislative_lower_genderedu <- censusstatelegislative_lower_genderedu
     BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
     BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
     BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    AI_AN_TOTAL = sum(male_aian_total+female_aian_total),
+    AI_AN_FEMALE = sum(female_aian_total), 
+    AI_AN_MALE = sum(male_aian_total),
+    AI_AN_LESS_HS_TOTAL = sum(male_aian_less_hs+female_aian_less_hs),
+    AI_AN_HS_TOTAL = sum(male_aian_hs_grad+female_aian_hs_grad),
+    AI_AN_SOME_COLLEGE_TOTAL = sum(male_aian_some_college+female_aian_some_college),
+    AI_AN_COLLEGE_TOTAL = sum(male_aian_bs+female_aian_bs),
+    
+    ASIAN_TOTAL = sum(male_asian_total+female_asian_total),
+    ASIAN_FEMALE = sum(female_asian_total), 
+    ASIAN_MALE = sum(male_asian_total),
+    ASIAN_LESS_HS_TOTAL = sum(male_asian_less_hs+female_asian_less_hs),
+    ASIAN_HS_TOTAL = sum(male_asian_hs_grad+female_asian_hs_grad),
+    ASIAN_SOME_COLLEGE_TOTAL = sum(male_asian_some_college+female_asian_some_college),
+    ASIAN_COLLEGE_TOTAL = sum(male_asian_bs+female_asian_bs),
+    
+    NHPI_TOTAL = sum(male_nhpi_total+female_nhpi_total),
+    NHPI_FEMALE = sum(female_nhpi_total), 
+    NHPI_MALE = sum(male_nhpi_total),
+    NHPI_LESS_HS_TOTAL = sum(male_nhpi_less_hs+female_nhpi_less_hs),
+    NHPI_HS_TOTAL = sum(male_nhpi_hs_grad+female_nhpi_hs_grad),
+    NHPI_SOME_COLLEGE_TOTAL = sum(male_nhpi_some_college+female_nhpi_some_college),
+    NHPI_COLLEGE_TOTAL = sum(male_nhpi_bs+female_nhpi_bs),
+    
+    OTHER_TOTAL = sum(male_other_total+female_other_total),
+    OTHER_FEMALE = sum(female_other_total), 
+    OTHER_MALE = sum(male_other_total),
+    OTHER_LESS_HS_TOTAL = sum(male_other_less_hs+female_other_less_hs),
+    OTHER_HS_TOTAL = sum(male_other_hs_grad+female_other_hs_grad),
+    OTHER_SOME_COLLEGE_TOTAL = sum(male_other_some_college+female_other_some_college),
+    OTHER_COLLEGE_TOTAL = sum(male_other_bs+female_other_bs),
+    
+    MIXED_TOTAL = sum(male_mixed_total+female_mixed_total),
+    MIXED_FEMALE = sum(female_mixed_total), 
+    MIXED_MALE = sum(male_mixed_total),
+    MIXED_LESS_HS_TOTAL = sum(male_mixed_less_hs+female_mixed_less_hs),
+    MIXED_HS_TOTAL = sum(male_mixed_hs_grad+female_mixed_hs_grad),
+    MIXED_SOME_COLLEGE_TOTAL = sum(male_mixed_some_college+female_mixed_some_college),
+    MIXED_COLLEGE_TOTAL = sum(male_mixed_bs+female_mixed_bs),
+    
+    W_NOTHISP_TOTAL = sum(male_w_nothisp_total+female_w_nothisp_total),
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_total), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_total),
+    W_NOTHISP_LESS_HS_TOTAL = sum(male_w_nothisp_less_hs+female_w_nothisp_less_hs),
+    W_NOTHISP_HS_TOTAL = sum(male_w_nothisp_hs_grad+female_w_nothisp_hs_grad),
+    W_NOTHISP_SOME_COLLEGE_TOTAL = sum(male_w_nothisp_some_college+female_w_nothisp_some_college),
+    W_NOTHISP_COLLEGE_TOTAL = sum(male_w_nothisp_bs+female_w_nothisp_bs),
+    
     HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
     HISP_FEMALE = sum(female_hisp_total), 
     HISP_MALE = sum(male_hisp_total),
@@ -720,17 +923,33 @@ censusstatelegislative_lower_genderedu <- censusstatelegislative_lower_genderedu
     HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
     HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
     
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
-    UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
-    UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
-    UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
-    UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+NHPI_TOTAL+
+                      OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    ALL_FEMALE_TOTAL = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+
+                             OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE),
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+
+                     OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_LESS_HS_TOTAL = sum(WHITE_LESS_HS_TOTAL+BLACK_LESS_HS_TOTAL+AI_AN_LESS_HS_TOTAL+ASIAN_LESS_HS_TOTAL+NHPI_LESS_HS_TOTAL+
+                              OTHER_LESS_HS_TOTAL+MIXED_LESS_HS_TOTAL+W_NOTHISP_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    ALL_HS_TOTAL = sum(WHITE_HS_TOTAL+BLACK_HS_TOTAL+AI_AN_HS_TOTAL+ASIAN_HS_TOTAL+NHPI_HS_TOTAL+
+                         OTHER_HS_TOTAL+MIXED_HS_TOTAL+W_NOTHISP_HS_TOTAL+HISP_HS_TOTAL),
+    ALL_SOME_COLLEGE_TOTAL = sum(WHITE_SOME_COLLEGE_TOTAL+BLACK_SOME_COLLEGE_TOTAL+AI_AN_SOME_COLLEGE_TOTAL+
+                                   ASIAN_SOME_COLLEGE_TOTAL+NHPI_SOME_COLLEGE_TOTAL+OTHER_SOME_COLLEGE_TOTAL+
+                                   MIXED_SOME_COLLEGE_TOTAL+W_NOTHISP_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    ALL_COLLEGE_TOTAL = sum(WHITE_COLLEGE_TOTAL+BLACK_COLLEGE_TOTAL+AI_AN_COLLEGE_TOTAL+ASIAN_COLLEGE_TOTAL+NHPI_COLLEGE_TOTAL+
+                              OTHER_COLLEGE_TOTAL+MIXED_COLLEGE_TOTAL+W_NOTHISP_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
     
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    # UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    # UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    # UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    # UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    # 
   )
 # export
-write.csv(censusstatelegislative_lower_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower_genderedu.csv")
+write.csv(censusstatelegislative_lower_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower_genderedu2.csv")
 
 
 ############# ZIP ############# 
@@ -941,32 +1160,105 @@ censuszip_genderedu <- censuszip_genderedu %>% select(-contains("NAME"))
 censuszip_genderedu <- censuszip_genderedu %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
-         BLACK_TOTAL = sum(male_black_total+female_black_total),
-         BLACK_FEMALE = sum(female_black_total), 
-         BLACK_MALE = sum(male_black_total),
-         BLACK_LESS_HS_TOTAL = sum(male_black_less_hs+female_black_less_hs),
-         BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
-         BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
-         BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
-         HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
-         HISP_FEMALE = sum(female_hisp_total), 
-         HISP_MALE = sum(male_hisp_total),
-         HISP_LESS_HS_TOTAL = sum(male_hisp_less_hs+female_hisp_less_hs),
-         HISP_HS_TOTAL = sum(male_hisp_hs_grad+female_hisp_hs_grad),
-         HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
-         HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
-         
-         UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
-         UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
-         UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-         UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
-         UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
-         UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
-         UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
-         
-)
+    WHITE_TOTAL = sum(male_white_total+female_white_total),
+    WHITE_FEMALE = sum(female_white_total), 
+    WHITE_MALE = sum(male_white_total),
+    WHITE_LESS_HS_TOTAL = sum(male_white_less_hs+female_white_less_hs),
+    WHITE_HS_TOTAL = sum(male_white_hs_grad+female_white_hs_grad),
+    WHITE_SOME_COLLEGE_TOTAL = sum(male_white_some_college+female_white_some_college),
+    WHITE_COLLEGE_TOTAL = sum(male_white_bs+female_white_bs),
+    
+    BLACK_TOTAL = sum(male_black_total+female_black_total),
+    BLACK_FEMALE = sum(female_black_total), 
+    BLACK_MALE = sum(male_black_total),
+    BLACK_LESS_HS_TOTAL = sum(male_black_less_hs+female_black_less_hs),
+    BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
+    BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
+    BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    AI_AN_TOTAL = sum(male_aian_total+female_aian_total),
+    AI_AN_FEMALE = sum(female_aian_total), 
+    AI_AN_MALE = sum(male_aian_total),
+    AI_AN_LESS_HS_TOTAL = sum(male_aian_less_hs+female_aian_less_hs),
+    AI_AN_HS_TOTAL = sum(male_aian_hs_grad+female_aian_hs_grad),
+    AI_AN_SOME_COLLEGE_TOTAL = sum(male_aian_some_college+female_aian_some_college),
+    AI_AN_COLLEGE_TOTAL = sum(male_aian_bs+female_aian_bs),
+    
+    ASIAN_TOTAL = sum(male_asian_total+female_asian_total),
+    ASIAN_FEMALE = sum(female_asian_total), 
+    ASIAN_MALE = sum(male_asian_total),
+    ASIAN_LESS_HS_TOTAL = sum(male_asian_less_hs+female_asian_less_hs),
+    ASIAN_HS_TOTAL = sum(male_asian_hs_grad+female_asian_hs_grad),
+    ASIAN_SOME_COLLEGE_TOTAL = sum(male_asian_some_college+female_asian_some_college),
+    ASIAN_COLLEGE_TOTAL = sum(male_asian_bs+female_asian_bs),
+    
+    NHPI_TOTAL = sum(male_nhpi_total+female_nhpi_total),
+    NHPI_FEMALE = sum(female_nhpi_total), 
+    NHPI_MALE = sum(male_nhpi_total),
+    NHPI_LESS_HS_TOTAL = sum(male_nhpi_less_hs+female_nhpi_less_hs),
+    NHPI_HS_TOTAL = sum(male_nhpi_hs_grad+female_nhpi_hs_grad),
+    NHPI_SOME_COLLEGE_TOTAL = sum(male_nhpi_some_college+female_nhpi_some_college),
+    NHPI_COLLEGE_TOTAL = sum(male_nhpi_bs+female_nhpi_bs),
+    
+    OTHER_TOTAL = sum(male_other_total+female_other_total),
+    OTHER_FEMALE = sum(female_other_total), 
+    OTHER_MALE = sum(male_other_total),
+    OTHER_LESS_HS_TOTAL = sum(male_other_less_hs+female_other_less_hs),
+    OTHER_HS_TOTAL = sum(male_other_hs_grad+female_other_hs_grad),
+    OTHER_SOME_COLLEGE_TOTAL = sum(male_other_some_college+female_other_some_college),
+    OTHER_COLLEGE_TOTAL = sum(male_other_bs+female_other_bs),
+    
+    MIXED_TOTAL = sum(male_mixed_total+female_mixed_total),
+    MIXED_FEMALE = sum(female_mixed_total), 
+    MIXED_MALE = sum(male_mixed_total),
+    MIXED_LESS_HS_TOTAL = sum(male_mixed_less_hs+female_mixed_less_hs),
+    MIXED_HS_TOTAL = sum(male_mixed_hs_grad+female_mixed_hs_grad),
+    MIXED_SOME_COLLEGE_TOTAL = sum(male_mixed_some_college+female_mixed_some_college),
+    MIXED_COLLEGE_TOTAL = sum(male_mixed_bs+female_mixed_bs),
+    
+    W_NOTHISP_TOTAL = sum(male_w_nothisp_total+female_w_nothisp_total),
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_total), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_total),
+    W_NOTHISP_LESS_HS_TOTAL = sum(male_w_nothisp_less_hs+female_w_nothisp_less_hs),
+    W_NOTHISP_HS_TOTAL = sum(male_w_nothisp_hs_grad+female_w_nothisp_hs_grad),
+    W_NOTHISP_SOME_COLLEGE_TOTAL = sum(male_w_nothisp_some_college+female_w_nothisp_some_college),
+    W_NOTHISP_COLLEGE_TOTAL = sum(male_w_nothisp_bs+female_w_nothisp_bs),
+    
+    HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
+    HISP_FEMALE = sum(female_hisp_total), 
+    HISP_MALE = sum(male_hisp_total),
+    HISP_LESS_HS_TOTAL = sum(male_hisp_less_hs+female_hisp_less_hs),
+    HISP_HS_TOTAL = sum(male_hisp_hs_grad+female_hisp_hs_grad),
+    HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
+    HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
+    
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+NHPI_TOTAL+
+                      OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    ALL_FEMALE_TOTAL = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+
+                             OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE),
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+
+                     OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_LESS_HS_TOTAL = sum(WHITE_LESS_HS_TOTAL+BLACK_LESS_HS_TOTAL+AI_AN_LESS_HS_TOTAL+ASIAN_LESS_HS_TOTAL+NHPI_LESS_HS_TOTAL+
+                              OTHER_LESS_HS_TOTAL+MIXED_LESS_HS_TOTAL+W_NOTHISP_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    ALL_HS_TOTAL = sum(WHITE_HS_TOTAL+BLACK_HS_TOTAL+AI_AN_HS_TOTAL+ASIAN_HS_TOTAL+NHPI_HS_TOTAL+
+                         OTHER_HS_TOTAL+MIXED_HS_TOTAL+W_NOTHISP_HS_TOTAL+HISP_HS_TOTAL),
+    ALL_SOME_COLLEGE_TOTAL = sum(WHITE_SOME_COLLEGE_TOTAL+BLACK_SOME_COLLEGE_TOTAL+AI_AN_SOME_COLLEGE_TOTAL+
+                                   ASIAN_SOME_COLLEGE_TOTAL+NHPI_SOME_COLLEGE_TOTAL+OTHER_SOME_COLLEGE_TOTAL+
+                                   MIXED_SOME_COLLEGE_TOTAL+W_NOTHISP_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    ALL_COLLEGE_TOTAL = sum(WHITE_COLLEGE_TOTAL+BLACK_COLLEGE_TOTAL+AI_AN_COLLEGE_TOTAL+ASIAN_COLLEGE_TOTAL+NHPI_COLLEGE_TOTAL+
+                              OTHER_COLLEGE_TOTAL+MIXED_COLLEGE_TOTAL+W_NOTHISP_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    # UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    # UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    # UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    # UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    # 
+  )
 # export
-write.csv(censuszip_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip_genderedu.csv")
+write.csv(censuszip_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip_genderedu2.csv")
 
 
 ############# TRACT ############# 
@@ -1175,32 +1467,105 @@ censustract_genderedu <- censustract_genderedu %>% select(-contains("NAME"))
 censustract_genderedu <- censustract_genderedu %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
-         BLACK_TOTAL = sum(male_black_total+female_black_total),
-         BLACK_FEMALE = sum(female_black_total), 
-         BLACK_MALE = sum(male_black_total),
-         BLACK_LESS_HS_TOTAL = sum(male_black_less_hs+female_black_less_hs),
-         BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
-         BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
-         BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
-         HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
-         HISP_FEMALE = sum(female_hisp_total), 
-         HISP_MALE = sum(male_hisp_total),
-         HISP_LESS_HS_TOTAL = sum(male_hisp_less_hs+female_hisp_less_hs),
-         HISP_HS_TOTAL = sum(male_hisp_hs_grad+female_hisp_hs_grad),
-         HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
-         HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
-         
-         UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
-         UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
-         UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-         UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
-         UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
-         UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
-         UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
-         
-)
+    WHITE_TOTAL = sum(male_white_total+female_white_total),
+    WHITE_FEMALE = sum(female_white_total), 
+    WHITE_MALE = sum(male_white_total),
+    WHITE_LESS_HS_TOTAL = sum(male_white_less_hs+female_white_less_hs),
+    WHITE_HS_TOTAL = sum(male_white_hs_grad+female_white_hs_grad),
+    WHITE_SOME_COLLEGE_TOTAL = sum(male_white_some_college+female_white_some_college),
+    WHITE_COLLEGE_TOTAL = sum(male_white_bs+female_white_bs),
+    
+    BLACK_TOTAL = sum(male_black_total+female_black_total),
+    BLACK_FEMALE = sum(female_black_total), 
+    BLACK_MALE = sum(male_black_total),
+    BLACK_LESS_HS_TOTAL = sum(male_black_less_hs+female_black_less_hs),
+    BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
+    BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
+    BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    AI_AN_TOTAL = sum(male_aian_total+female_aian_total),
+    AI_AN_FEMALE = sum(female_aian_total), 
+    AI_AN_MALE = sum(male_aian_total),
+    AI_AN_LESS_HS_TOTAL = sum(male_aian_less_hs+female_aian_less_hs),
+    AI_AN_HS_TOTAL = sum(male_aian_hs_grad+female_aian_hs_grad),
+    AI_AN_SOME_COLLEGE_TOTAL = sum(male_aian_some_college+female_aian_some_college),
+    AI_AN_COLLEGE_TOTAL = sum(male_aian_bs+female_aian_bs),
+    
+    ASIAN_TOTAL = sum(male_asian_total+female_asian_total),
+    ASIAN_FEMALE = sum(female_asian_total), 
+    ASIAN_MALE = sum(male_asian_total),
+    ASIAN_LESS_HS_TOTAL = sum(male_asian_less_hs+female_asian_less_hs),
+    ASIAN_HS_TOTAL = sum(male_asian_hs_grad+female_asian_hs_grad),
+    ASIAN_SOME_COLLEGE_TOTAL = sum(male_asian_some_college+female_asian_some_college),
+    ASIAN_COLLEGE_TOTAL = sum(male_asian_bs+female_asian_bs),
+    
+    NHPI_TOTAL = sum(male_nhpi_total+female_nhpi_total),
+    NHPI_FEMALE = sum(female_nhpi_total), 
+    NHPI_MALE = sum(male_nhpi_total),
+    NHPI_LESS_HS_TOTAL = sum(male_nhpi_less_hs+female_nhpi_less_hs),
+    NHPI_HS_TOTAL = sum(male_nhpi_hs_grad+female_nhpi_hs_grad),
+    NHPI_SOME_COLLEGE_TOTAL = sum(male_nhpi_some_college+female_nhpi_some_college),
+    NHPI_COLLEGE_TOTAL = sum(male_nhpi_bs+female_nhpi_bs),
+    
+    OTHER_TOTAL = sum(male_other_total+female_other_total),
+    OTHER_FEMALE = sum(female_other_total), 
+    OTHER_MALE = sum(male_other_total),
+    OTHER_LESS_HS_TOTAL = sum(male_other_less_hs+female_other_less_hs),
+    OTHER_HS_TOTAL = sum(male_other_hs_grad+female_other_hs_grad),
+    OTHER_SOME_COLLEGE_TOTAL = sum(male_other_some_college+female_other_some_college),
+    OTHER_COLLEGE_TOTAL = sum(male_other_bs+female_other_bs),
+    
+    MIXED_TOTAL = sum(male_mixed_total+female_mixed_total),
+    MIXED_FEMALE = sum(female_mixed_total), 
+    MIXED_MALE = sum(male_mixed_total),
+    MIXED_LESS_HS_TOTAL = sum(male_mixed_less_hs+female_mixed_less_hs),
+    MIXED_HS_TOTAL = sum(male_mixed_hs_grad+female_mixed_hs_grad),
+    MIXED_SOME_COLLEGE_TOTAL = sum(male_mixed_some_college+female_mixed_some_college),
+    MIXED_COLLEGE_TOTAL = sum(male_mixed_bs+female_mixed_bs),
+    
+    W_NOTHISP_TOTAL = sum(male_w_nothisp_total+female_w_nothisp_total),
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_total), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_total),
+    W_NOTHISP_LESS_HS_TOTAL = sum(male_w_nothisp_less_hs+female_w_nothisp_less_hs),
+    W_NOTHISP_HS_TOTAL = sum(male_w_nothisp_hs_grad+female_w_nothisp_hs_grad),
+    W_NOTHISP_SOME_COLLEGE_TOTAL = sum(male_w_nothisp_some_college+female_w_nothisp_some_college),
+    W_NOTHISP_COLLEGE_TOTAL = sum(male_w_nothisp_bs+female_w_nothisp_bs),
+    
+    HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
+    HISP_FEMALE = sum(female_hisp_total), 
+    HISP_MALE = sum(male_hisp_total),
+    HISP_LESS_HS_TOTAL = sum(male_hisp_less_hs+female_hisp_less_hs),
+    HISP_HS_TOTAL = sum(male_hisp_hs_grad+female_hisp_hs_grad),
+    HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
+    HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
+    
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+NHPI_TOTAL+
+                      OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    ALL_FEMALE_TOTAL = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+
+                             OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE),
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+
+                     OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_LESS_HS_TOTAL = sum(WHITE_LESS_HS_TOTAL+BLACK_LESS_HS_TOTAL+AI_AN_LESS_HS_TOTAL+ASIAN_LESS_HS_TOTAL+NHPI_LESS_HS_TOTAL+
+                              OTHER_LESS_HS_TOTAL+MIXED_LESS_HS_TOTAL+W_NOTHISP_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    ALL_HS_TOTAL = sum(WHITE_HS_TOTAL+BLACK_HS_TOTAL+AI_AN_HS_TOTAL+ASIAN_HS_TOTAL+NHPI_HS_TOTAL+
+                         OTHER_HS_TOTAL+MIXED_HS_TOTAL+W_NOTHISP_HS_TOTAL+HISP_HS_TOTAL),
+    ALL_SOME_COLLEGE_TOTAL = sum(WHITE_SOME_COLLEGE_TOTAL+BLACK_SOME_COLLEGE_TOTAL+AI_AN_SOME_COLLEGE_TOTAL+
+                                   ASIAN_SOME_COLLEGE_TOTAL+NHPI_SOME_COLLEGE_TOTAL+OTHER_SOME_COLLEGE_TOTAL+
+                                   MIXED_SOME_COLLEGE_TOTAL+W_NOTHISP_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    ALL_COLLEGE_TOTAL = sum(WHITE_COLLEGE_TOTAL+BLACK_COLLEGE_TOTAL+AI_AN_COLLEGE_TOTAL+ASIAN_COLLEGE_TOTAL+NHPI_COLLEGE_TOTAL+
+                              OTHER_COLLEGE_TOTAL+MIXED_COLLEGE_TOTAL+W_NOTHISP_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    # UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    # UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    # UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    # UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    # 
+  )
 # export
-write.csv(censustract_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_genderedu.csv")
+write.csv(censustract_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_genderedu2.csv")
 
 ############# STATE ############# 
 
@@ -1408,6 +1773,14 @@ censusstate_genderedu <- censusstate_genderedu %>% select(-contains("NAME"))
 censusstate_genderedu <- censusstate_genderedu %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_TOTAL = sum(male_white_total+female_white_total),
+    WHITE_FEMALE = sum(female_white_total), 
+    WHITE_MALE = sum(male_white_total),
+    WHITE_LESS_HS_TOTAL = sum(male_white_less_hs+female_white_less_hs),
+    WHITE_HS_TOTAL = sum(male_white_hs_grad+female_white_hs_grad),
+    WHITE_SOME_COLLEGE_TOTAL = sum(male_white_some_college+female_white_some_college),
+    WHITE_COLLEGE_TOTAL = sum(male_white_bs+female_white_bs),
+    
     BLACK_TOTAL = sum(male_black_total+female_black_total),
     BLACK_FEMALE = sum(female_black_total), 
     BLACK_MALE = sum(male_black_total),
@@ -1415,6 +1788,54 @@ censusstate_genderedu <- censusstate_genderedu %>%
     BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
     BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
     BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    AI_AN_TOTAL = sum(male_aian_total+female_aian_total),
+    AI_AN_FEMALE = sum(female_aian_total), 
+    AI_AN_MALE = sum(male_aian_total),
+    AI_AN_LESS_HS_TOTAL = sum(male_aian_less_hs+female_aian_less_hs),
+    AI_AN_HS_TOTAL = sum(male_aian_hs_grad+female_aian_hs_grad),
+    AI_AN_SOME_COLLEGE_TOTAL = sum(male_aian_some_college+female_aian_some_college),
+    AI_AN_COLLEGE_TOTAL = sum(male_aian_bs+female_aian_bs),
+    
+    ASIAN_TOTAL = sum(male_asian_total+female_asian_total),
+    ASIAN_FEMALE = sum(female_asian_total), 
+    ASIAN_MALE = sum(male_asian_total),
+    ASIAN_LESS_HS_TOTAL = sum(male_asian_less_hs+female_asian_less_hs),
+    ASIAN_HS_TOTAL = sum(male_asian_hs_grad+female_asian_hs_grad),
+    ASIAN_SOME_COLLEGE_TOTAL = sum(male_asian_some_college+female_asian_some_college),
+    ASIAN_COLLEGE_TOTAL = sum(male_asian_bs+female_asian_bs),
+    
+    NHPI_TOTAL = sum(male_nhpi_total+female_nhpi_total),
+    NHPI_FEMALE = sum(female_nhpi_total), 
+    NHPI_MALE = sum(male_nhpi_total),
+    NHPI_LESS_HS_TOTAL = sum(male_nhpi_less_hs+female_nhpi_less_hs),
+    NHPI_HS_TOTAL = sum(male_nhpi_hs_grad+female_nhpi_hs_grad),
+    NHPI_SOME_COLLEGE_TOTAL = sum(male_nhpi_some_college+female_nhpi_some_college),
+    NHPI_COLLEGE_TOTAL = sum(male_nhpi_bs+female_nhpi_bs),
+    
+    OTHER_TOTAL = sum(male_other_total+female_other_total),
+    OTHER_FEMALE = sum(female_other_total), 
+    OTHER_MALE = sum(male_other_total),
+    OTHER_LESS_HS_TOTAL = sum(male_other_less_hs+female_other_less_hs),
+    OTHER_HS_TOTAL = sum(male_other_hs_grad+female_other_hs_grad),
+    OTHER_SOME_COLLEGE_TOTAL = sum(male_other_some_college+female_other_some_college),
+    OTHER_COLLEGE_TOTAL = sum(male_other_bs+female_other_bs),
+    
+    MIXED_TOTAL = sum(male_mixed_total+female_mixed_total),
+    MIXED_FEMALE = sum(female_mixed_total), 
+    MIXED_MALE = sum(male_mixed_total),
+    MIXED_LESS_HS_TOTAL = sum(male_mixed_less_hs+female_mixed_less_hs),
+    MIXED_HS_TOTAL = sum(male_mixed_hs_grad+female_mixed_hs_grad),
+    MIXED_SOME_COLLEGE_TOTAL = sum(male_mixed_some_college+female_mixed_some_college),
+    MIXED_COLLEGE_TOTAL = sum(male_mixed_bs+female_mixed_bs),
+    
+    W_NOTHISP_TOTAL = sum(male_w_nothisp_total+female_w_nothisp_total),
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_total), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_total),
+    W_NOTHISP_LESS_HS_TOTAL = sum(male_w_nothisp_less_hs+female_w_nothisp_less_hs),
+    W_NOTHISP_HS_TOTAL = sum(male_w_nothisp_hs_grad+female_w_nothisp_hs_grad),
+    W_NOTHISP_SOME_COLLEGE_TOTAL = sum(male_w_nothisp_some_college+female_w_nothisp_some_college),
+    W_NOTHISP_COLLEGE_TOTAL = sum(male_w_nothisp_bs+female_w_nothisp_bs),
     
     HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
     HISP_FEMALE = sum(female_hisp_total), 
@@ -1424,18 +1845,34 @@ censusstate_genderedu <- censusstate_genderedu %>%
     HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
     HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
     
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
-    UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
-    UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
-    UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
-    UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+NHPI_TOTAL+
+                      OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    ALL_FEMALE_TOTAL = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+
+                             OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE),
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+
+                     OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_LESS_HS_TOTAL = sum(WHITE_LESS_HS_TOTAL+BLACK_LESS_HS_TOTAL+AI_AN_LESS_HS_TOTAL+ASIAN_LESS_HS_TOTAL+NHPI_LESS_HS_TOTAL+
+                              OTHER_LESS_HS_TOTAL+MIXED_LESS_HS_TOTAL+W_NOTHISP_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    ALL_HS_TOTAL = sum(WHITE_HS_TOTAL+BLACK_HS_TOTAL+AI_AN_HS_TOTAL+ASIAN_HS_TOTAL+NHPI_HS_TOTAL+
+                         OTHER_HS_TOTAL+MIXED_HS_TOTAL+W_NOTHISP_HS_TOTAL+HISP_HS_TOTAL),
+    ALL_SOME_COLLEGE_TOTAL = sum(WHITE_SOME_COLLEGE_TOTAL+BLACK_SOME_COLLEGE_TOTAL+AI_AN_SOME_COLLEGE_TOTAL+
+                                   ASIAN_SOME_COLLEGE_TOTAL+NHPI_SOME_COLLEGE_TOTAL+OTHER_SOME_COLLEGE_TOTAL+
+                                   MIXED_SOME_COLLEGE_TOTAL+W_NOTHISP_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    ALL_COLLEGE_TOTAL = sum(WHITE_COLLEGE_TOTAL+BLACK_COLLEGE_TOTAL+AI_AN_COLLEGE_TOTAL+ASIAN_COLLEGE_TOTAL+NHPI_COLLEGE_TOTAL+
+                              OTHER_COLLEGE_TOTAL+MIXED_COLLEGE_TOTAL+W_NOTHISP_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
     
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    # UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    # UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    # UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    # UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    # 
   )
 
 # export
-write.csv(censusstate_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_genderedu.csv")
+write.csv(censusstate_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_genderedu2.csv")
 
 
 ############# COUNTY ############# 
@@ -1644,6 +2081,14 @@ censuscounty_genderedu <- censuscounty_genderedu %>% select(-contains("NAME"))
 censuscounty_genderedu <- censuscounty_genderedu %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_TOTAL = sum(male_white_total+female_white_total),
+    WHITE_FEMALE = sum(female_white_total), 
+    WHITE_MALE = sum(male_white_total),
+    WHITE_LESS_HS_TOTAL = sum(male_white_less_hs+female_white_less_hs),
+    WHITE_HS_TOTAL = sum(male_white_hs_grad+female_white_hs_grad),
+    WHITE_SOME_COLLEGE_TOTAL = sum(male_white_some_college+female_white_some_college),
+    WHITE_COLLEGE_TOTAL = sum(male_white_bs+female_white_bs),
+    
     BLACK_TOTAL = sum(male_black_total+female_black_total),
     BLACK_FEMALE = sum(female_black_total), 
     BLACK_MALE = sum(male_black_total),
@@ -1651,6 +2096,55 @@ censuscounty_genderedu <- censuscounty_genderedu %>%
     BLACK_HS_TOTAL = sum(male_black_hs_grad+female_black_hs_grad),
     BLACK_SOME_COLLEGE_TOTAL = sum(male_black_some_college+female_black_some_college),
     BLACK_COLLEGE_TOTAL = sum(male_black_bs+female_black_bs),
+    
+    AI_AN_TOTAL = sum(male_aian_total+female_aian_total),
+    AI_AN_FEMALE = sum(female_aian_total), 
+    AI_AN_MALE = sum(male_aian_total),
+    AI_AN_LESS_HS_TOTAL = sum(male_aian_less_hs+female_aian_less_hs),
+    AI_AN_HS_TOTAL = sum(male_aian_hs_grad+female_aian_hs_grad),
+    AI_AN_SOME_COLLEGE_TOTAL = sum(male_aian_some_college+female_aian_some_college),
+    AI_AN_COLLEGE_TOTAL = sum(male_aian_bs+female_aian_bs),
+    
+    ASIAN_TOTAL = sum(male_asian_total+female_asian_total),
+    ASIAN_FEMALE = sum(female_asian_total), 
+    ASIAN_MALE = sum(male_asian_total),
+    ASIAN_LESS_HS_TOTAL = sum(male_asian_less_hs+female_asian_less_hs),
+    ASIAN_HS_TOTAL = sum(male_asian_hs_grad+female_asian_hs_grad),
+    ASIAN_SOME_COLLEGE_TOTAL = sum(male_asian_some_college+female_asian_some_college),
+    ASIAN_COLLEGE_TOTAL = sum(male_asian_bs+female_asian_bs),
+    
+    NHPI_TOTAL = sum(male_nhpi_total+female_nhpi_total),
+    NHPI_FEMALE = sum(female_nhpi_total), 
+    NHPI_MALE = sum(male_nhpi_total),
+    NHPI_LESS_HS_TOTAL = sum(male_nhpi_less_hs+female_nhpi_less_hs),
+    NHPI_HS_TOTAL = sum(male_nhpi_hs_grad+female_nhpi_hs_grad),
+    NHPI_SOME_COLLEGE_TOTAL = sum(male_nhpi_some_college+female_nhpi_some_college),
+    NHPI_COLLEGE_TOTAL = sum(male_nhpi_bs+female_nhpi_bs),
+    
+    OTHER_TOTAL = sum(male_other_total+female_other_total),
+    OTHER_FEMALE = sum(female_other_total), 
+    OTHER_MALE = sum(male_other_total),
+    OTHER_LESS_HS_TOTAL = sum(male_other_less_hs+female_other_less_hs),
+    OTHER_HS_TOTAL = sum(male_other_hs_grad+female_other_hs_grad),
+    OTHER_SOME_COLLEGE_TOTAL = sum(male_other_some_college+female_other_some_college),
+    OTHER_COLLEGE_TOTAL = sum(male_other_bs+female_other_bs),
+    
+    MIXED_TOTAL = sum(male_mixed_total+female_mixed_total),
+    MIXED_FEMALE = sum(female_mixed_total), 
+    MIXED_MALE = sum(male_mixed_total),
+    MIXED_LESS_HS_TOTAL = sum(male_mixed_less_hs+female_mixed_less_hs),
+    MIXED_HS_TOTAL = sum(male_mixed_hs_grad+female_mixed_hs_grad),
+    MIXED_SOME_COLLEGE_TOTAL = sum(male_mixed_some_college+female_mixed_some_college),
+    MIXED_COLLEGE_TOTAL = sum(male_mixed_bs+female_mixed_bs),
+    
+    W_NOTHISP_TOTAL = sum(male_w_nothisp_total+female_w_nothisp_total),
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_total), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_total),
+    W_NOTHISP_LESS_HS_TOTAL = sum(male_w_nothisp_less_hs+female_w_nothisp_less_hs),
+    W_NOTHISP_HS_TOTAL = sum(male_w_nothisp_hs_grad+female_w_nothisp_hs_grad),
+    W_NOTHISP_SOME_COLLEGE_TOTAL = sum(male_w_nothisp_some_college+female_w_nothisp_some_college),
+    W_NOTHISP_COLLEGE_TOTAL = sum(male_w_nothisp_bs+female_w_nothisp_bs),
+    
     HISP_TOTAL = sum(male_hisp_total+female_hisp_total),
     HISP_FEMALE = sum(female_hisp_total), 
     HISP_MALE = sum(male_hisp_total),
@@ -1659,18 +2153,34 @@ censuscounty_genderedu <- censuscounty_genderedu %>%
     HISP_SOME_COLLEGE_TOTAL = sum(male_hisp_some_college+female_hisp_some_college),
     HISP_COLLEGE_TOTAL = sum(male_hisp_bs+female_hisp_bs),
     
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
-    UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
-    UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
-    UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
-    UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+NHPI_TOTAL+
+                      OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    ALL_FEMALE_TOTAL = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+
+                             OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE),
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+
+                     OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_LESS_HS_TOTAL = sum(WHITE_LESS_HS_TOTAL+BLACK_LESS_HS_TOTAL+AI_AN_LESS_HS_TOTAL+ASIAN_LESS_HS_TOTAL+NHPI_LESS_HS_TOTAL+
+                              OTHER_LESS_HS_TOTAL+MIXED_LESS_HS_TOTAL+W_NOTHISP_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    ALL_HS_TOTAL = sum(WHITE_HS_TOTAL+BLACK_HS_TOTAL+AI_AN_HS_TOTAL+ASIAN_HS_TOTAL+NHPI_HS_TOTAL+
+                         OTHER_HS_TOTAL+MIXED_HS_TOTAL+W_NOTHISP_HS_TOTAL+HISP_HS_TOTAL),
+    ALL_SOME_COLLEGE_TOTAL = sum(WHITE_SOME_COLLEGE_TOTAL+BLACK_SOME_COLLEGE_TOTAL+AI_AN_SOME_COLLEGE_TOTAL+
+                                   ASIAN_SOME_COLLEGE_TOTAL+NHPI_SOME_COLLEGE_TOTAL+OTHER_SOME_COLLEGE_TOTAL+
+                                   MIXED_SOME_COLLEGE_TOTAL+W_NOTHISP_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    ALL_COLLEGE_TOTAL = sum(WHITE_COLLEGE_TOTAL+BLACK_COLLEGE_TOTAL+AI_AN_COLLEGE_TOTAL+ASIAN_COLLEGE_TOTAL+NHPI_COLLEGE_TOTAL+
+                              OTHER_COLLEGE_TOTAL+MIXED_COLLEGE_TOTAL+W_NOTHISP_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
     
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL),
+    # UNDERREP_FEMALE_TOTAL = sum(BLACK_FEMALE+HISP_FEMALE),
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_LESS_HS_TOTAL = sum(BLACK_LESS_HS_TOTAL+HISP_LESS_HS_TOTAL),
+    # UNDERREP_HS_TOTAL = sum(BLACK_HS_TOTAL+HISP_HS_TOTAL),
+    # UNDERREP_SOME_COLLEGE_TOTAL = sum(BLACK_SOME_COLLEGE_TOTAL+HISP_SOME_COLLEGE_TOTAL),
+    # UNDERREP_COLLEGE_TOTAL = sum(BLACK_COLLEGE_TOTAL+HISP_COLLEGE_TOTAL),
+    # 
   )
 
 # export
-write.csv(censuscounty_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_genderedu.csv")
+write.csv(censuscounty_genderedu,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_genderedu2.csv")
 
 
 ################################## 
