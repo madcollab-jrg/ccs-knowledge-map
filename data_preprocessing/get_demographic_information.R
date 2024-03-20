@@ -4,7 +4,7 @@ library(tidyr)
 
 combine_files <- function(head, filelist, type = "demo") {
   n <- 9
-  # n <- 38
+  # n <- 62
   if (!type %in% c("demo", "questions", "all")) {
     stop("type is not one of 'demo', 'questions', or 'all'")
   }
@@ -12,7 +12,6 @@ combine_files <- function(head, filelist, type = "demo") {
   if (length(filelist) > 0) {
     file_path <- paste(head, filelist[1], sep = "")
     dataset <- read.csv(file_path)
-
     if (type == "demo") {
       print(ncol(dataset))
       dataset <- dataset[, (ncol(dataset) - n + 1):ncol(dataset)]
@@ -128,7 +127,21 @@ save_loc <- "/Volumes/cbjackson2/ccs-knowledge/"
 # combine and save demographic survey for air, tree, urban surveys
 head <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data-updated/"
 surveys <- c(
-  "energy_concerns", "general_survey", "health_impacts"
+  # old surveys
+  # "air_map",
+  # "air_survey"
+  # "ej_survey"
+  # "ej_report"
+  # "ej_story"
+  # "tree_map"
+  # "tree_survey"
+  # "heat_map"
+  # "heat_survey"
+  # new surveys
+  "carbon_concerns"
+  # "energy_concerns"
+  # "general_survey"
+  #  "health_impacts"
 )
 save_dir <- "ccs-data-demographic_unprocessed"
 survey_save_name <- "demographic_data.csv"

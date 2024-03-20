@@ -11,8 +11,8 @@ get_summary_statistics <- function(
   n <- length(queries)
   survey_df <- read.csv(survey)
 
-  tbl_data <- data.frame(matrix(ncol = 3, nrow = 20))
-  colnames(tbl_data) <- c("Black", "Hispanic", "Total")
+  tbl_data <- data.frame(matrix(ncol = 1, nrow = 26))
+  colnames(tbl_data) <- c("Total")
   rownames(tbl_data) <- c(
     "Male", "Female",
     "18_to_24", "25_to_34",
@@ -23,27 +23,31 @@ get_summary_statistics <- function(
     "Less than $25,000", "$25,000 to $34,999",
     "$35,000 to $49,999", "$50,000 to $74,999",
     "$75,000 to $99,999", "$100,000 to $149,999",
-    "$150,000 to $199,999", "$200,000 or more"
+    "$150,000 to $199,999", "$200,000 or more",
+    "Black or African American",
+    "Hispanic", "White", "Asian",
+    "Native Hawaiian Pacific Islander",
+    "American Indian Alaskan Native"
   )
 
   for (i in 1:n) {
     query_to_be_generated <- queries[[i]]
 
-    # print(census_level)
+    print(census_level)
 
     # add census code to the query
     if (census_level == "tract") {
       query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- census_code
     }
-    # if (census_level == "county") {
-    #   if (census_code == 55025) {
-    #     query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 25
-    #   } else {
-    #     query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 55
-    #   }
-    # } else {
-    #   query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- census_code
-    # }
+    if (census_level == "county") {
+      if (census_code == 55025) {
+        query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 25
+      } else {
+        query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- 55
+      }
+    } else {
+      query_to_be_generated$survey_query$query[[CENSUS_TO_SURVEY_COL[[census_level]]]] <- census_code
+    }
 
     query <- query_to_be_generated$survey_query$query
     temp <- survey_df
@@ -54,6 +58,8 @@ get_summary_statistics <- function(
     tbl_data[query_to_be_generated$row, query_to_be_generated$col] <- nrow(temp)
   }
 
+  print(tbl_data)
+  print(fname)
   save(tbl_data, file = fname)
 }
 
@@ -62,16 +68,17 @@ demographic_data <-
 
 
 SURVEYS <- c(
+  # old surveys
   # "air-quality-map",
-  # "air-quality-survey",
-  # "urban-heat-map",
-  # "urban-heat-survey",
-  # "ej-report",
-  # "ej-storytile",
-  # "ej-survey",
-  # "air-quality-survey",
-  # "tree-canopy-map",
+  # "air-quality-survey"
+  # "ej-survey"
+  # "ej-report"
+  # "ej-storytile"
+  # "tree-canopy-map"
   # "tree-canopy-survey"
+  # "urban-heat-map"
+  # "urban-heat-survey"
+  # new surveys
   "carbon-concerns",
   "energy-concerns",
   "general-survey",
@@ -81,12 +88,14 @@ SURVEYS <- c(
 
 # SURVEYS = c("air-quality-map")
 CENSUS_TO_SURVEY_COL <- c(
-  "tract" = "zip"
+  "zipcode" = "zip"
   # "tract" = "census_tract_full",
   # "state" = "state_fips",
-  # "county" = "county_fips"
+  # "county" = "county_fips",
+  # "state_upper" = "district_GEOID",
+  # "state_lower" = "assembly_geoid",
+  # "congress" = "congress_district"
 )
-# HEAD <- "/Users/christianvarner/Research/ccs-knowledge-map/data_preprocessing/results_summary/"
 
 HEAD <- "/Volumes/cbjackson2/ccs-knowledge/results_summary/"
 

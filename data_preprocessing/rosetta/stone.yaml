@@ -41,6 +41,7 @@ tract:
   1004: "55055100400"
 
 zipcode:
+    53508: "53508"
     34787: "34787"
     53070: "53070"
     53527: "53527"
@@ -70,6 +71,7 @@ zipcode:
     53719: "53719"
     53726: "53726"
     95207: "95207"
+
   
   # the connection in the data files is assembly_geoid in CCS Data and GEOID in Census files (all are included below)
 state_upper:

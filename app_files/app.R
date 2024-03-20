@@ -33,8 +33,6 @@ surveys <- c(
 )
 surveyInputId <- c(
   "Air Quality Survey" = "air_quality_qs",
-  # "Community Ideas Survey" = "ej_report_qs",
-  "Story From the Community Survey" = "ej_storytile_qs",
   "Environmental Justice Survey" = "ej_survey_qs",
   "Tree Canopy Survey" = "tree_canopy_qs",
   "Urban Heat Survey" = "urban_heat_qs",
@@ -51,7 +49,6 @@ surveyInputId <- c(
 
 has_results <- c(
   "Air Quality Survey" = TRUE, "Community Ideas Survey" = FALSE,
-  "Story From the Community Survey" = FALSE,
   "Environmental Justice Survey" = TRUE, "Tree Canopy Survey" = TRUE,
   "Urban Heat Survey" = TRUE,
   "Air Quality Map" = TRUE, "Tree Canopy Map" = FALSE, "Urban Heat Map" = FALSE,
@@ -70,8 +67,6 @@ censusInputId <- c(
 )
 input_to_data_demo <- c(
   "Air Quality Survey" = "air-quality-survey",
-  # "Community Ideas Survey" = "ej-report",
-  "Story From the Community Survey" = "ej-storytile",
   "Environmental Justice Survey" = "ej-survey",
   "Tree Canopy Survey" = "tree-canopy-survey",
   "Urban Heat Survey" = "urban-heat-survey",
