@@ -5915,6 +5915,16 @@ censuscongress_income <- censuscongress_income %>% select(-contains("NAME"))
 censuscongress_income <- censuscongress_income %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_less25 = sum(white_less10kE+white_10kto14kE+white_15kto19kE+white_20kto24kE),
+    WHITE_25_to_34 = sum(white_25kto29kE+white_30kto34kE),
+    WHITE_35_to_49 = sum(white_35kto39kE+white_40kto44kE+white_45kto49kE),
+    WHITE_50_to_74 = sum(white_50kto59kE+white_60kto74kE),
+    WHITE_75_to_99 = white_75kto99kE,
+    WHITE_100_to_149 =  sum(white_100kto124kE+white_125kto149kE),
+    WHITE_150_to_199 =  white_150kto199kE,
+    WHITE_200_more =  white_200ktomoreE,
+    WHITE_TOTAL = white_totalE,
+    
     BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
     BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
     BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
@@ -5924,6 +5934,66 @@ censuscongress_income <- censuscongress_income %>%
     BLACK_150_to_199 =  black_150kto199kE,
     BLACK_200_more =  black_200ktomoreE,
     BLACK_TOTAL = black_totalE,
+    
+    AI_AN_less25 = sum(aian_less10kE+aian_10kto14kE+aian_15kto19kE+aian_20kto24kE),
+    AI_AN_25_to_34 = sum(aian_25kto29kE+aian_30kto34kE),
+    AI_AN_35_to_49 = sum(aian_35kto39kE+aian_40kto44kE+aian_45kto49kE),
+    AI_AN_50_to_74 = sum(aian_50kto59kE+aian_60kto74kE),
+    AI_AN_75_to_99 = aian_75kto99kE,
+    AI_AN_100_to_149 =  sum(aian_100kto124kE+aian_125kto149kE),
+    AI_AN_150_to_199 =  aian_150kto199kE,
+    AI_AN_200_more =  aian_200ktomoreE,
+    AI_AN_TOTAL = aian_totalE,
+    
+    ASIAN_less25 = sum(asian_less10kE+asian_10kto14kE+asian_15kto19kE+asian_20kto24kE),
+    ASIAN_25_to_34 = sum(asian_25kto29kE+asian_30kto34kE),
+    ASIAN_35_to_49 = sum(asian_35kto39kE+asian_40kto44kE+asian_45kto49kE),
+    ASIAN_50_to_74 = sum(asian_50kto59kE+asian_60kto74kE),
+    ASIAN_75_to_99 = asian_75kto99kE,
+    ASIAN_100_to_149 =  sum(asian_100kto124kE+asian_125kto149kE),
+    ASIAN_150_to_199 =  asian_150kto199kE,
+    ASIAN_200_more =  asian_200ktomoreE,
+    ASIAN_TOTAL = asian_totalE,
+    
+    NHPI_less25 = sum(nhpi_less10kE+nhpi_10kto14kE+nhpi_15kto19kE+nhpi_20kto24kE),
+    NHPI_25_to_34 = sum(nhpi_25kto29kE+nhpi_30kto34kE),
+    NHPI_35_to_49 = sum(nhpi_35kto39kE+nhpi_40kto44kE+nhpi_45kto49kE),
+    NHPI_50_to_74 = sum(nhpi_50kto59kE+nhpi_60kto74kE),
+    NHPI_75_to_99 = nhpi_75kto99kE,
+    NHPI_100_to_149 =  sum(nhpi_100kto124kE+nhpi_125kto149kE),
+    NHPI_150_to_199 =  nhpi_150kto199kE,
+    NHPI_200_more =  nhpi_200ktomoreE,
+    NHPI_TOTAL = nhpi_totalE,
+    
+    OTHER_less25 = sum(other_less10kE+other_10kto14kE+other_15kto19kE+other_20kto24kE),
+    OTHER_25_to_34 = sum(other_25kto29kE+other_30kto34kE),
+    OTHER_35_to_49 = sum(other_35kto39kE+other_40kto44kE+other_45kto49kE),
+    OTHER_50_to_74 = sum(other_50kto59kE+other_60kto74kE),
+    OTHER_75_to_99 = other_75kto99kE,
+    OTHER_100_to_149 =  sum(other_100kto124kE+other_125kto149kE),
+    OTHER_150_to_199 =  other_150kto199kE,
+    OTHER_200_more =  other_200ktomoreE,
+    OTHER_TOTAL = other_totalE,
+    
+    MIXED_less25 = sum(mixed_less10kE+mixed_10kto14kE+mixed_15kto19kE+mixed_20kto24kE),
+    MIXED_25_to_34 = sum(mixed_25kto29kE+mixed_30kto34kE),
+    MIXED_35_to_49 = sum(mixed_35kto39kE+mixed_40kto44kE+mixed_45kto49kE),
+    MIXED_50_to_74 = sum(mixed_50kto59kE+mixed_60kto74kE),
+    MIXED_75_to_99 = mixed_75kto99kE,
+    MIXED_100_to_149 =  sum(mixed_100kto124kE+mixed_125kto149kE),
+    MIXED_150_to_199 =  mixed_150kto199kE,
+    MIXED_200_more =  mixed_200ktomoreE,
+    MIXED_TOTAL = mixed_totalE,
+    
+    W_NOTHISP_less25 = sum(w_nothisp_less10kE+w_nothisp_10kto14kE+w_nothisp_15kto19kE+w_nothisp_20kto24kE),
+    W_NOTHISP_25_to_34 = sum(w_nothisp_25kto29kE+w_nothisp_30kto34kE),
+    W_NOTHISP_35_to_49 = sum(w_nothisp_35kto39kE+w_nothisp_40kto44kE+w_nothisp_45kto49kE),
+    W_NOTHISP_50_to_74 = sum(w_nothisp_50kto59kE+w_nothisp_60kto74kE),
+    W_NOTHISP_75_to_99 = w_nothisp_75kto99kE,
+    W_NOTHISP_100_to_149 =  sum(w_nothisp_100kto124kE+w_nothisp_125kto149kE),
+    W_NOTHISP_150_to_199 =  w_nothisp_150kto199kE,
+    W_NOTHISP_200_more =  w_nothisp_200ktomoreE,
+    W_NOTHISP_TOTAL = w_nothisp_totalE,
     
     HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
     HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
@@ -5935,21 +6005,40 @@ censuscongress_income <- censuscongress_income %>%
     HISP_200_more =  hisp_200ktomoreE,
     HISP_TOTAL = hisp_totalE,
     
-    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
-    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
-    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
-    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
-    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
-    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    ALL_less25 = sum(WHITE_less25+BLACK_less25+AI_AN_less25+ASIAN_less25+
+                       NHPI_less25+OTHER_less25+MIXED_less25+W_NOTHISP_less25+HISP_less25),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+
+                         NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_49 = sum(WHITE_35_to_49+BLACK_35_to_49+AI_AN_35_to_49+ASIAN_35_to_49+
+                         NHPI_35_to_49+OTHER_35_to_49+MIXED_35_to_49+W_NOTHISP_35_to_49+HISP_35_to_49),
+    ALL_50_to_74 = sum(WHITE_50_to_74+BLACK_50_to_74+AI_AN_50_to_74+ASIAN_50_to_74+
+                         NHPI_50_to_74+OTHER_50_to_74+MIXED_50_to_74+W_NOTHISP_50_to_74+HISP_50_to_74),
+    ALL_75_to_99 = sum(WHITE_75_to_99+BLACK_75_to_99+AI_AN_75_to_99+ASIAN_75_to_99+
+                         NHPI_75_to_99+OTHER_75_to_99+MIXED_75_to_99+W_NOTHISP_75_to_99+HISP_75_to_99),
+    ALL_100_to_149 =  sum(WHITE_100_to_149+BLACK_100_to_149+AI_AN_100_to_149+ASIAN_100_to_149+
+                            NHPI_100_to_149+OTHER_100_to_149+MIXED_100_to_149+W_NOTHISP_100_to_149+HISP_100_to_149),
+    ALL_150_to_199 =  sum(WHITE_150_to_199+BLACK_150_to_199+AI_AN_150_to_199+ASIAN_150_to_199+
+                            NHPI_150_to_199+OTHER_150_to_199+MIXED_150_to_199+W_NOTHISP_150_to_199+HISP_150_to_199),
+    ALL_200_more =  sum(WHITE_200_more+BLACK_200_more+AI_AN_200_more+ASIAN_200_more+
+                          NHPI_200_more+OTHER_200_more+MIXED_200_more+W_NOTHISP_200_more+HISP_200_more),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+
+                      NHPI_TOTAL+OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    
+    # UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    # UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    # UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    # UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    # UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    # UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
     
   )
 
 
 # export
-write.csv(censuscongress_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_income.csv")
+write.csv(censuscongress_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_income2.csv")
 
 ############# state legislative district (upper chamber) ############# 
 
@@ -6229,6 +6318,16 @@ censusstatelegislative_upper_income <- censusstatelegislative_upper_income %>% s
 censusstatelegislative_upper_income <- censusstatelegislative_upper_income %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_less25 = sum(white_less10kE+white_10kto14kE+white_15kto19kE+white_20kto24kE),
+    WHITE_25_to_34 = sum(white_25kto29kE+white_30kto34kE),
+    WHITE_35_to_49 = sum(white_35kto39kE+white_40kto44kE+white_45kto49kE),
+    WHITE_50_to_74 = sum(white_50kto59kE+white_60kto74kE),
+    WHITE_75_to_99 = white_75kto99kE,
+    WHITE_100_to_149 =  sum(white_100kto124kE+white_125kto149kE),
+    WHITE_150_to_199 =  white_150kto199kE,
+    WHITE_200_more =  white_200ktomoreE,
+    WHITE_TOTAL = white_totalE,
+    
     BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
     BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
     BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
@@ -6238,6 +6337,66 @@ censusstatelegislative_upper_income <- censusstatelegislative_upper_income %>%
     BLACK_150_to_199 =  black_150kto199kE,
     BLACK_200_more =  black_200ktomoreE,
     BLACK_TOTAL = black_totalE,
+    
+    AI_AN_less25 = sum(aian_less10kE+aian_10kto14kE+aian_15kto19kE+aian_20kto24kE),
+    AI_AN_25_to_34 = sum(aian_25kto29kE+aian_30kto34kE),
+    AI_AN_35_to_49 = sum(aian_35kto39kE+aian_40kto44kE+aian_45kto49kE),
+    AI_AN_50_to_74 = sum(aian_50kto59kE+aian_60kto74kE),
+    AI_AN_75_to_99 = aian_75kto99kE,
+    AI_AN_100_to_149 =  sum(aian_100kto124kE+aian_125kto149kE),
+    AI_AN_150_to_199 =  aian_150kto199kE,
+    AI_AN_200_more =  aian_200ktomoreE,
+    AI_AN_TOTAL = aian_totalE,
+    
+    ASIAN_less25 = sum(asian_less10kE+asian_10kto14kE+asian_15kto19kE+asian_20kto24kE),
+    ASIAN_25_to_34 = sum(asian_25kto29kE+asian_30kto34kE),
+    ASIAN_35_to_49 = sum(asian_35kto39kE+asian_40kto44kE+asian_45kto49kE),
+    ASIAN_50_to_74 = sum(asian_50kto59kE+asian_60kto74kE),
+    ASIAN_75_to_99 = asian_75kto99kE,
+    ASIAN_100_to_149 =  sum(asian_100kto124kE+asian_125kto149kE),
+    ASIAN_150_to_199 =  asian_150kto199kE,
+    ASIAN_200_more =  asian_200ktomoreE,
+    ASIAN_TOTAL = asian_totalE,
+    
+    NHPI_less25 = sum(nhpi_less10kE+nhpi_10kto14kE+nhpi_15kto19kE+nhpi_20kto24kE),
+    NHPI_25_to_34 = sum(nhpi_25kto29kE+nhpi_30kto34kE),
+    NHPI_35_to_49 = sum(nhpi_35kto39kE+nhpi_40kto44kE+nhpi_45kto49kE),
+    NHPI_50_to_74 = sum(nhpi_50kto59kE+nhpi_60kto74kE),
+    NHPI_75_to_99 = nhpi_75kto99kE,
+    NHPI_100_to_149 =  sum(nhpi_100kto124kE+nhpi_125kto149kE),
+    NHPI_150_to_199 =  nhpi_150kto199kE,
+    NHPI_200_more =  nhpi_200ktomoreE,
+    NHPI_TOTAL = nhpi_totalE,
+    
+    OTHER_less25 = sum(other_less10kE+other_10kto14kE+other_15kto19kE+other_20kto24kE),
+    OTHER_25_to_34 = sum(other_25kto29kE+other_30kto34kE),
+    OTHER_35_to_49 = sum(other_35kto39kE+other_40kto44kE+other_45kto49kE),
+    OTHER_50_to_74 = sum(other_50kto59kE+other_60kto74kE),
+    OTHER_75_to_99 = other_75kto99kE,
+    OTHER_100_to_149 =  sum(other_100kto124kE+other_125kto149kE),
+    OTHER_150_to_199 =  other_150kto199kE,
+    OTHER_200_more =  other_200ktomoreE,
+    OTHER_TOTAL = other_totalE,
+    
+    MIXED_less25 = sum(mixed_less10kE+mixed_10kto14kE+mixed_15kto19kE+mixed_20kto24kE),
+    MIXED_25_to_34 = sum(mixed_25kto29kE+mixed_30kto34kE),
+    MIXED_35_to_49 = sum(mixed_35kto39kE+mixed_40kto44kE+mixed_45kto49kE),
+    MIXED_50_to_74 = sum(mixed_50kto59kE+mixed_60kto74kE),
+    MIXED_75_to_99 = mixed_75kto99kE,
+    MIXED_100_to_149 =  sum(mixed_100kto124kE+mixed_125kto149kE),
+    MIXED_150_to_199 =  mixed_150kto199kE,
+    MIXED_200_more =  mixed_200ktomoreE,
+    MIXED_TOTAL = mixed_totalE,
+    
+    W_NOTHISP_less25 = sum(w_nothisp_less10kE+w_nothisp_10kto14kE+w_nothisp_15kto19kE+w_nothisp_20kto24kE),
+    W_NOTHISP_25_to_34 = sum(w_nothisp_25kto29kE+w_nothisp_30kto34kE),
+    W_NOTHISP_35_to_49 = sum(w_nothisp_35kto39kE+w_nothisp_40kto44kE+w_nothisp_45kto49kE),
+    W_NOTHISP_50_to_74 = sum(w_nothisp_50kto59kE+w_nothisp_60kto74kE),
+    W_NOTHISP_75_to_99 = w_nothisp_75kto99kE,
+    W_NOTHISP_100_to_149 =  sum(w_nothisp_100kto124kE+w_nothisp_125kto149kE),
+    W_NOTHISP_150_to_199 =  w_nothisp_150kto199kE,
+    W_NOTHISP_200_more =  w_nothisp_200ktomoreE,
+    W_NOTHISP_TOTAL = w_nothisp_totalE,
     
     HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
     HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
@@ -6249,21 +6408,40 @@ censusstatelegislative_upper_income <- censusstatelegislative_upper_income %>%
     HISP_200_more =  hisp_200ktomoreE,
     HISP_TOTAL = hisp_totalE,
     
-    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
-    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
-    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
-    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
-    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
-    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    ALL_less25 = sum(WHITE_less25+BLACK_less25+AI_AN_less25+ASIAN_less25+
+                       NHPI_less25+OTHER_less25+MIXED_less25+W_NOTHISP_less25+HISP_less25),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+
+                         NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_49 = sum(WHITE_35_to_49+BLACK_35_to_49+AI_AN_35_to_49+ASIAN_35_to_49+
+                         NHPI_35_to_49+OTHER_35_to_49+MIXED_35_to_49+W_NOTHISP_35_to_49+HISP_35_to_49),
+    ALL_50_to_74 = sum(WHITE_50_to_74+BLACK_50_to_74+AI_AN_50_to_74+ASIAN_50_to_74+
+                         NHPI_50_to_74+OTHER_50_to_74+MIXED_50_to_74+W_NOTHISP_50_to_74+HISP_50_to_74),
+    ALL_75_to_99 = sum(WHITE_75_to_99+BLACK_75_to_99+AI_AN_75_to_99+ASIAN_75_to_99+
+                         NHPI_75_to_99+OTHER_75_to_99+MIXED_75_to_99+W_NOTHISP_75_to_99+HISP_75_to_99),
+    ALL_100_to_149 =  sum(WHITE_100_to_149+BLACK_100_to_149+AI_AN_100_to_149+ASIAN_100_to_149+
+                            NHPI_100_to_149+OTHER_100_to_149+MIXED_100_to_149+W_NOTHISP_100_to_149+HISP_100_to_149),
+    ALL_150_to_199 =  sum(WHITE_150_to_199+BLACK_150_to_199+AI_AN_150_to_199+ASIAN_150_to_199+
+                            NHPI_150_to_199+OTHER_150_to_199+MIXED_150_to_199+W_NOTHISP_150_to_199+HISP_150_to_199),
+    ALL_200_more =  sum(WHITE_200_more+BLACK_200_more+AI_AN_200_more+ASIAN_200_more+
+                          NHPI_200_more+OTHER_200_more+MIXED_200_more+W_NOTHISP_200_more+HISP_200_more),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+
+                      NHPI_TOTAL+OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    
+    # UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    # UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    # UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    # UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    # UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    # UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
     
   )
 
 
 # export
-write.csv(censusstatelegislative_upper_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper_income.csv")
+write.csv(censusstatelegislative_upper_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper_income2.csv")
 
 ############# state legislative district (lower chamber) ############# 
 
@@ -6544,6 +6722,16 @@ censusstatelegislative_lower_income <- censusstatelegislative_lower_income %>% s
 censusstatelegislative_lower_income <- censusstatelegislative_lower_income %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_less25 = sum(white_less10kE+white_10kto14kE+white_15kto19kE+white_20kto24kE),
+    WHITE_25_to_34 = sum(white_25kto29kE+white_30kto34kE),
+    WHITE_35_to_49 = sum(white_35kto39kE+white_40kto44kE+white_45kto49kE),
+    WHITE_50_to_74 = sum(white_50kto59kE+white_60kto74kE),
+    WHITE_75_to_99 = white_75kto99kE,
+    WHITE_100_to_149 =  sum(white_100kto124kE+white_125kto149kE),
+    WHITE_150_to_199 =  white_150kto199kE,
+    WHITE_200_more =  white_200ktomoreE,
+    WHITE_TOTAL = white_totalE,
+    
     BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
     BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
     BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
@@ -6553,6 +6741,66 @@ censusstatelegislative_lower_income <- censusstatelegislative_lower_income %>%
     BLACK_150_to_199 =  black_150kto199kE,
     BLACK_200_more =  black_200ktomoreE,
     BLACK_TOTAL = black_totalE,
+    
+    AI_AN_less25 = sum(aian_less10kE+aian_10kto14kE+aian_15kto19kE+aian_20kto24kE),
+    AI_AN_25_to_34 = sum(aian_25kto29kE+aian_30kto34kE),
+    AI_AN_35_to_49 = sum(aian_35kto39kE+aian_40kto44kE+aian_45kto49kE),
+    AI_AN_50_to_74 = sum(aian_50kto59kE+aian_60kto74kE),
+    AI_AN_75_to_99 = aian_75kto99kE,
+    AI_AN_100_to_149 =  sum(aian_100kto124kE+aian_125kto149kE),
+    AI_AN_150_to_199 =  aian_150kto199kE,
+    AI_AN_200_more =  aian_200ktomoreE,
+    AI_AN_TOTAL = aian_totalE,
+    
+    ASIAN_less25 = sum(asian_less10kE+asian_10kto14kE+asian_15kto19kE+asian_20kto24kE),
+    ASIAN_25_to_34 = sum(asian_25kto29kE+asian_30kto34kE),
+    ASIAN_35_to_49 = sum(asian_35kto39kE+asian_40kto44kE+asian_45kto49kE),
+    ASIAN_50_to_74 = sum(asian_50kto59kE+asian_60kto74kE),
+    ASIAN_75_to_99 = asian_75kto99kE,
+    ASIAN_100_to_149 =  sum(asian_100kto124kE+asian_125kto149kE),
+    ASIAN_150_to_199 =  asian_150kto199kE,
+    ASIAN_200_more =  asian_200ktomoreE,
+    ASIAN_TOTAL = asian_totalE,
+    
+    NHPI_less25 = sum(nhpi_less10kE+nhpi_10kto14kE+nhpi_15kto19kE+nhpi_20kto24kE),
+    NHPI_25_to_34 = sum(nhpi_25kto29kE+nhpi_30kto34kE),
+    NHPI_35_to_49 = sum(nhpi_35kto39kE+nhpi_40kto44kE+nhpi_45kto49kE),
+    NHPI_50_to_74 = sum(nhpi_50kto59kE+nhpi_60kto74kE),
+    NHPI_75_to_99 = nhpi_75kto99kE,
+    NHPI_100_to_149 =  sum(nhpi_100kto124kE+nhpi_125kto149kE),
+    NHPI_150_to_199 =  nhpi_150kto199kE,
+    NHPI_200_more =  nhpi_200ktomoreE,
+    NHPI_TOTAL = nhpi_totalE,
+    
+    OTHER_less25 = sum(other_less10kE+other_10kto14kE+other_15kto19kE+other_20kto24kE),
+    OTHER_25_to_34 = sum(other_25kto29kE+other_30kto34kE),
+    OTHER_35_to_49 = sum(other_35kto39kE+other_40kto44kE+other_45kto49kE),
+    OTHER_50_to_74 = sum(other_50kto59kE+other_60kto74kE),
+    OTHER_75_to_99 = other_75kto99kE,
+    OTHER_100_to_149 =  sum(other_100kto124kE+other_125kto149kE),
+    OTHER_150_to_199 =  other_150kto199kE,
+    OTHER_200_more =  other_200ktomoreE,
+    OTHER_TOTAL = other_totalE,
+    
+    MIXED_less25 = sum(mixed_less10kE+mixed_10kto14kE+mixed_15kto19kE+mixed_20kto24kE),
+    MIXED_25_to_34 = sum(mixed_25kto29kE+mixed_30kto34kE),
+    MIXED_35_to_49 = sum(mixed_35kto39kE+mixed_40kto44kE+mixed_45kto49kE),
+    MIXED_50_to_74 = sum(mixed_50kto59kE+mixed_60kto74kE),
+    MIXED_75_to_99 = mixed_75kto99kE,
+    MIXED_100_to_149 =  sum(mixed_100kto124kE+mixed_125kto149kE),
+    MIXED_150_to_199 =  mixed_150kto199kE,
+    MIXED_200_more =  mixed_200ktomoreE,
+    MIXED_TOTAL = mixed_totalE,
+    
+    W_NOTHISP_less25 = sum(w_nothisp_less10kE+w_nothisp_10kto14kE+w_nothisp_15kto19kE+w_nothisp_20kto24kE),
+    W_NOTHISP_25_to_34 = sum(w_nothisp_25kto29kE+w_nothisp_30kto34kE),
+    W_NOTHISP_35_to_49 = sum(w_nothisp_35kto39kE+w_nothisp_40kto44kE+w_nothisp_45kto49kE),
+    W_NOTHISP_50_to_74 = sum(w_nothisp_50kto59kE+w_nothisp_60kto74kE),
+    W_NOTHISP_75_to_99 = w_nothisp_75kto99kE,
+    W_NOTHISP_100_to_149 =  sum(w_nothisp_100kto124kE+w_nothisp_125kto149kE),
+    W_NOTHISP_150_to_199 =  w_nothisp_150kto199kE,
+    W_NOTHISP_200_more =  w_nothisp_200ktomoreE,
+    W_NOTHISP_TOTAL = w_nothisp_totalE,
     
     HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
     HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
@@ -6564,21 +6812,40 @@ censusstatelegislative_lower_income <- censusstatelegislative_lower_income %>%
     HISP_200_more =  hisp_200ktomoreE,
     HISP_TOTAL = hisp_totalE,
     
-    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
-    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
-    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
-    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
-    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
-    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    ALL_less25 = sum(WHITE_less25+BLACK_less25+AI_AN_less25+ASIAN_less25+
+                       NHPI_less25+OTHER_less25+MIXED_less25+W_NOTHISP_less25+HISP_less25),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+
+                         NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_49 = sum(WHITE_35_to_49+BLACK_35_to_49+AI_AN_35_to_49+ASIAN_35_to_49+
+                         NHPI_35_to_49+OTHER_35_to_49+MIXED_35_to_49+W_NOTHISP_35_to_49+HISP_35_to_49),
+    ALL_50_to_74 = sum(WHITE_50_to_74+BLACK_50_to_74+AI_AN_50_to_74+ASIAN_50_to_74+
+                         NHPI_50_to_74+OTHER_50_to_74+MIXED_50_to_74+W_NOTHISP_50_to_74+HISP_50_to_74),
+    ALL_75_to_99 = sum(WHITE_75_to_99+BLACK_75_to_99+AI_AN_75_to_99+ASIAN_75_to_99+
+                         NHPI_75_to_99+OTHER_75_to_99+MIXED_75_to_99+W_NOTHISP_75_to_99+HISP_75_to_99),
+    ALL_100_to_149 =  sum(WHITE_100_to_149+BLACK_100_to_149+AI_AN_100_to_149+ASIAN_100_to_149+
+                            NHPI_100_to_149+OTHER_100_to_149+MIXED_100_to_149+W_NOTHISP_100_to_149+HISP_100_to_149),
+    ALL_150_to_199 =  sum(WHITE_150_to_199+BLACK_150_to_199+AI_AN_150_to_199+ASIAN_150_to_199+
+                            NHPI_150_to_199+OTHER_150_to_199+MIXED_150_to_199+W_NOTHISP_150_to_199+HISP_150_to_199),
+    ALL_200_more =  sum(WHITE_200_more+BLACK_200_more+AI_AN_200_more+ASIAN_200_more+
+                          NHPI_200_more+OTHER_200_more+MIXED_200_more+W_NOTHISP_200_more+HISP_200_more),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+
+                      NHPI_TOTAL+OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    
+    # UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    # UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    # UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    # UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    # UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    # UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
     
   )
 
 
 # export
-write.csv(censusstatelegislative_lower_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower_income.csv")
+write.csv(censusstatelegislative_lower_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower_income2.csv")
 
 
 ############# ZIP ############# 
@@ -6860,6 +7127,16 @@ censuszip_income <- censuszip_income %>% select(-contains("NAME"))
 censuszip_income <- censuszip_income %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_less25 = sum(white_less10kE+white_10kto14kE+white_15kto19kE+white_20kto24kE),
+    WHITE_25_to_34 = sum(white_25kto29kE+white_30kto34kE),
+    WHITE_35_to_49 = sum(white_35kto39kE+white_40kto44kE+white_45kto49kE),
+    WHITE_50_to_74 = sum(white_50kto59kE+white_60kto74kE),
+    WHITE_75_to_99 = white_75kto99kE,
+    WHITE_100_to_149 =  sum(white_100kto124kE+white_125kto149kE),
+    WHITE_150_to_199 =  white_150kto199kE,
+    WHITE_200_more =  white_200ktomoreE,
+    WHITE_TOTAL = white_totalE,
+    
     BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
     BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
     BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
@@ -6869,6 +7146,66 @@ censuszip_income <- censuszip_income %>%
     BLACK_150_to_199 =  black_150kto199kE,
     BLACK_200_more =  black_200ktomoreE,
     BLACK_TOTAL = black_totalE,
+    
+    AI_AN_less25 = sum(aian_less10kE+aian_10kto14kE+aian_15kto19kE+aian_20kto24kE),
+    AI_AN_25_to_34 = sum(aian_25kto29kE+aian_30kto34kE),
+    AI_AN_35_to_49 = sum(aian_35kto39kE+aian_40kto44kE+aian_45kto49kE),
+    AI_AN_50_to_74 = sum(aian_50kto59kE+aian_60kto74kE),
+    AI_AN_75_to_99 = aian_75kto99kE,
+    AI_AN_100_to_149 =  sum(aian_100kto124kE+aian_125kto149kE),
+    AI_AN_150_to_199 =  aian_150kto199kE,
+    AI_AN_200_more =  aian_200ktomoreE,
+    AI_AN_TOTAL = aian_totalE,
+    
+    ASIAN_less25 = sum(asian_less10kE+asian_10kto14kE+asian_15kto19kE+asian_20kto24kE),
+    ASIAN_25_to_34 = sum(asian_25kto29kE+asian_30kto34kE),
+    ASIAN_35_to_49 = sum(asian_35kto39kE+asian_40kto44kE+asian_45kto49kE),
+    ASIAN_50_to_74 = sum(asian_50kto59kE+asian_60kto74kE),
+    ASIAN_75_to_99 = asian_75kto99kE,
+    ASIAN_100_to_149 =  sum(asian_100kto124kE+asian_125kto149kE),
+    ASIAN_150_to_199 =  asian_150kto199kE,
+    ASIAN_200_more =  asian_200ktomoreE,
+    ASIAN_TOTAL = asian_totalE,
+    
+    NHPI_less25 = sum(nhpi_less10kE+nhpi_10kto14kE+nhpi_15kto19kE+nhpi_20kto24kE),
+    NHPI_25_to_34 = sum(nhpi_25kto29kE+nhpi_30kto34kE),
+    NHPI_35_to_49 = sum(nhpi_35kto39kE+nhpi_40kto44kE+nhpi_45kto49kE),
+    NHPI_50_to_74 = sum(nhpi_50kto59kE+nhpi_60kto74kE),
+    NHPI_75_to_99 = nhpi_75kto99kE,
+    NHPI_100_to_149 =  sum(nhpi_100kto124kE+nhpi_125kto149kE),
+    NHPI_150_to_199 =  nhpi_150kto199kE,
+    NHPI_200_more =  nhpi_200ktomoreE,
+    NHPI_TOTAL = nhpi_totalE,
+    
+    OTHER_less25 = sum(other_less10kE+other_10kto14kE+other_15kto19kE+other_20kto24kE),
+    OTHER_25_to_34 = sum(other_25kto29kE+other_30kto34kE),
+    OTHER_35_to_49 = sum(other_35kto39kE+other_40kto44kE+other_45kto49kE),
+    OTHER_50_to_74 = sum(other_50kto59kE+other_60kto74kE),
+    OTHER_75_to_99 = other_75kto99kE,
+    OTHER_100_to_149 =  sum(other_100kto124kE+other_125kto149kE),
+    OTHER_150_to_199 =  other_150kto199kE,
+    OTHER_200_more =  other_200ktomoreE,
+    OTHER_TOTAL = other_totalE,
+    
+    MIXED_less25 = sum(mixed_less10kE+mixed_10kto14kE+mixed_15kto19kE+mixed_20kto24kE),
+    MIXED_25_to_34 = sum(mixed_25kto29kE+mixed_30kto34kE),
+    MIXED_35_to_49 = sum(mixed_35kto39kE+mixed_40kto44kE+mixed_45kto49kE),
+    MIXED_50_to_74 = sum(mixed_50kto59kE+mixed_60kto74kE),
+    MIXED_75_to_99 = mixed_75kto99kE,
+    MIXED_100_to_149 =  sum(mixed_100kto124kE+mixed_125kto149kE),
+    MIXED_150_to_199 =  mixed_150kto199kE,
+    MIXED_200_more =  mixed_200ktomoreE,
+    MIXED_TOTAL = mixed_totalE,
+    
+    W_NOTHISP_less25 = sum(w_nothisp_less10kE+w_nothisp_10kto14kE+w_nothisp_15kto19kE+w_nothisp_20kto24kE),
+    W_NOTHISP_25_to_34 = sum(w_nothisp_25kto29kE+w_nothisp_30kto34kE),
+    W_NOTHISP_35_to_49 = sum(w_nothisp_35kto39kE+w_nothisp_40kto44kE+w_nothisp_45kto49kE),
+    W_NOTHISP_50_to_74 = sum(w_nothisp_50kto59kE+w_nothisp_60kto74kE),
+    W_NOTHISP_75_to_99 = w_nothisp_75kto99kE,
+    W_NOTHISP_100_to_149 =  sum(w_nothisp_100kto124kE+w_nothisp_125kto149kE),
+    W_NOTHISP_150_to_199 =  w_nothisp_150kto199kE,
+    W_NOTHISP_200_more =  w_nothisp_200ktomoreE,
+    W_NOTHISP_TOTAL = w_nothisp_totalE,
     
     HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
     HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
@@ -6880,21 +7217,40 @@ censuszip_income <- censuszip_income %>%
     HISP_200_more =  hisp_200ktomoreE,
     HISP_TOTAL = hisp_totalE,
     
-    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
-    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
-    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
-    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
-    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
-    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    ALL_less25 = sum(WHITE_less25+BLACK_less25+AI_AN_less25+ASIAN_less25+
+                       NHPI_less25+OTHER_less25+MIXED_less25+W_NOTHISP_less25+HISP_less25),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+
+                         NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_49 = sum(WHITE_35_to_49+BLACK_35_to_49+AI_AN_35_to_49+ASIAN_35_to_49+
+                         NHPI_35_to_49+OTHER_35_to_49+MIXED_35_to_49+W_NOTHISP_35_to_49+HISP_35_to_49),
+    ALL_50_to_74 = sum(WHITE_50_to_74+BLACK_50_to_74+AI_AN_50_to_74+ASIAN_50_to_74+
+                         NHPI_50_to_74+OTHER_50_to_74+MIXED_50_to_74+W_NOTHISP_50_to_74+HISP_50_to_74),
+    ALL_75_to_99 = sum(WHITE_75_to_99+BLACK_75_to_99+AI_AN_75_to_99+ASIAN_75_to_99+
+                         NHPI_75_to_99+OTHER_75_to_99+MIXED_75_to_99+W_NOTHISP_75_to_99+HISP_75_to_99),
+    ALL_100_to_149 =  sum(WHITE_100_to_149+BLACK_100_to_149+AI_AN_100_to_149+ASIAN_100_to_149+
+                            NHPI_100_to_149+OTHER_100_to_149+MIXED_100_to_149+W_NOTHISP_100_to_149+HISP_100_to_149),
+    ALL_150_to_199 =  sum(WHITE_150_to_199+BLACK_150_to_199+AI_AN_150_to_199+ASIAN_150_to_199+
+                            NHPI_150_to_199+OTHER_150_to_199+MIXED_150_to_199+W_NOTHISP_150_to_199+HISP_150_to_199),
+    ALL_200_more =  sum(WHITE_200_more+BLACK_200_more+AI_AN_200_more+ASIAN_200_more+
+                          NHPI_200_more+OTHER_200_more+MIXED_200_more+W_NOTHISP_200_more+HISP_200_more),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+
+                      NHPI_TOTAL+OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    
+    # UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    # UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    # UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    # UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    # UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    # UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
     
   )
 
 
 # export
-write.csv(censuszip_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip_income.csv")
+write.csv(censuszip_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip_income2.csv")
 
 
 ############# TRACT ############# 
@@ -7176,6 +7532,16 @@ censustract_income <- censustract_income %>% select(-contains("NAME"))
 censustract_income <- censustract_income %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_less25 = sum(white_less10kE+white_10kto14kE+white_15kto19kE+white_20kto24kE),
+    WHITE_25_to_34 = sum(white_25kto29kE+white_30kto34kE),
+    WHITE_35_to_49 = sum(white_35kto39kE+white_40kto44kE+white_45kto49kE),
+    WHITE_50_to_74 = sum(white_50kto59kE+white_60kto74kE),
+    WHITE_75_to_99 = white_75kto99kE,
+    WHITE_100_to_149 =  sum(white_100kto124kE+white_125kto149kE),
+    WHITE_150_to_199 =  white_150kto199kE,
+    WHITE_200_more =  white_200ktomoreE,
+    WHITE_TOTAL = white_totalE,
+    
     BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
     BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
     BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
@@ -7185,6 +7551,66 @@ censustract_income <- censustract_income %>%
     BLACK_150_to_199 =  black_150kto199kE,
     BLACK_200_more =  black_200ktomoreE,
     BLACK_TOTAL = black_totalE,
+    
+    AI_AN_less25 = sum(aian_less10kE+aian_10kto14kE+aian_15kto19kE+aian_20kto24kE),
+    AI_AN_25_to_34 = sum(aian_25kto29kE+aian_30kto34kE),
+    AI_AN_35_to_49 = sum(aian_35kto39kE+aian_40kto44kE+aian_45kto49kE),
+    AI_AN_50_to_74 = sum(aian_50kto59kE+aian_60kto74kE),
+    AI_AN_75_to_99 = aian_75kto99kE,
+    AI_AN_100_to_149 =  sum(aian_100kto124kE+aian_125kto149kE),
+    AI_AN_150_to_199 =  aian_150kto199kE,
+    AI_AN_200_more =  aian_200ktomoreE,
+    AI_AN_TOTAL = aian_totalE,
+    
+    ASIAN_less25 = sum(asian_less10kE+asian_10kto14kE+asian_15kto19kE+asian_20kto24kE),
+    ASIAN_25_to_34 = sum(asian_25kto29kE+asian_30kto34kE),
+    ASIAN_35_to_49 = sum(asian_35kto39kE+asian_40kto44kE+asian_45kto49kE),
+    ASIAN_50_to_74 = sum(asian_50kto59kE+asian_60kto74kE),
+    ASIAN_75_to_99 = asian_75kto99kE,
+    ASIAN_100_to_149 =  sum(asian_100kto124kE+asian_125kto149kE),
+    ASIAN_150_to_199 =  asian_150kto199kE,
+    ASIAN_200_more =  asian_200ktomoreE,
+    ASIAN_TOTAL = asian_totalE,
+    
+    NHPI_less25 = sum(nhpi_less10kE+nhpi_10kto14kE+nhpi_15kto19kE+nhpi_20kto24kE),
+    NHPI_25_to_34 = sum(nhpi_25kto29kE+nhpi_30kto34kE),
+    NHPI_35_to_49 = sum(nhpi_35kto39kE+nhpi_40kto44kE+nhpi_45kto49kE),
+    NHPI_50_to_74 = sum(nhpi_50kto59kE+nhpi_60kto74kE),
+    NHPI_75_to_99 = nhpi_75kto99kE,
+    NHPI_100_to_149 =  sum(nhpi_100kto124kE+nhpi_125kto149kE),
+    NHPI_150_to_199 =  nhpi_150kto199kE,
+    NHPI_200_more =  nhpi_200ktomoreE,
+    NHPI_TOTAL = nhpi_totalE,
+    
+    OTHER_less25 = sum(other_less10kE+other_10kto14kE+other_15kto19kE+other_20kto24kE),
+    OTHER_25_to_34 = sum(other_25kto29kE+other_30kto34kE),
+    OTHER_35_to_49 = sum(other_35kto39kE+other_40kto44kE+other_45kto49kE),
+    OTHER_50_to_74 = sum(other_50kto59kE+other_60kto74kE),
+    OTHER_75_to_99 = other_75kto99kE,
+    OTHER_100_to_149 =  sum(other_100kto124kE+other_125kto149kE),
+    OTHER_150_to_199 =  other_150kto199kE,
+    OTHER_200_more =  other_200ktomoreE,
+    OTHER_TOTAL = other_totalE,
+    
+    MIXED_less25 = sum(mixed_less10kE+mixed_10kto14kE+mixed_15kto19kE+mixed_20kto24kE),
+    MIXED_25_to_34 = sum(mixed_25kto29kE+mixed_30kto34kE),
+    MIXED_35_to_49 = sum(mixed_35kto39kE+mixed_40kto44kE+mixed_45kto49kE),
+    MIXED_50_to_74 = sum(mixed_50kto59kE+mixed_60kto74kE),
+    MIXED_75_to_99 = mixed_75kto99kE,
+    MIXED_100_to_149 =  sum(mixed_100kto124kE+mixed_125kto149kE),
+    MIXED_150_to_199 =  mixed_150kto199kE,
+    MIXED_200_more =  mixed_200ktomoreE,
+    MIXED_TOTAL = mixed_totalE,
+    
+    W_NOTHISP_less25 = sum(w_nothisp_less10kE+w_nothisp_10kto14kE+w_nothisp_15kto19kE+w_nothisp_20kto24kE),
+    W_NOTHISP_25_to_34 = sum(w_nothisp_25kto29kE+w_nothisp_30kto34kE),
+    W_NOTHISP_35_to_49 = sum(w_nothisp_35kto39kE+w_nothisp_40kto44kE+w_nothisp_45kto49kE),
+    W_NOTHISP_50_to_74 = sum(w_nothisp_50kto59kE+w_nothisp_60kto74kE),
+    W_NOTHISP_75_to_99 = w_nothisp_75kto99kE,
+    W_NOTHISP_100_to_149 =  sum(w_nothisp_100kto124kE+w_nothisp_125kto149kE),
+    W_NOTHISP_150_to_199 =  w_nothisp_150kto199kE,
+    W_NOTHISP_200_more =  w_nothisp_200ktomoreE,
+    W_NOTHISP_TOTAL = w_nothisp_totalE,
     
     HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
     HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
@@ -7196,21 +7622,40 @@ censustract_income <- censustract_income %>%
     HISP_200_more =  hisp_200ktomoreE,
     HISP_TOTAL = hisp_totalE,
     
-    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
-    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
-    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
-    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
-    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
-    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    ALL_less25 = sum(WHITE_less25+BLACK_less25+AI_AN_less25+ASIAN_less25+
+                       NHPI_less25+OTHER_less25+MIXED_less25+W_NOTHISP_less25+HISP_less25),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+
+                         NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_49 = sum(WHITE_35_to_49+BLACK_35_to_49+AI_AN_35_to_49+ASIAN_35_to_49+
+                         NHPI_35_to_49+OTHER_35_to_49+MIXED_35_to_49+W_NOTHISP_35_to_49+HISP_35_to_49),
+    ALL_50_to_74 = sum(WHITE_50_to_74+BLACK_50_to_74+AI_AN_50_to_74+ASIAN_50_to_74+
+                         NHPI_50_to_74+OTHER_50_to_74+MIXED_50_to_74+W_NOTHISP_50_to_74+HISP_50_to_74),
+    ALL_75_to_99 = sum(WHITE_75_to_99+BLACK_75_to_99+AI_AN_75_to_99+ASIAN_75_to_99+
+                         NHPI_75_to_99+OTHER_75_to_99+MIXED_75_to_99+W_NOTHISP_75_to_99+HISP_75_to_99),
+    ALL_100_to_149 =  sum(WHITE_100_to_149+BLACK_100_to_149+AI_AN_100_to_149+ASIAN_100_to_149+
+                            NHPI_100_to_149+OTHER_100_to_149+MIXED_100_to_149+W_NOTHISP_100_to_149+HISP_100_to_149),
+    ALL_150_to_199 =  sum(WHITE_150_to_199+BLACK_150_to_199+AI_AN_150_to_199+ASIAN_150_to_199+
+                            NHPI_150_to_199+OTHER_150_to_199+MIXED_150_to_199+W_NOTHISP_150_to_199+HISP_150_to_199),
+    ALL_200_more =  sum(WHITE_200_more+BLACK_200_more+AI_AN_200_more+ASIAN_200_more+
+                          NHPI_200_more+OTHER_200_more+MIXED_200_more+W_NOTHISP_200_more+HISP_200_more),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+
+                      NHPI_TOTAL+OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    
+    # UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    # UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    # UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    # UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    # UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    # UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
     
   )
 
 
 # export
-write.csv(censustract_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_income.csv")
+write.csv(censustract_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_income2.csv")
 
 
 
@@ -7494,6 +7939,16 @@ censusstate_income <- censusstate_income %>% select(-contains("NAME"))
 censusstate_income <- censusstate_income %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_less25 = sum(white_less10kE+white_10kto14kE+white_15kto19kE+white_20kto24kE),
+    WHITE_25_to_34 = sum(white_25kto29kE+white_30kto34kE),
+    WHITE_35_to_49 = sum(white_35kto39kE+white_40kto44kE+white_45kto49kE),
+    WHITE_50_to_74 = sum(white_50kto59kE+white_60kto74kE),
+    WHITE_75_to_99 = white_75kto99kE,
+    WHITE_100_to_149 =  sum(white_100kto124kE+white_125kto149kE),
+    WHITE_150_to_199 =  white_150kto199kE,
+    WHITE_200_more =  white_200ktomoreE,
+    WHITE_TOTAL = white_totalE,
+    
     BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
     BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
     BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
@@ -7503,6 +7958,66 @@ censusstate_income <- censusstate_income %>%
     BLACK_150_to_199 =  black_150kto199kE,
     BLACK_200_more =  black_200ktomoreE,
     BLACK_TOTAL = black_totalE,
+    
+    AI_AN_less25 = sum(aian_less10kE+aian_10kto14kE+aian_15kto19kE+aian_20kto24kE),
+    AI_AN_25_to_34 = sum(aian_25kto29kE+aian_30kto34kE),
+    AI_AN_35_to_49 = sum(aian_35kto39kE+aian_40kto44kE+aian_45kto49kE),
+    AI_AN_50_to_74 = sum(aian_50kto59kE+aian_60kto74kE),
+    AI_AN_75_to_99 = aian_75kto99kE,
+    AI_AN_100_to_149 =  sum(aian_100kto124kE+aian_125kto149kE),
+    AI_AN_150_to_199 =  aian_150kto199kE,
+    AI_AN_200_more =  aian_200ktomoreE,
+    AI_AN_TOTAL = aian_totalE,
+    
+    ASIAN_less25 = sum(asian_less10kE+asian_10kto14kE+asian_15kto19kE+asian_20kto24kE),
+    ASIAN_25_to_34 = sum(asian_25kto29kE+asian_30kto34kE),
+    ASIAN_35_to_49 = sum(asian_35kto39kE+asian_40kto44kE+asian_45kto49kE),
+    ASIAN_50_to_74 = sum(asian_50kto59kE+asian_60kto74kE),
+    ASIAN_75_to_99 = asian_75kto99kE,
+    ASIAN_100_to_149 =  sum(asian_100kto124kE+asian_125kto149kE),
+    ASIAN_150_to_199 =  asian_150kto199kE,
+    ASIAN_200_more =  asian_200ktomoreE,
+    ASIAN_TOTAL = asian_totalE,
+    
+    NHPI_less25 = sum(nhpi_less10kE+nhpi_10kto14kE+nhpi_15kto19kE+nhpi_20kto24kE),
+    NHPI_25_to_34 = sum(nhpi_25kto29kE+nhpi_30kto34kE),
+    NHPI_35_to_49 = sum(nhpi_35kto39kE+nhpi_40kto44kE+nhpi_45kto49kE),
+    NHPI_50_to_74 = sum(nhpi_50kto59kE+nhpi_60kto74kE),
+    NHPI_75_to_99 = nhpi_75kto99kE,
+    NHPI_100_to_149 =  sum(nhpi_100kto124kE+nhpi_125kto149kE),
+    NHPI_150_to_199 =  nhpi_150kto199kE,
+    NHPI_200_more =  nhpi_200ktomoreE,
+    NHPI_TOTAL = nhpi_totalE,
+    
+    OTHER_less25 = sum(other_less10kE+other_10kto14kE+other_15kto19kE+other_20kto24kE),
+    OTHER_25_to_34 = sum(other_25kto29kE+other_30kto34kE),
+    OTHER_35_to_49 = sum(other_35kto39kE+other_40kto44kE+other_45kto49kE),
+    OTHER_50_to_74 = sum(other_50kto59kE+other_60kto74kE),
+    OTHER_75_to_99 = other_75kto99kE,
+    OTHER_100_to_149 =  sum(other_100kto124kE+other_125kto149kE),
+    OTHER_150_to_199 =  other_150kto199kE,
+    OTHER_200_more =  other_200ktomoreE,
+    OTHER_TOTAL = other_totalE,
+    
+    MIXED_less25 = sum(mixed_less10kE+mixed_10kto14kE+mixed_15kto19kE+mixed_20kto24kE),
+    MIXED_25_to_34 = sum(mixed_25kto29kE+mixed_30kto34kE),
+    MIXED_35_to_49 = sum(mixed_35kto39kE+mixed_40kto44kE+mixed_45kto49kE),
+    MIXED_50_to_74 = sum(mixed_50kto59kE+mixed_60kto74kE),
+    MIXED_75_to_99 = mixed_75kto99kE,
+    MIXED_100_to_149 =  sum(mixed_100kto124kE+mixed_125kto149kE),
+    MIXED_150_to_199 =  mixed_150kto199kE,
+    MIXED_200_more =  mixed_200ktomoreE,
+    MIXED_TOTAL = mixed_totalE,
+    
+    W_NOTHISP_less25 = sum(w_nothisp_less10kE+w_nothisp_10kto14kE+w_nothisp_15kto19kE+w_nothisp_20kto24kE),
+    W_NOTHISP_25_to_34 = sum(w_nothisp_25kto29kE+w_nothisp_30kto34kE),
+    W_NOTHISP_35_to_49 = sum(w_nothisp_35kto39kE+w_nothisp_40kto44kE+w_nothisp_45kto49kE),
+    W_NOTHISP_50_to_74 = sum(w_nothisp_50kto59kE+w_nothisp_60kto74kE),
+    W_NOTHISP_75_to_99 = w_nothisp_75kto99kE,
+    W_NOTHISP_100_to_149 =  sum(w_nothisp_100kto124kE+w_nothisp_125kto149kE),
+    W_NOTHISP_150_to_199 =  w_nothisp_150kto199kE,
+    W_NOTHISP_200_more =  w_nothisp_200ktomoreE,
+    W_NOTHISP_TOTAL = w_nothisp_totalE,
     
     HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
     HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
@@ -7514,20 +8029,39 @@ censusstate_income <- censusstate_income %>%
     HISP_200_more =  hisp_200ktomoreE,
     HISP_TOTAL = hisp_totalE,
     
-    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
-    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
-    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
-    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
-    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
-    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    ALL_less25 = sum(WHITE_less25+BLACK_less25+AI_AN_less25+ASIAN_less25+
+                       NHPI_less25+OTHER_less25+MIXED_less25+W_NOTHISP_less25+HISP_less25),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+
+                         NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_49 = sum(WHITE_35_to_49+BLACK_35_to_49+AI_AN_35_to_49+ASIAN_35_to_49+
+                         NHPI_35_to_49+OTHER_35_to_49+MIXED_35_to_49+W_NOTHISP_35_to_49+HISP_35_to_49),
+    ALL_50_to_74 = sum(WHITE_50_to_74+BLACK_50_to_74+AI_AN_50_to_74+ASIAN_50_to_74+
+                         NHPI_50_to_74+OTHER_50_to_74+MIXED_50_to_74+W_NOTHISP_50_to_74+HISP_50_to_74),
+    ALL_75_to_99 = sum(WHITE_75_to_99+BLACK_75_to_99+AI_AN_75_to_99+ASIAN_75_to_99+
+                         NHPI_75_to_99+OTHER_75_to_99+MIXED_75_to_99+W_NOTHISP_75_to_99+HISP_75_to_99),
+    ALL_100_to_149 =  sum(WHITE_100_to_149+BLACK_100_to_149+AI_AN_100_to_149+ASIAN_100_to_149+
+                            NHPI_100_to_149+OTHER_100_to_149+MIXED_100_to_149+W_NOTHISP_100_to_149+HISP_100_to_149),
+    ALL_150_to_199 =  sum(WHITE_150_to_199+BLACK_150_to_199+AI_AN_150_to_199+ASIAN_150_to_199+
+                            NHPI_150_to_199+OTHER_150_to_199+MIXED_150_to_199+W_NOTHISP_150_to_199+HISP_150_to_199),
+    ALL_200_more =  sum(WHITE_200_more+BLACK_200_more+AI_AN_200_more+ASIAN_200_more+
+                          NHPI_200_more+OTHER_200_more+MIXED_200_more+W_NOTHISP_200_more+HISP_200_more),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+
+                      NHPI_TOTAL+OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    
+    # UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    # UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    # UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    # UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    # UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    # UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
     
   )
 
 # export
-write.csv(censusstate_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_income.csv")
+write.csv(censusstate_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_income2.csv")
 
 
 ############# County ############# 
@@ -7810,6 +8344,16 @@ censuscounty_income <- censuscounty_income %>% select(-contains("NAME"))
 censuscounty_income <- censuscounty_income %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    WHITE_less25 = sum(white_less10kE+white_10kto14kE+white_15kto19kE+white_20kto24kE),
+    WHITE_25_to_34 = sum(white_25kto29kE+white_30kto34kE),
+    WHITE_35_to_49 = sum(white_35kto39kE+white_40kto44kE+white_45kto49kE),
+    WHITE_50_to_74 = sum(white_50kto59kE+white_60kto74kE),
+    WHITE_75_to_99 = white_75kto99kE,
+    WHITE_100_to_149 =  sum(white_100kto124kE+white_125kto149kE),
+    WHITE_150_to_199 =  white_150kto199kE,
+    WHITE_200_more =  white_200ktomoreE,
+    WHITE_TOTAL = white_totalE,
+    
     BLACK_less25 = sum(black_less10kE+black_10kto14kE+black_15kto19kE+black_20kto24kE),
     BLACK_25_to_34 = sum(black_25kto29kE+black_30kto34kE),
     BLACK_35_to_49 = sum(black_35kto39kE+black_40kto44kE+black_45kto49kE),
@@ -7819,6 +8363,66 @@ censuscounty_income <- censuscounty_income %>%
     BLACK_150_to_199 =  black_150kto199kE,
     BLACK_200_more =  black_200ktomoreE,
     BLACK_TOTAL = black_totalE,
+    
+    AI_AN_less25 = sum(aian_less10kE+aian_10kto14kE+aian_15kto19kE+aian_20kto24kE),
+    AI_AN_25_to_34 = sum(aian_25kto29kE+aian_30kto34kE),
+    AI_AN_35_to_49 = sum(aian_35kto39kE+aian_40kto44kE+aian_45kto49kE),
+    AI_AN_50_to_74 = sum(aian_50kto59kE+aian_60kto74kE),
+    AI_AN_75_to_99 = aian_75kto99kE,
+    AI_AN_100_to_149 =  sum(aian_100kto124kE+aian_125kto149kE),
+    AI_AN_150_to_199 =  aian_150kto199kE,
+    AI_AN_200_more =  aian_200ktomoreE,
+    AI_AN_TOTAL = aian_totalE,
+    
+    ASIAN_less25 = sum(asian_less10kE+asian_10kto14kE+asian_15kto19kE+asian_20kto24kE),
+    ASIAN_25_to_34 = sum(asian_25kto29kE+asian_30kto34kE),
+    ASIAN_35_to_49 = sum(asian_35kto39kE+asian_40kto44kE+asian_45kto49kE),
+    ASIAN_50_to_74 = sum(asian_50kto59kE+asian_60kto74kE),
+    ASIAN_75_to_99 = asian_75kto99kE,
+    ASIAN_100_to_149 =  sum(asian_100kto124kE+asian_125kto149kE),
+    ASIAN_150_to_199 =  asian_150kto199kE,
+    ASIAN_200_more =  asian_200ktomoreE,
+    ASIAN_TOTAL = asian_totalE,
+    
+    NHPI_less25 = sum(nhpi_less10kE+nhpi_10kto14kE+nhpi_15kto19kE+nhpi_20kto24kE),
+    NHPI_25_to_34 = sum(nhpi_25kto29kE+nhpi_30kto34kE),
+    NHPI_35_to_49 = sum(nhpi_35kto39kE+nhpi_40kto44kE+nhpi_45kto49kE),
+    NHPI_50_to_74 = sum(nhpi_50kto59kE+nhpi_60kto74kE),
+    NHPI_75_to_99 = nhpi_75kto99kE,
+    NHPI_100_to_149 =  sum(nhpi_100kto124kE+nhpi_125kto149kE),
+    NHPI_150_to_199 =  nhpi_150kto199kE,
+    NHPI_200_more =  nhpi_200ktomoreE,
+    NHPI_TOTAL = nhpi_totalE,
+    
+    OTHER_less25 = sum(other_less10kE+other_10kto14kE+other_15kto19kE+other_20kto24kE),
+    OTHER_25_to_34 = sum(other_25kto29kE+other_30kto34kE),
+    OTHER_35_to_49 = sum(other_35kto39kE+other_40kto44kE+other_45kto49kE),
+    OTHER_50_to_74 = sum(other_50kto59kE+other_60kto74kE),
+    OTHER_75_to_99 = other_75kto99kE,
+    OTHER_100_to_149 =  sum(other_100kto124kE+other_125kto149kE),
+    OTHER_150_to_199 =  other_150kto199kE,
+    OTHER_200_more =  other_200ktomoreE,
+    OTHER_TOTAL = other_totalE,
+    
+    MIXED_less25 = sum(mixed_less10kE+mixed_10kto14kE+mixed_15kto19kE+mixed_20kto24kE),
+    MIXED_25_to_34 = sum(mixed_25kto29kE+mixed_30kto34kE),
+    MIXED_35_to_49 = sum(mixed_35kto39kE+mixed_40kto44kE+mixed_45kto49kE),
+    MIXED_50_to_74 = sum(mixed_50kto59kE+mixed_60kto74kE),
+    MIXED_75_to_99 = mixed_75kto99kE,
+    MIXED_100_to_149 =  sum(mixed_100kto124kE+mixed_125kto149kE),
+    MIXED_150_to_199 =  mixed_150kto199kE,
+    MIXED_200_more =  mixed_200ktomoreE,
+    MIXED_TOTAL = mixed_totalE,
+    
+    W_NOTHISP_less25 = sum(w_nothisp_less10kE+w_nothisp_10kto14kE+w_nothisp_15kto19kE+w_nothisp_20kto24kE),
+    W_NOTHISP_25_to_34 = sum(w_nothisp_25kto29kE+w_nothisp_30kto34kE),
+    W_NOTHISP_35_to_49 = sum(w_nothisp_35kto39kE+w_nothisp_40kto44kE+w_nothisp_45kto49kE),
+    W_NOTHISP_50_to_74 = sum(w_nothisp_50kto59kE+w_nothisp_60kto74kE),
+    W_NOTHISP_75_to_99 = w_nothisp_75kto99kE,
+    W_NOTHISP_100_to_149 =  sum(w_nothisp_100kto124kE+w_nothisp_125kto149kE),
+    W_NOTHISP_150_to_199 =  w_nothisp_150kto199kE,
+    W_NOTHISP_200_more =  w_nothisp_200ktomoreE,
+    W_NOTHISP_TOTAL = w_nothisp_totalE,
     
     HISP_less25 = sum(hisp_less10kE+hisp_10kto14kE+hisp_15kto19kE+hisp_20kto24kE),
     HISP_25_to_34 = sum(hisp_25kto29kE+hisp_30kto34kE),
@@ -7830,19 +8434,38 @@ censuscounty_income <- censuscounty_income %>%
     HISP_200_more =  hisp_200ktomoreE,
     HISP_TOTAL = hisp_totalE,
     
-    UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
-    UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
-    UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
-    UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
-    UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
-    UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
-    UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
+    ALL_less25 = sum(WHITE_less25+BLACK_less25+AI_AN_less25+ASIAN_less25+
+                       NHPI_less25+OTHER_less25+MIXED_less25+W_NOTHISP_less25+HISP_less25),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+
+                         NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_49 = sum(WHITE_35_to_49+BLACK_35_to_49+AI_AN_35_to_49+ASIAN_35_to_49+
+                         NHPI_35_to_49+OTHER_35_to_49+MIXED_35_to_49+W_NOTHISP_35_to_49+HISP_35_to_49),
+    ALL_50_to_74 = sum(WHITE_50_to_74+BLACK_50_to_74+AI_AN_50_to_74+ASIAN_50_to_74+
+                         NHPI_50_to_74+OTHER_50_to_74+MIXED_50_to_74+W_NOTHISP_50_to_74+HISP_50_to_74),
+    ALL_75_to_99 = sum(WHITE_75_to_99+BLACK_75_to_99+AI_AN_75_to_99+ASIAN_75_to_99+
+                         NHPI_75_to_99+OTHER_75_to_99+MIXED_75_to_99+W_NOTHISP_75_to_99+HISP_75_to_99),
+    ALL_100_to_149 =  sum(WHITE_100_to_149+BLACK_100_to_149+AI_AN_100_to_149+ASIAN_100_to_149+
+                            NHPI_100_to_149+OTHER_100_to_149+MIXED_100_to_149+W_NOTHISP_100_to_149+HISP_100_to_149),
+    ALL_150_to_199 =  sum(WHITE_150_to_199+BLACK_150_to_199+AI_AN_150_to_199+ASIAN_150_to_199+
+                            NHPI_150_to_199+OTHER_150_to_199+MIXED_150_to_199+W_NOTHISP_150_to_199+HISP_150_to_199),
+    ALL_200_more =  sum(WHITE_200_more+BLACK_200_more+AI_AN_200_more+ASIAN_200_more+
+                          NHPI_200_more+OTHER_200_more+MIXED_200_more+W_NOTHISP_200_more+HISP_200_more),
+    ALL_TOTAL = sum(WHITE_TOTAL+BLACK_TOTAL+AI_AN_TOTAL+ASIAN_TOTAL+
+                      NHPI_TOTAL+OTHER_TOTAL+MIXED_TOTAL+W_NOTHISP_TOTAL+HISP_TOTAL),
+    
+    # UNDERREP_less25 = sum(BLACK_less25+HISP_less25),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_49 = sum(BLACK_35_to_49+HISP_35_to_49),
+    # UNDERREP_50_to_74 = sum(BLACK_50_to_74+HISP_50_to_74),
+    # UNDERREP_75_to_99 = sum(BLACK_75_to_99+BLACK_75_to_99),
+    # UNDERREP_100_to_149 =  sum(BLACK_100_to_149+HISP_100_to_149),
+    # UNDERREP_150_to_199 =  sum(BLACK_150_to_199+HISP_150_to_199),
+    # UNDERREP_200_more =  sum(BLACK_200_more+HISP_200_more),
+    # UNDERREP_TOTAL = sum(BLACK_TOTAL+HISP_TOTAL)
     
   )
 
 # export
-write.csv(censuscounty_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_income.csv")
+write.csv(censuscounty_income,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_income2.csv")
 
 
