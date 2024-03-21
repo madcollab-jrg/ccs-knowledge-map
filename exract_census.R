@@ -2492,6 +2492,23 @@ censuscongress_age <- censuscongress_age %>% select(-contains("NAME"))
 censuscongress_age <- censuscongress_age %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    # white
+    WHITE_FEMALE = sum(female_white_age18to19+female_white_age20to24+female_white_age25to29+female_white_age30to34+
+                         female_white_age35to44+female_white_age45to54+female_white_age65to74+female_white_age75to84+
+                         female_white_age85over), 
+    WHITE_MALE = sum(male_white_age18to19+male_white_age20to24+male_white_age25to29+male_white_age30to34+
+                       male_white_age35to44+male_white_age45to54+male_white_age65to74+male_white_age75to84+
+                       male_white_age85over),
+    WHITE_TOTAL = sum(WHITE_FEMALE+WHITE_MALE),
+    WHITE_18_to_24 = sum(male_white_age18to19+male_white_age20to24+female_white_age18to19+female_white_age20to24),
+    WHITE_25_to_34 = sum(male_white_age25to29+male_white_age30to34+female_white_age25to29+female_white_age30to34),
+    WHITE_35_to_44 = sum(male_white_age35to44+female_white_age35to44),
+    WHITE_45_to_54 = sum(male_white_age45to54+female_white_age45to54),
+    WHITE_55_to_64 = sum(male_white_age55to64+female_white_age55to64),
+    WHITE_65_over =  sum(male_white_age65to74+male_white_age75to84+male_white_age85over+ 
+                           female_white_age65to74+female_white_age75to84+female_white_age85over),
+    
+    # black
     BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
                          female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
                          female_black_age85over), 
@@ -2507,6 +2524,103 @@ censuscongress_age <- censuscongress_age %>%
     BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
                            female_black_age65to74+female_black_age75to84+female_black_age85over),
     
+    # ai_an
+    AI_AN_FEMALE = sum(female_aian_age18to19+female_aian_age20to24+female_aian_age25to29+female_aian_age30to34+
+                         female_aian_age35to44+female_aian_age45to54+female_aian_age65to74+female_aian_age75to84+
+                         female_aian_age85over), 
+    AI_AN_MALE = sum(male_aian_age18to19+male_aian_age20to24+male_aian_age25to29+male_aian_age30to34+
+                       male_aian_age35to44+male_aian_age45to54+male_aian_age65to74+male_aian_age75to84+
+                       male_aian_age85over),
+    AI_AN_TOTAL = sum(AI_AN_FEMALE+AI_AN_MALE),
+    AI_AN_18_to_24 = sum(male_aian_age18to19+male_aian_age20to24+female_aian_age18to19+female_aian_age20to24),
+    AI_AN_25_to_34 = sum(male_aian_age25to29+male_aian_age30to34+female_aian_age25to29+female_aian_age30to34),
+    AI_AN_35_to_44 = sum(male_aian_age35to44+female_aian_age35to44),
+    AI_AN_45_to_54 = sum(male_aian_age45to54+female_aian_age45to54),
+    AI_AN_55_to_64 = sum(male_aian_age55to64+female_aian_age55to64),
+    AI_AN_65_over =  sum(male_aian_age65to74+male_aian_age75to84+male_aian_age85over+ 
+                           female_aian_age65to74+female_aian_age75to84+female_aian_age85over),
+    
+    # asian
+    ASIAN_FEMALE = sum(female_asian_age18to19+female_asian_age20to24+female_asian_age25to29+female_asian_age30to34+
+                         female_asian_age35to44+female_asian_age45to54+female_asian_age65to74+female_asian_age75to84+
+                         female_asian_age85over), 
+    ASIAN_MALE = sum(male_asian_age18to19+male_asian_age20to24+male_asian_age25to29+male_asian_age30to34+
+                       male_asian_age35to44+male_asian_age45to54+male_asian_age65to74+male_asian_age75to84+
+                       male_asian_age85over),
+    ASIAN_TOTAL = sum(ASIAN_FEMALE+ASIAN_MALE),
+    ASIAN_18_to_24 = sum(male_asian_age18to19+male_asian_age20to24+female_asian_age18to19+female_asian_age20to24),
+    ASIAN_25_to_34 = sum(male_asian_age25to29+male_asian_age30to34+female_asian_age25to29+female_asian_age30to34),
+    ASIAN_35_to_44 = sum(male_asian_age35to44+female_asian_age35to44),
+    ASIAN_45_to_54 = sum(male_asian_age45to54+female_asian_age45to54),
+    ASIAN_55_to_64 = sum(male_asian_age55to64+female_asian_age55to64),
+    ASIAN_65_over =  sum(male_asian_age65to74+male_asian_age75to84+male_asian_age85over+ 
+                           female_asian_age65to74+female_asian_age75to84+female_asian_age85over),
+    
+    # nhpi
+    NHPI_FEMALE = sum(female_nhpi_age18to19+female_nhpi_age20to24+female_nhpi_age25to29+female_nhpi_age30to34+
+                        female_nhpi_age35to44+female_nhpi_age45to54+female_nhpi_age65to74+female_nhpi_age75to84+
+                        female_nhpi_age85over), 
+    NHPI_MALE = sum(male_nhpi_age18to19+male_nhpi_age20to24+male_nhpi_age25to29+male_nhpi_age30to34+
+                      male_nhpi_age35to44+male_nhpi_age45to54+male_nhpi_age65to74+male_nhpi_age75to84+
+                      male_nhpi_age85over),
+    NHPI_TOTAL = sum(NHPI_FEMALE+NHPI_MALE),
+    NHPI_18_to_24 = sum(male_nhpi_age18to19+male_nhpi_age20to24+female_nhpi_age18to19+female_nhpi_age20to24),
+    NHPI_25_to_34 = sum(male_nhpi_age25to29+male_nhpi_age30to34+female_nhpi_age25to29+female_nhpi_age30to34),
+    NHPI_35_to_44 = sum(male_nhpi_age35to44+female_nhpi_age35to44),
+    NHPI_45_to_54 = sum(male_nhpi_age45to54+female_nhpi_age45to54),
+    NHPI_55_to_64 = sum(male_nhpi_age55to64+female_nhpi_age55to64),
+    NHPI_65_over =  sum(male_nhpi_age65to74+male_nhpi_age75to84+male_nhpi_age85over+ 
+                          female_nhpi_age65to74+female_nhpi_age75to84+female_nhpi_age85over),
+    
+    # other
+    OTHER_FEMALE = sum(female_other_age18to19+female_other_age20to24+female_other_age25to29+female_other_age30to34+
+                        female_other_age35to44+female_other_age45to54+female_other_age65to74+female_other_age75to84+
+                        female_other_age85over), 
+    OTHER_MALE = sum(male_other_age18to19+male_other_age20to24+male_other_age25to29+male_other_age30to34+
+                      male_other_age35to44+male_other_age45to54+male_other_age65to74+male_other_age75to84+
+                      male_other_age85over),
+    OTHER_TOTAL = sum(OTHER_FEMALE+OTHER_MALE),
+    OTHER_18_to_24 = sum(male_other_age18to19+male_other_age20to24+female_other_age18to19+female_other_age20to24),
+    OTHER_25_to_34 = sum(male_other_age25to29+male_other_age30to34+female_other_age25to29+female_other_age30to34),
+    OTHER_35_to_44 = sum(male_other_age35to44+female_other_age35to44),
+    OTHER_45_to_54 = sum(male_other_age45to54+female_other_age45to54),
+    OTHER_55_to_64 = sum(male_other_age55to64+female_other_age55to64),
+    OTHER_65_over =  sum(male_other_age65to74+male_other_age75to84+male_other_age85over+ 
+                          female_other_age65to74+female_other_age75to84+female_other_age85over),
+    
+    # mixed
+    MIXED_FEMALE = sum(female_mixed_age18to19+female_mixed_age20to24+female_mixed_age25to29+female_mixed_age30to34+
+                        female_mixed_age35to44+female_mixed_age45to54+female_mixed_age65to74+female_mixed_age75to84+
+                        female_mixed_age85over), 
+    MIXED_MALE = sum(male_mixed_age18to19+male_mixed_age20to24+male_mixed_age25to29+male_mixed_age30to34+
+                      male_mixed_age35to44+male_mixed_age45to54+male_mixed_age65to74+male_mixed_age75to84+
+                      male_mixed_age85over),
+    MIXED_TOTAL = sum(MIXED_FEMALE+MIXED_MALE),
+    MIXED_18_to_24 = sum(male_mixed_age18to19+male_mixed_age20to24+female_mixed_age18to19+female_mixed_age20to24),
+    MIXED_25_to_34 = sum(male_mixed_age25to29+male_mixed_age30to34+female_mixed_age25to29+female_mixed_age30to34),
+    MIXED_35_to_44 = sum(male_mixed_age35to44+female_mixed_age35to44),
+    MIXED_45_to_54 = sum(male_mixed_age45to54+female_mixed_age45to54),
+    MIXED_55_to_64 = sum(male_mixed_age55to64+female_mixed_age55to64),
+    MIXED_65_over =  sum(male_mixed_age65to74+male_mixed_age75to84+male_mixed_age85over+ 
+                          female_mixed_age65to74+female_mixed_age75to84+female_mixed_age85over),
+    
+    # white not hisp
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_age18to19+female_w_nothisp_age20to24+female_w_nothisp_age25to29+female_w_nothisp_age30to34+
+                        female_w_nothisp_age35to44+female_w_nothisp_age45to54+female_w_nothisp_age65to74+female_w_nothisp_age75to84+
+                        female_w_nothisp_age85over), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+male_w_nothisp_age25to29+male_w_nothisp_age30to34+
+                      male_w_nothisp_age35to44+male_w_nothisp_age45to54+male_w_nothisp_age65to74+male_w_nothisp_age75to84+
+                      male_w_nothisp_age85over),
+    W_NOTHISP_TOTAL = sum(W_NOTHISP_FEMALE+W_NOTHISP_MALE),
+    W_NOTHISP_18_to_24 = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+female_w_nothisp_age18to19+female_w_nothisp_age20to24),
+    W_NOTHISP_25_to_34 = sum(male_w_nothisp_age25to29+male_w_nothisp_age30to34+female_w_nothisp_age25to29+female_w_nothisp_age30to34),
+    W_NOTHISP_35_to_44 = sum(male_w_nothisp_age35to44+female_w_nothisp_age35to44),
+    W_NOTHISP_45_to_54 = sum(male_w_nothisp_age45to54+female_w_nothisp_age45to54),
+    W_NOTHISP_55_to_64 = sum(male_w_nothisp_age55to64+female_w_nothisp_age55to64),
+    W_NOTHISP_65_over =  sum(male_w_nothisp_age65to74+male_w_nothisp_age75to84+male_w_nothisp_age85over+ 
+                          female_w_nothisp_age65to74+female_w_nothisp_age75to84+female_w_nothisp_age85over),
+    
+    # hisp
     HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
                         female_hisp_age85over), 
@@ -2522,19 +2636,31 @@ censuscongress_age <- censuscongress_age %>%
     HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
     
-    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
-    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
-    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
-    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
-    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    # all
+    ALL_FEMALE = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE), 
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_TOTAL = sum(ALL_FEMALE+ALL_MALE),
+    ALL_18_to_24 = sum(WHITE_18_to_24+BLACK_18_to_24+AI_AN_18_to_24+ASIAN_18_to_24+NHPI_18_to_24+OTHER_18_to_24+MIXED_18_to_24+W_NOTHISP_18_to_24+HISP_18_to_24),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_44 = sum(WHITE_35_to_44+BLACK_35_to_44+AI_AN_35_to_44+ASIAN_35_to_44+NHPI_35_to_44+OTHER_35_to_44+MIXED_35_to_44+W_NOTHISP_35_to_44+HISP_35_to_44),
+    ALL_45_to_54 = sum(WHITE_45_to_54+BLACK_45_to_54+AI_AN_45_to_54+ASIAN_45_to_54+NHPI_45_to_54+OTHER_45_to_54+MIXED_45_to_54+W_NOTHISP_45_to_54+HISP_45_to_54),
+    ALL_55_to_64 = sum(WHITE_55_to_64+BLACK_55_to_64+AI_AN_55_to_64+ASIAN_55_to_64+NHPI_55_to_64+OTHER_55_to_64+MIXED_55_to_64+W_NOTHISP_55_to_64+HISP_55_to_64),
+    ALL_65_over =  sum(WHITE_65_over+BLACK_65_over+AI_AN_65_over+ASIAN_65_over+NHPI_65_over+OTHER_65_over+MIXED_65_over+W_NOTHISP_65_over+HISP_65_over),
+    
+    # # under-represented
+    # UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    # UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    # UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    # UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    # UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
   )
 
 # export
-write.csv(censuscongress_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_age.csv")
+write.csv(censuscongress_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress_age2.csv")
 
 
 ############# state legislative district (upper chamber) ############# 
@@ -2843,6 +2969,23 @@ censusstatelegislative_upper_age <- censusstatelegislative_upper_age %>% select(
 censusstatelegislative_upper_age <- censusstatelegislative_upper_age %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    # white
+    WHITE_FEMALE = sum(female_white_age18to19+female_white_age20to24+female_white_age25to29+female_white_age30to34+
+                         female_white_age35to44+female_white_age45to54+female_white_age65to74+female_white_age75to84+
+                         female_white_age85over), 
+    WHITE_MALE = sum(male_white_age18to19+male_white_age20to24+male_white_age25to29+male_white_age30to34+
+                       male_white_age35to44+male_white_age45to54+male_white_age65to74+male_white_age75to84+
+                       male_white_age85over),
+    WHITE_TOTAL = sum(WHITE_FEMALE+WHITE_MALE),
+    WHITE_18_to_24 = sum(male_white_age18to19+male_white_age20to24+female_white_age18to19+female_white_age20to24),
+    WHITE_25_to_34 = sum(male_white_age25to29+male_white_age30to34+female_white_age25to29+female_white_age30to34),
+    WHITE_35_to_44 = sum(male_white_age35to44+female_white_age35to44),
+    WHITE_45_to_54 = sum(male_white_age45to54+female_white_age45to54),
+    WHITE_55_to_64 = sum(male_white_age55to64+female_white_age55to64),
+    WHITE_65_over =  sum(male_white_age65to74+male_white_age75to84+male_white_age85over+ 
+                           female_white_age65to74+female_white_age75to84+female_white_age85over),
+    
+    # black
     BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
                          female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
                          female_black_age85over), 
@@ -2858,6 +3001,103 @@ censusstatelegislative_upper_age <- censusstatelegislative_upper_age %>%
     BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
                            female_black_age65to74+female_black_age75to84+female_black_age85over),
     
+    # ai_an
+    AI_AN_FEMALE = sum(female_aian_age18to19+female_aian_age20to24+female_aian_age25to29+female_aian_age30to34+
+                         female_aian_age35to44+female_aian_age45to54+female_aian_age65to74+female_aian_age75to84+
+                         female_aian_age85over), 
+    AI_AN_MALE = sum(male_aian_age18to19+male_aian_age20to24+male_aian_age25to29+male_aian_age30to34+
+                       male_aian_age35to44+male_aian_age45to54+male_aian_age65to74+male_aian_age75to84+
+                       male_aian_age85over),
+    AI_AN_TOTAL = sum(AI_AN_FEMALE+AI_AN_MALE),
+    AI_AN_18_to_24 = sum(male_aian_age18to19+male_aian_age20to24+female_aian_age18to19+female_aian_age20to24),
+    AI_AN_25_to_34 = sum(male_aian_age25to29+male_aian_age30to34+female_aian_age25to29+female_aian_age30to34),
+    AI_AN_35_to_44 = sum(male_aian_age35to44+female_aian_age35to44),
+    AI_AN_45_to_54 = sum(male_aian_age45to54+female_aian_age45to54),
+    AI_AN_55_to_64 = sum(male_aian_age55to64+female_aian_age55to64),
+    AI_AN_65_over =  sum(male_aian_age65to74+male_aian_age75to84+male_aian_age85over+ 
+                           female_aian_age65to74+female_aian_age75to84+female_aian_age85over),
+    
+    # asian
+    ASIAN_FEMALE = sum(female_asian_age18to19+female_asian_age20to24+female_asian_age25to29+female_asian_age30to34+
+                         female_asian_age35to44+female_asian_age45to54+female_asian_age65to74+female_asian_age75to84+
+                         female_asian_age85over), 
+    ASIAN_MALE = sum(male_asian_age18to19+male_asian_age20to24+male_asian_age25to29+male_asian_age30to34+
+                       male_asian_age35to44+male_asian_age45to54+male_asian_age65to74+male_asian_age75to84+
+                       male_asian_age85over),
+    ASIAN_TOTAL = sum(ASIAN_FEMALE+ASIAN_MALE),
+    ASIAN_18_to_24 = sum(male_asian_age18to19+male_asian_age20to24+female_asian_age18to19+female_asian_age20to24),
+    ASIAN_25_to_34 = sum(male_asian_age25to29+male_asian_age30to34+female_asian_age25to29+female_asian_age30to34),
+    ASIAN_35_to_44 = sum(male_asian_age35to44+female_asian_age35to44),
+    ASIAN_45_to_54 = sum(male_asian_age45to54+female_asian_age45to54),
+    ASIAN_55_to_64 = sum(male_asian_age55to64+female_asian_age55to64),
+    ASIAN_65_over =  sum(male_asian_age65to74+male_asian_age75to84+male_asian_age85over+ 
+                           female_asian_age65to74+female_asian_age75to84+female_asian_age85over),
+    
+    # nhpi
+    NHPI_FEMALE = sum(female_nhpi_age18to19+female_nhpi_age20to24+female_nhpi_age25to29+female_nhpi_age30to34+
+                        female_nhpi_age35to44+female_nhpi_age45to54+female_nhpi_age65to74+female_nhpi_age75to84+
+                        female_nhpi_age85over), 
+    NHPI_MALE = sum(male_nhpi_age18to19+male_nhpi_age20to24+male_nhpi_age25to29+male_nhpi_age30to34+
+                      male_nhpi_age35to44+male_nhpi_age45to54+male_nhpi_age65to74+male_nhpi_age75to84+
+                      male_nhpi_age85over),
+    NHPI_TOTAL = sum(NHPI_FEMALE+NHPI_MALE),
+    NHPI_18_to_24 = sum(male_nhpi_age18to19+male_nhpi_age20to24+female_nhpi_age18to19+female_nhpi_age20to24),
+    NHPI_25_to_34 = sum(male_nhpi_age25to29+male_nhpi_age30to34+female_nhpi_age25to29+female_nhpi_age30to34),
+    NHPI_35_to_44 = sum(male_nhpi_age35to44+female_nhpi_age35to44),
+    NHPI_45_to_54 = sum(male_nhpi_age45to54+female_nhpi_age45to54),
+    NHPI_55_to_64 = sum(male_nhpi_age55to64+female_nhpi_age55to64),
+    NHPI_65_over =  sum(male_nhpi_age65to74+male_nhpi_age75to84+male_nhpi_age85over+ 
+                          female_nhpi_age65to74+female_nhpi_age75to84+female_nhpi_age85over),
+    
+    # other
+    OTHER_FEMALE = sum(female_other_age18to19+female_other_age20to24+female_other_age25to29+female_other_age30to34+
+                         female_other_age35to44+female_other_age45to54+female_other_age65to74+female_other_age75to84+
+                         female_other_age85over), 
+    OTHER_MALE = sum(male_other_age18to19+male_other_age20to24+male_other_age25to29+male_other_age30to34+
+                       male_other_age35to44+male_other_age45to54+male_other_age65to74+male_other_age75to84+
+                       male_other_age85over),
+    OTHER_TOTAL = sum(OTHER_FEMALE+OTHER_MALE),
+    OTHER_18_to_24 = sum(male_other_age18to19+male_other_age20to24+female_other_age18to19+female_other_age20to24),
+    OTHER_25_to_34 = sum(male_other_age25to29+male_other_age30to34+female_other_age25to29+female_other_age30to34),
+    OTHER_35_to_44 = sum(male_other_age35to44+female_other_age35to44),
+    OTHER_45_to_54 = sum(male_other_age45to54+female_other_age45to54),
+    OTHER_55_to_64 = sum(male_other_age55to64+female_other_age55to64),
+    OTHER_65_over =  sum(male_other_age65to74+male_other_age75to84+male_other_age85over+ 
+                           female_other_age65to74+female_other_age75to84+female_other_age85over),
+    
+    # mixed
+    MIXED_FEMALE = sum(female_mixed_age18to19+female_mixed_age20to24+female_mixed_age25to29+female_mixed_age30to34+
+                         female_mixed_age35to44+female_mixed_age45to54+female_mixed_age65to74+female_mixed_age75to84+
+                         female_mixed_age85over), 
+    MIXED_MALE = sum(male_mixed_age18to19+male_mixed_age20to24+male_mixed_age25to29+male_mixed_age30to34+
+                       male_mixed_age35to44+male_mixed_age45to54+male_mixed_age65to74+male_mixed_age75to84+
+                       male_mixed_age85over),
+    MIXED_TOTAL = sum(MIXED_FEMALE+MIXED_MALE),
+    MIXED_18_to_24 = sum(male_mixed_age18to19+male_mixed_age20to24+female_mixed_age18to19+female_mixed_age20to24),
+    MIXED_25_to_34 = sum(male_mixed_age25to29+male_mixed_age30to34+female_mixed_age25to29+female_mixed_age30to34),
+    MIXED_35_to_44 = sum(male_mixed_age35to44+female_mixed_age35to44),
+    MIXED_45_to_54 = sum(male_mixed_age45to54+female_mixed_age45to54),
+    MIXED_55_to_64 = sum(male_mixed_age55to64+female_mixed_age55to64),
+    MIXED_65_over =  sum(male_mixed_age65to74+male_mixed_age75to84+male_mixed_age85over+ 
+                           female_mixed_age65to74+female_mixed_age75to84+female_mixed_age85over),
+    
+    # white not hisp
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_age18to19+female_w_nothisp_age20to24+female_w_nothisp_age25to29+female_w_nothisp_age30to34+
+                             female_w_nothisp_age35to44+female_w_nothisp_age45to54+female_w_nothisp_age65to74+female_w_nothisp_age75to84+
+                             female_w_nothisp_age85over), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+male_w_nothisp_age25to29+male_w_nothisp_age30to34+
+                           male_w_nothisp_age35to44+male_w_nothisp_age45to54+male_w_nothisp_age65to74+male_w_nothisp_age75to84+
+                           male_w_nothisp_age85over),
+    W_NOTHISP_TOTAL = sum(W_NOTHISP_FEMALE+W_NOTHISP_MALE),
+    W_NOTHISP_18_to_24 = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+female_w_nothisp_age18to19+female_w_nothisp_age20to24),
+    W_NOTHISP_25_to_34 = sum(male_w_nothisp_age25to29+male_w_nothisp_age30to34+female_w_nothisp_age25to29+female_w_nothisp_age30to34),
+    W_NOTHISP_35_to_44 = sum(male_w_nothisp_age35to44+female_w_nothisp_age35to44),
+    W_NOTHISP_45_to_54 = sum(male_w_nothisp_age45to54+female_w_nothisp_age45to54),
+    W_NOTHISP_55_to_64 = sum(male_w_nothisp_age55to64+female_w_nothisp_age55to64),
+    W_NOTHISP_65_over =  sum(male_w_nothisp_age65to74+male_w_nothisp_age75to84+male_w_nothisp_age85over+ 
+                               female_w_nothisp_age65to74+female_w_nothisp_age75to84+female_w_nothisp_age85over),
+    
+    # hisp
     HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
                         female_hisp_age85over), 
@@ -2873,19 +3113,31 @@ censusstatelegislative_upper_age <- censusstatelegislative_upper_age %>%
     HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
     
-    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
-    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
-    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
-    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
-    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    # all
+    ALL_FEMALE = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE), 
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_TOTAL = sum(ALL_FEMALE+ALL_MALE),
+    ALL_18_to_24 = sum(WHITE_18_to_24+BLACK_18_to_24+AI_AN_18_to_24+ASIAN_18_to_24+NHPI_18_to_24+OTHER_18_to_24+MIXED_18_to_24+W_NOTHISP_18_to_24+HISP_18_to_24),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_44 = sum(WHITE_35_to_44+BLACK_35_to_44+AI_AN_35_to_44+ASIAN_35_to_44+NHPI_35_to_44+OTHER_35_to_44+MIXED_35_to_44+W_NOTHISP_35_to_44+HISP_35_to_44),
+    ALL_45_to_54 = sum(WHITE_45_to_54+BLACK_45_to_54+AI_AN_45_to_54+ASIAN_45_to_54+NHPI_45_to_54+OTHER_45_to_54+MIXED_45_to_54+W_NOTHISP_45_to_54+HISP_45_to_54),
+    ALL_55_to_64 = sum(WHITE_55_to_64+BLACK_55_to_64+AI_AN_55_to_64+ASIAN_55_to_64+NHPI_55_to_64+OTHER_55_to_64+MIXED_55_to_64+W_NOTHISP_55_to_64+HISP_55_to_64),
+    ALL_65_over =  sum(WHITE_65_over+BLACK_65_over+AI_AN_65_over+ASIAN_65_over+NHPI_65_over+OTHER_65_over+MIXED_65_over+W_NOTHISP_65_over+HISP_65_over),
+    
+    # # under-represented
+    # UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    # UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    # UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    # UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    # UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
   )
 
 # export
-write.csv(censusstatelegislative_upper_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper_age.csv")
+write.csv(censusstatelegislative_upper_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper_age2.csv")
 
 ############# state legislative district (lower chamber) ############# 
 
@@ -3193,6 +3445,23 @@ censusstatelegislative_lower_age <- censusstatelegislative_lower_age %>% select(
 censusstatelegislative_lower_age <- censusstatelegislative_lower_age %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    # white
+    WHITE_FEMALE = sum(female_white_age18to19+female_white_age20to24+female_white_age25to29+female_white_age30to34+
+                         female_white_age35to44+female_white_age45to54+female_white_age65to74+female_white_age75to84+
+                         female_white_age85over), 
+    WHITE_MALE = sum(male_white_age18to19+male_white_age20to24+male_white_age25to29+male_white_age30to34+
+                       male_white_age35to44+male_white_age45to54+male_white_age65to74+male_white_age75to84+
+                       male_white_age85over),
+    WHITE_TOTAL = sum(WHITE_FEMALE+WHITE_MALE),
+    WHITE_18_to_24 = sum(male_white_age18to19+male_white_age20to24+female_white_age18to19+female_white_age20to24),
+    WHITE_25_to_34 = sum(male_white_age25to29+male_white_age30to34+female_white_age25to29+female_white_age30to34),
+    WHITE_35_to_44 = sum(male_white_age35to44+female_white_age35to44),
+    WHITE_45_to_54 = sum(male_white_age45to54+female_white_age45to54),
+    WHITE_55_to_64 = sum(male_white_age55to64+female_white_age55to64),
+    WHITE_65_over =  sum(male_white_age65to74+male_white_age75to84+male_white_age85over+ 
+                           female_white_age65to74+female_white_age75to84+female_white_age85over),
+    
+    # black
     BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
                          female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
                          female_black_age85over), 
@@ -3208,6 +3477,103 @@ censusstatelegislative_lower_age <- censusstatelegislative_lower_age %>%
     BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
                            female_black_age65to74+female_black_age75to84+female_black_age85over),
     
+    # ai_an
+    AI_AN_FEMALE = sum(female_aian_age18to19+female_aian_age20to24+female_aian_age25to29+female_aian_age30to34+
+                         female_aian_age35to44+female_aian_age45to54+female_aian_age65to74+female_aian_age75to84+
+                         female_aian_age85over), 
+    AI_AN_MALE = sum(male_aian_age18to19+male_aian_age20to24+male_aian_age25to29+male_aian_age30to34+
+                       male_aian_age35to44+male_aian_age45to54+male_aian_age65to74+male_aian_age75to84+
+                       male_aian_age85over),
+    AI_AN_TOTAL = sum(AI_AN_FEMALE+AI_AN_MALE),
+    AI_AN_18_to_24 = sum(male_aian_age18to19+male_aian_age20to24+female_aian_age18to19+female_aian_age20to24),
+    AI_AN_25_to_34 = sum(male_aian_age25to29+male_aian_age30to34+female_aian_age25to29+female_aian_age30to34),
+    AI_AN_35_to_44 = sum(male_aian_age35to44+female_aian_age35to44),
+    AI_AN_45_to_54 = sum(male_aian_age45to54+female_aian_age45to54),
+    AI_AN_55_to_64 = sum(male_aian_age55to64+female_aian_age55to64),
+    AI_AN_65_over =  sum(male_aian_age65to74+male_aian_age75to84+male_aian_age85over+ 
+                           female_aian_age65to74+female_aian_age75to84+female_aian_age85over),
+    
+    # asian
+    ASIAN_FEMALE = sum(female_asian_age18to19+female_asian_age20to24+female_asian_age25to29+female_asian_age30to34+
+                         female_asian_age35to44+female_asian_age45to54+female_asian_age65to74+female_asian_age75to84+
+                         female_asian_age85over), 
+    ASIAN_MALE = sum(male_asian_age18to19+male_asian_age20to24+male_asian_age25to29+male_asian_age30to34+
+                       male_asian_age35to44+male_asian_age45to54+male_asian_age65to74+male_asian_age75to84+
+                       male_asian_age85over),
+    ASIAN_TOTAL = sum(ASIAN_FEMALE+ASIAN_MALE),
+    ASIAN_18_to_24 = sum(male_asian_age18to19+male_asian_age20to24+female_asian_age18to19+female_asian_age20to24),
+    ASIAN_25_to_34 = sum(male_asian_age25to29+male_asian_age30to34+female_asian_age25to29+female_asian_age30to34),
+    ASIAN_35_to_44 = sum(male_asian_age35to44+female_asian_age35to44),
+    ASIAN_45_to_54 = sum(male_asian_age45to54+female_asian_age45to54),
+    ASIAN_55_to_64 = sum(male_asian_age55to64+female_asian_age55to64),
+    ASIAN_65_over =  sum(male_asian_age65to74+male_asian_age75to84+male_asian_age85over+ 
+                           female_asian_age65to74+female_asian_age75to84+female_asian_age85over),
+    
+    # nhpi
+    NHPI_FEMALE = sum(female_nhpi_age18to19+female_nhpi_age20to24+female_nhpi_age25to29+female_nhpi_age30to34+
+                        female_nhpi_age35to44+female_nhpi_age45to54+female_nhpi_age65to74+female_nhpi_age75to84+
+                        female_nhpi_age85over), 
+    NHPI_MALE = sum(male_nhpi_age18to19+male_nhpi_age20to24+male_nhpi_age25to29+male_nhpi_age30to34+
+                      male_nhpi_age35to44+male_nhpi_age45to54+male_nhpi_age65to74+male_nhpi_age75to84+
+                      male_nhpi_age85over),
+    NHPI_TOTAL = sum(NHPI_FEMALE+NHPI_MALE),
+    NHPI_18_to_24 = sum(male_nhpi_age18to19+male_nhpi_age20to24+female_nhpi_age18to19+female_nhpi_age20to24),
+    NHPI_25_to_34 = sum(male_nhpi_age25to29+male_nhpi_age30to34+female_nhpi_age25to29+female_nhpi_age30to34),
+    NHPI_35_to_44 = sum(male_nhpi_age35to44+female_nhpi_age35to44),
+    NHPI_45_to_54 = sum(male_nhpi_age45to54+female_nhpi_age45to54),
+    NHPI_55_to_64 = sum(male_nhpi_age55to64+female_nhpi_age55to64),
+    NHPI_65_over =  sum(male_nhpi_age65to74+male_nhpi_age75to84+male_nhpi_age85over+ 
+                          female_nhpi_age65to74+female_nhpi_age75to84+female_nhpi_age85over),
+    
+    # other
+    OTHER_FEMALE = sum(female_other_age18to19+female_other_age20to24+female_other_age25to29+female_other_age30to34+
+                         female_other_age35to44+female_other_age45to54+female_other_age65to74+female_other_age75to84+
+                         female_other_age85over), 
+    OTHER_MALE = sum(male_other_age18to19+male_other_age20to24+male_other_age25to29+male_other_age30to34+
+                       male_other_age35to44+male_other_age45to54+male_other_age65to74+male_other_age75to84+
+                       male_other_age85over),
+    OTHER_TOTAL = sum(OTHER_FEMALE+OTHER_MALE),
+    OTHER_18_to_24 = sum(male_other_age18to19+male_other_age20to24+female_other_age18to19+female_other_age20to24),
+    OTHER_25_to_34 = sum(male_other_age25to29+male_other_age30to34+female_other_age25to29+female_other_age30to34),
+    OTHER_35_to_44 = sum(male_other_age35to44+female_other_age35to44),
+    OTHER_45_to_54 = sum(male_other_age45to54+female_other_age45to54),
+    OTHER_55_to_64 = sum(male_other_age55to64+female_other_age55to64),
+    OTHER_65_over =  sum(male_other_age65to74+male_other_age75to84+male_other_age85over+ 
+                           female_other_age65to74+female_other_age75to84+female_other_age85over),
+    
+    # mixed
+    MIXED_FEMALE = sum(female_mixed_age18to19+female_mixed_age20to24+female_mixed_age25to29+female_mixed_age30to34+
+                         female_mixed_age35to44+female_mixed_age45to54+female_mixed_age65to74+female_mixed_age75to84+
+                         female_mixed_age85over), 
+    MIXED_MALE = sum(male_mixed_age18to19+male_mixed_age20to24+male_mixed_age25to29+male_mixed_age30to34+
+                       male_mixed_age35to44+male_mixed_age45to54+male_mixed_age65to74+male_mixed_age75to84+
+                       male_mixed_age85over),
+    MIXED_TOTAL = sum(MIXED_FEMALE+MIXED_MALE),
+    MIXED_18_to_24 = sum(male_mixed_age18to19+male_mixed_age20to24+female_mixed_age18to19+female_mixed_age20to24),
+    MIXED_25_to_34 = sum(male_mixed_age25to29+male_mixed_age30to34+female_mixed_age25to29+female_mixed_age30to34),
+    MIXED_35_to_44 = sum(male_mixed_age35to44+female_mixed_age35to44),
+    MIXED_45_to_54 = sum(male_mixed_age45to54+female_mixed_age45to54),
+    MIXED_55_to_64 = sum(male_mixed_age55to64+female_mixed_age55to64),
+    MIXED_65_over =  sum(male_mixed_age65to74+male_mixed_age75to84+male_mixed_age85over+ 
+                           female_mixed_age65to74+female_mixed_age75to84+female_mixed_age85over),
+    
+    # white not hisp
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_age18to19+female_w_nothisp_age20to24+female_w_nothisp_age25to29+female_w_nothisp_age30to34+
+                             female_w_nothisp_age35to44+female_w_nothisp_age45to54+female_w_nothisp_age65to74+female_w_nothisp_age75to84+
+                             female_w_nothisp_age85over), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+male_w_nothisp_age25to29+male_w_nothisp_age30to34+
+                           male_w_nothisp_age35to44+male_w_nothisp_age45to54+male_w_nothisp_age65to74+male_w_nothisp_age75to84+
+                           male_w_nothisp_age85over),
+    W_NOTHISP_TOTAL = sum(W_NOTHISP_FEMALE+W_NOTHISP_MALE),
+    W_NOTHISP_18_to_24 = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+female_w_nothisp_age18to19+female_w_nothisp_age20to24),
+    W_NOTHISP_25_to_34 = sum(male_w_nothisp_age25to29+male_w_nothisp_age30to34+female_w_nothisp_age25to29+female_w_nothisp_age30to34),
+    W_NOTHISP_35_to_44 = sum(male_w_nothisp_age35to44+female_w_nothisp_age35to44),
+    W_NOTHISP_45_to_54 = sum(male_w_nothisp_age45to54+female_w_nothisp_age45to54),
+    W_NOTHISP_55_to_64 = sum(male_w_nothisp_age55to64+female_w_nothisp_age55to64),
+    W_NOTHISP_65_over =  sum(male_w_nothisp_age65to74+male_w_nothisp_age75to84+male_w_nothisp_age85over+ 
+                               female_w_nothisp_age65to74+female_w_nothisp_age75to84+female_w_nothisp_age85over),
+    
+    # hisp
     HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
                         female_hisp_age85over), 
@@ -3223,19 +3589,31 @@ censusstatelegislative_lower_age <- censusstatelegislative_lower_age %>%
     HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
     
-    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
-    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
-    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
-    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
-    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    # all
+    ALL_FEMALE = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE), 
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_TOTAL = sum(ALL_FEMALE+ALL_MALE),
+    ALL_18_to_24 = sum(WHITE_18_to_24+BLACK_18_to_24+AI_AN_18_to_24+ASIAN_18_to_24+NHPI_18_to_24+OTHER_18_to_24+MIXED_18_to_24+W_NOTHISP_18_to_24+HISP_18_to_24),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_44 = sum(WHITE_35_to_44+BLACK_35_to_44+AI_AN_35_to_44+ASIAN_35_to_44+NHPI_35_to_44+OTHER_35_to_44+MIXED_35_to_44+W_NOTHISP_35_to_44+HISP_35_to_44),
+    ALL_45_to_54 = sum(WHITE_45_to_54+BLACK_45_to_54+AI_AN_45_to_54+ASIAN_45_to_54+NHPI_45_to_54+OTHER_45_to_54+MIXED_45_to_54+W_NOTHISP_45_to_54+HISP_45_to_54),
+    ALL_55_to_64 = sum(WHITE_55_to_64+BLACK_55_to_64+AI_AN_55_to_64+ASIAN_55_to_64+NHPI_55_to_64+OTHER_55_to_64+MIXED_55_to_64+W_NOTHISP_55_to_64+HISP_55_to_64),
+    ALL_65_over =  sum(WHITE_65_over+BLACK_65_over+AI_AN_65_over+ASIAN_65_over+NHPI_65_over+OTHER_65_over+MIXED_65_over+W_NOTHISP_65_over+HISP_65_over),
+    
+    # # under-represented
+    # UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    # UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    # UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    # UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    # UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
   )
 
 # export
-write.csv(censusstatelegislative_lower_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower_age.csv")
+write.csv(censusstatelegislative_lower_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower_age2.csv")
 
 
 ############## ZIP ##############
@@ -3543,6 +3921,23 @@ censuszip_age <- censuszip_age %>% select(-contains("NAME"))
 censuszip_age <- censuszip_age %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    # white
+    WHITE_FEMALE = sum(female_white_age18to19+female_white_age20to24+female_white_age25to29+female_white_age30to34+
+                         female_white_age35to44+female_white_age45to54+female_white_age65to74+female_white_age75to84+
+                         female_white_age85over), 
+    WHITE_MALE = sum(male_white_age18to19+male_white_age20to24+male_white_age25to29+male_white_age30to34+
+                       male_white_age35to44+male_white_age45to54+male_white_age65to74+male_white_age75to84+
+                       male_white_age85over),
+    WHITE_TOTAL = sum(WHITE_FEMALE+WHITE_MALE),
+    WHITE_18_to_24 = sum(male_white_age18to19+male_white_age20to24+female_white_age18to19+female_white_age20to24),
+    WHITE_25_to_34 = sum(male_white_age25to29+male_white_age30to34+female_white_age25to29+female_white_age30to34),
+    WHITE_35_to_44 = sum(male_white_age35to44+female_white_age35to44),
+    WHITE_45_to_54 = sum(male_white_age45to54+female_white_age45to54),
+    WHITE_55_to_64 = sum(male_white_age55to64+female_white_age55to64),
+    WHITE_65_over =  sum(male_white_age65to74+male_white_age75to84+male_white_age85over+ 
+                           female_white_age65to74+female_white_age75to84+female_white_age85over),
+    
+    # black
     BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
                          female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
                          female_black_age85over), 
@@ -3558,6 +3953,103 @@ censuszip_age <- censuszip_age %>%
     BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
                            female_black_age65to74+female_black_age75to84+female_black_age85over),
     
+    # ai_an
+    AI_AN_FEMALE = sum(female_aian_age18to19+female_aian_age20to24+female_aian_age25to29+female_aian_age30to34+
+                         female_aian_age35to44+female_aian_age45to54+female_aian_age65to74+female_aian_age75to84+
+                         female_aian_age85over), 
+    AI_AN_MALE = sum(male_aian_age18to19+male_aian_age20to24+male_aian_age25to29+male_aian_age30to34+
+                       male_aian_age35to44+male_aian_age45to54+male_aian_age65to74+male_aian_age75to84+
+                       male_aian_age85over),
+    AI_AN_TOTAL = sum(AI_AN_FEMALE+AI_AN_MALE),
+    AI_AN_18_to_24 = sum(male_aian_age18to19+male_aian_age20to24+female_aian_age18to19+female_aian_age20to24),
+    AI_AN_25_to_34 = sum(male_aian_age25to29+male_aian_age30to34+female_aian_age25to29+female_aian_age30to34),
+    AI_AN_35_to_44 = sum(male_aian_age35to44+female_aian_age35to44),
+    AI_AN_45_to_54 = sum(male_aian_age45to54+female_aian_age45to54),
+    AI_AN_55_to_64 = sum(male_aian_age55to64+female_aian_age55to64),
+    AI_AN_65_over =  sum(male_aian_age65to74+male_aian_age75to84+male_aian_age85over+ 
+                           female_aian_age65to74+female_aian_age75to84+female_aian_age85over),
+    
+    # asian
+    ASIAN_FEMALE = sum(female_asian_age18to19+female_asian_age20to24+female_asian_age25to29+female_asian_age30to34+
+                         female_asian_age35to44+female_asian_age45to54+female_asian_age65to74+female_asian_age75to84+
+                         female_asian_age85over), 
+    ASIAN_MALE = sum(male_asian_age18to19+male_asian_age20to24+male_asian_age25to29+male_asian_age30to34+
+                       male_asian_age35to44+male_asian_age45to54+male_asian_age65to74+male_asian_age75to84+
+                       male_asian_age85over),
+    ASIAN_TOTAL = sum(ASIAN_FEMALE+ASIAN_MALE),
+    ASIAN_18_to_24 = sum(male_asian_age18to19+male_asian_age20to24+female_asian_age18to19+female_asian_age20to24),
+    ASIAN_25_to_34 = sum(male_asian_age25to29+male_asian_age30to34+female_asian_age25to29+female_asian_age30to34),
+    ASIAN_35_to_44 = sum(male_asian_age35to44+female_asian_age35to44),
+    ASIAN_45_to_54 = sum(male_asian_age45to54+female_asian_age45to54),
+    ASIAN_55_to_64 = sum(male_asian_age55to64+female_asian_age55to64),
+    ASIAN_65_over =  sum(male_asian_age65to74+male_asian_age75to84+male_asian_age85over+ 
+                           female_asian_age65to74+female_asian_age75to84+female_asian_age85over),
+    
+    # nhpi
+    NHPI_FEMALE = sum(female_nhpi_age18to19+female_nhpi_age20to24+female_nhpi_age25to29+female_nhpi_age30to34+
+                        female_nhpi_age35to44+female_nhpi_age45to54+female_nhpi_age65to74+female_nhpi_age75to84+
+                        female_nhpi_age85over), 
+    NHPI_MALE = sum(male_nhpi_age18to19+male_nhpi_age20to24+male_nhpi_age25to29+male_nhpi_age30to34+
+                      male_nhpi_age35to44+male_nhpi_age45to54+male_nhpi_age65to74+male_nhpi_age75to84+
+                      male_nhpi_age85over),
+    NHPI_TOTAL = sum(NHPI_FEMALE+NHPI_MALE),
+    NHPI_18_to_24 = sum(male_nhpi_age18to19+male_nhpi_age20to24+female_nhpi_age18to19+female_nhpi_age20to24),
+    NHPI_25_to_34 = sum(male_nhpi_age25to29+male_nhpi_age30to34+female_nhpi_age25to29+female_nhpi_age30to34),
+    NHPI_35_to_44 = sum(male_nhpi_age35to44+female_nhpi_age35to44),
+    NHPI_45_to_54 = sum(male_nhpi_age45to54+female_nhpi_age45to54),
+    NHPI_55_to_64 = sum(male_nhpi_age55to64+female_nhpi_age55to64),
+    NHPI_65_over =  sum(male_nhpi_age65to74+male_nhpi_age75to84+male_nhpi_age85over+ 
+                          female_nhpi_age65to74+female_nhpi_age75to84+female_nhpi_age85over),
+    
+    # other
+    OTHER_FEMALE = sum(female_other_age18to19+female_other_age20to24+female_other_age25to29+female_other_age30to34+
+                         female_other_age35to44+female_other_age45to54+female_other_age65to74+female_other_age75to84+
+                         female_other_age85over), 
+    OTHER_MALE = sum(male_other_age18to19+male_other_age20to24+male_other_age25to29+male_other_age30to34+
+                       male_other_age35to44+male_other_age45to54+male_other_age65to74+male_other_age75to84+
+                       male_other_age85over),
+    OTHER_TOTAL = sum(OTHER_FEMALE+OTHER_MALE),
+    OTHER_18_to_24 = sum(male_other_age18to19+male_other_age20to24+female_other_age18to19+female_other_age20to24),
+    OTHER_25_to_34 = sum(male_other_age25to29+male_other_age30to34+female_other_age25to29+female_other_age30to34),
+    OTHER_35_to_44 = sum(male_other_age35to44+female_other_age35to44),
+    OTHER_45_to_54 = sum(male_other_age45to54+female_other_age45to54),
+    OTHER_55_to_64 = sum(male_other_age55to64+female_other_age55to64),
+    OTHER_65_over =  sum(male_other_age65to74+male_other_age75to84+male_other_age85over+ 
+                           female_other_age65to74+female_other_age75to84+female_other_age85over),
+    
+    # mixed
+    MIXED_FEMALE = sum(female_mixed_age18to19+female_mixed_age20to24+female_mixed_age25to29+female_mixed_age30to34+
+                         female_mixed_age35to44+female_mixed_age45to54+female_mixed_age65to74+female_mixed_age75to84+
+                         female_mixed_age85over), 
+    MIXED_MALE = sum(male_mixed_age18to19+male_mixed_age20to24+male_mixed_age25to29+male_mixed_age30to34+
+                       male_mixed_age35to44+male_mixed_age45to54+male_mixed_age65to74+male_mixed_age75to84+
+                       male_mixed_age85over),
+    MIXED_TOTAL = sum(MIXED_FEMALE+MIXED_MALE),
+    MIXED_18_to_24 = sum(male_mixed_age18to19+male_mixed_age20to24+female_mixed_age18to19+female_mixed_age20to24),
+    MIXED_25_to_34 = sum(male_mixed_age25to29+male_mixed_age30to34+female_mixed_age25to29+female_mixed_age30to34),
+    MIXED_35_to_44 = sum(male_mixed_age35to44+female_mixed_age35to44),
+    MIXED_45_to_54 = sum(male_mixed_age45to54+female_mixed_age45to54),
+    MIXED_55_to_64 = sum(male_mixed_age55to64+female_mixed_age55to64),
+    MIXED_65_over =  sum(male_mixed_age65to74+male_mixed_age75to84+male_mixed_age85over+ 
+                           female_mixed_age65to74+female_mixed_age75to84+female_mixed_age85over),
+    
+    # white not hisp
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_age18to19+female_w_nothisp_age20to24+female_w_nothisp_age25to29+female_w_nothisp_age30to34+
+                             female_w_nothisp_age35to44+female_w_nothisp_age45to54+female_w_nothisp_age65to74+female_w_nothisp_age75to84+
+                             female_w_nothisp_age85over), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+male_w_nothisp_age25to29+male_w_nothisp_age30to34+
+                           male_w_nothisp_age35to44+male_w_nothisp_age45to54+male_w_nothisp_age65to74+male_w_nothisp_age75to84+
+                           male_w_nothisp_age85over),
+    W_NOTHISP_TOTAL = sum(W_NOTHISP_FEMALE+W_NOTHISP_MALE),
+    W_NOTHISP_18_to_24 = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+female_w_nothisp_age18to19+female_w_nothisp_age20to24),
+    W_NOTHISP_25_to_34 = sum(male_w_nothisp_age25to29+male_w_nothisp_age30to34+female_w_nothisp_age25to29+female_w_nothisp_age30to34),
+    W_NOTHISP_35_to_44 = sum(male_w_nothisp_age35to44+female_w_nothisp_age35to44),
+    W_NOTHISP_45_to_54 = sum(male_w_nothisp_age45to54+female_w_nothisp_age45to54),
+    W_NOTHISP_55_to_64 = sum(male_w_nothisp_age55to64+female_w_nothisp_age55to64),
+    W_NOTHISP_65_over =  sum(male_w_nothisp_age65to74+male_w_nothisp_age75to84+male_w_nothisp_age85over+ 
+                               female_w_nothisp_age65to74+female_w_nothisp_age75to84+female_w_nothisp_age85over),
+    
+    # hisp
     HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
                         female_hisp_age85over), 
@@ -3573,21 +4065,32 @@ censuszip_age <- censuszip_age %>%
     HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
     
-    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
-    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
-    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
-    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
-    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    # all
+    ALL_FEMALE = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE), 
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_TOTAL = sum(ALL_FEMALE+ALL_MALE),
+    ALL_18_to_24 = sum(WHITE_18_to_24+BLACK_18_to_24+AI_AN_18_to_24+ASIAN_18_to_24+NHPI_18_to_24+OTHER_18_to_24+MIXED_18_to_24+W_NOTHISP_18_to_24+HISP_18_to_24),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_44 = sum(WHITE_35_to_44+BLACK_35_to_44+AI_AN_35_to_44+ASIAN_35_to_44+NHPI_35_to_44+OTHER_35_to_44+MIXED_35_to_44+W_NOTHISP_35_to_44+HISP_35_to_44),
+    ALL_45_to_54 = sum(WHITE_45_to_54+BLACK_45_to_54+AI_AN_45_to_54+ASIAN_45_to_54+NHPI_45_to_54+OTHER_45_to_54+MIXED_45_to_54+W_NOTHISP_45_to_54+HISP_45_to_54),
+    ALL_55_to_64 = sum(WHITE_55_to_64+BLACK_55_to_64+AI_AN_55_to_64+ASIAN_55_to_64+NHPI_55_to_64+OTHER_55_to_64+MIXED_55_to_64+W_NOTHISP_55_to_64+HISP_55_to_64),
+    ALL_65_over =  sum(WHITE_65_over+BLACK_65_over+AI_AN_65_over+ASIAN_65_over+NHPI_65_over+OTHER_65_over+MIXED_65_over+W_NOTHISP_65_over+HISP_65_over),
     
+    # # under-represented
+    # UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    # UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    # UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    # UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    # UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
   )
 
 
 # export
-write.csv(censuszip_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip_age.csv")
+write.csv(censuszip_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip_age2.csv")
 
 
 
@@ -3897,6 +4400,23 @@ censustract_age <- censustract_age %>% select(-contains("NAME"))
 censustract_age <- censustract_age %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    # white
+    WHITE_FEMALE = sum(female_white_age18to19+female_white_age20to24+female_white_age25to29+female_white_age30to34+
+                         female_white_age35to44+female_white_age45to54+female_white_age65to74+female_white_age75to84+
+                         female_white_age85over), 
+    WHITE_MALE = sum(male_white_age18to19+male_white_age20to24+male_white_age25to29+male_white_age30to34+
+                       male_white_age35to44+male_white_age45to54+male_white_age65to74+male_white_age75to84+
+                       male_white_age85over),
+    WHITE_TOTAL = sum(WHITE_FEMALE+WHITE_MALE),
+    WHITE_18_to_24 = sum(male_white_age18to19+male_white_age20to24+female_white_age18to19+female_white_age20to24),
+    WHITE_25_to_34 = sum(male_white_age25to29+male_white_age30to34+female_white_age25to29+female_white_age30to34),
+    WHITE_35_to_44 = sum(male_white_age35to44+female_white_age35to44),
+    WHITE_45_to_54 = sum(male_white_age45to54+female_white_age45to54),
+    WHITE_55_to_64 = sum(male_white_age55to64+female_white_age55to64),
+    WHITE_65_over =  sum(male_white_age65to74+male_white_age75to84+male_white_age85over+ 
+                           female_white_age65to74+female_white_age75to84+female_white_age85over),
+    
+    # black
     BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
                          female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
                          female_black_age85over), 
@@ -3910,14 +4430,111 @@ censustract_age <- censustract_age %>%
     BLACK_45_to_54 = sum(male_black_age45to54+female_black_age45to54),
     BLACK_55_to_64 = sum(male_black_age55to64+female_black_age55to64),
     BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
-                         female_black_age65to74+female_black_age75to84+female_black_age85over),
+                           female_black_age65to74+female_black_age75to84+female_black_age85over),
     
+    # ai_an
+    AI_AN_FEMALE = sum(female_aian_age18to19+female_aian_age20to24+female_aian_age25to29+female_aian_age30to34+
+                         female_aian_age35to44+female_aian_age45to54+female_aian_age65to74+female_aian_age75to84+
+                         female_aian_age85over), 
+    AI_AN_MALE = sum(male_aian_age18to19+male_aian_age20to24+male_aian_age25to29+male_aian_age30to34+
+                       male_aian_age35to44+male_aian_age45to54+male_aian_age65to74+male_aian_age75to84+
+                       male_aian_age85over),
+    AI_AN_TOTAL = sum(AI_AN_FEMALE+AI_AN_MALE),
+    AI_AN_18_to_24 = sum(male_aian_age18to19+male_aian_age20to24+female_aian_age18to19+female_aian_age20to24),
+    AI_AN_25_to_34 = sum(male_aian_age25to29+male_aian_age30to34+female_aian_age25to29+female_aian_age30to34),
+    AI_AN_35_to_44 = sum(male_aian_age35to44+female_aian_age35to44),
+    AI_AN_45_to_54 = sum(male_aian_age45to54+female_aian_age45to54),
+    AI_AN_55_to_64 = sum(male_aian_age55to64+female_aian_age55to64),
+    AI_AN_65_over =  sum(male_aian_age65to74+male_aian_age75to84+male_aian_age85over+ 
+                           female_aian_age65to74+female_aian_age75to84+female_aian_age85over),
+    
+    # asian
+    ASIAN_FEMALE = sum(female_asian_age18to19+female_asian_age20to24+female_asian_age25to29+female_asian_age30to34+
+                         female_asian_age35to44+female_asian_age45to54+female_asian_age65to74+female_asian_age75to84+
+                         female_asian_age85over), 
+    ASIAN_MALE = sum(male_asian_age18to19+male_asian_age20to24+male_asian_age25to29+male_asian_age30to34+
+                       male_asian_age35to44+male_asian_age45to54+male_asian_age65to74+male_asian_age75to84+
+                       male_asian_age85over),
+    ASIAN_TOTAL = sum(ASIAN_FEMALE+ASIAN_MALE),
+    ASIAN_18_to_24 = sum(male_asian_age18to19+male_asian_age20to24+female_asian_age18to19+female_asian_age20to24),
+    ASIAN_25_to_34 = sum(male_asian_age25to29+male_asian_age30to34+female_asian_age25to29+female_asian_age30to34),
+    ASIAN_35_to_44 = sum(male_asian_age35to44+female_asian_age35to44),
+    ASIAN_45_to_54 = sum(male_asian_age45to54+female_asian_age45to54),
+    ASIAN_55_to_64 = sum(male_asian_age55to64+female_asian_age55to64),
+    ASIAN_65_over =  sum(male_asian_age65to74+male_asian_age75to84+male_asian_age85over+ 
+                           female_asian_age65to74+female_asian_age75to84+female_asian_age85over),
+    
+    # nhpi
+    NHPI_FEMALE = sum(female_nhpi_age18to19+female_nhpi_age20to24+female_nhpi_age25to29+female_nhpi_age30to34+
+                        female_nhpi_age35to44+female_nhpi_age45to54+female_nhpi_age65to74+female_nhpi_age75to84+
+                        female_nhpi_age85over), 
+    NHPI_MALE = sum(male_nhpi_age18to19+male_nhpi_age20to24+male_nhpi_age25to29+male_nhpi_age30to34+
+                      male_nhpi_age35to44+male_nhpi_age45to54+male_nhpi_age65to74+male_nhpi_age75to84+
+                      male_nhpi_age85over),
+    NHPI_TOTAL = sum(NHPI_FEMALE+NHPI_MALE),
+    NHPI_18_to_24 = sum(male_nhpi_age18to19+male_nhpi_age20to24+female_nhpi_age18to19+female_nhpi_age20to24),
+    NHPI_25_to_34 = sum(male_nhpi_age25to29+male_nhpi_age30to34+female_nhpi_age25to29+female_nhpi_age30to34),
+    NHPI_35_to_44 = sum(male_nhpi_age35to44+female_nhpi_age35to44),
+    NHPI_45_to_54 = sum(male_nhpi_age45to54+female_nhpi_age45to54),
+    NHPI_55_to_64 = sum(male_nhpi_age55to64+female_nhpi_age55to64),
+    NHPI_65_over =  sum(male_nhpi_age65to74+male_nhpi_age75to84+male_nhpi_age85over+ 
+                          female_nhpi_age65to74+female_nhpi_age75to84+female_nhpi_age85over),
+    
+    # other
+    OTHER_FEMALE = sum(female_other_age18to19+female_other_age20to24+female_other_age25to29+female_other_age30to34+
+                         female_other_age35to44+female_other_age45to54+female_other_age65to74+female_other_age75to84+
+                         female_other_age85over), 
+    OTHER_MALE = sum(male_other_age18to19+male_other_age20to24+male_other_age25to29+male_other_age30to34+
+                       male_other_age35to44+male_other_age45to54+male_other_age65to74+male_other_age75to84+
+                       male_other_age85over),
+    OTHER_TOTAL = sum(OTHER_FEMALE+OTHER_MALE),
+    OTHER_18_to_24 = sum(male_other_age18to19+male_other_age20to24+female_other_age18to19+female_other_age20to24),
+    OTHER_25_to_34 = sum(male_other_age25to29+male_other_age30to34+female_other_age25to29+female_other_age30to34),
+    OTHER_35_to_44 = sum(male_other_age35to44+female_other_age35to44),
+    OTHER_45_to_54 = sum(male_other_age45to54+female_other_age45to54),
+    OTHER_55_to_64 = sum(male_other_age55to64+female_other_age55to64),
+    OTHER_65_over =  sum(male_other_age65to74+male_other_age75to84+male_other_age85over+ 
+                           female_other_age65to74+female_other_age75to84+female_other_age85over),
+    
+    # mixed
+    MIXED_FEMALE = sum(female_mixed_age18to19+female_mixed_age20to24+female_mixed_age25to29+female_mixed_age30to34+
+                         female_mixed_age35to44+female_mixed_age45to54+female_mixed_age65to74+female_mixed_age75to84+
+                         female_mixed_age85over), 
+    MIXED_MALE = sum(male_mixed_age18to19+male_mixed_age20to24+male_mixed_age25to29+male_mixed_age30to34+
+                       male_mixed_age35to44+male_mixed_age45to54+male_mixed_age65to74+male_mixed_age75to84+
+                       male_mixed_age85over),
+    MIXED_TOTAL = sum(MIXED_FEMALE+MIXED_MALE),
+    MIXED_18_to_24 = sum(male_mixed_age18to19+male_mixed_age20to24+female_mixed_age18to19+female_mixed_age20to24),
+    MIXED_25_to_34 = sum(male_mixed_age25to29+male_mixed_age30to34+female_mixed_age25to29+female_mixed_age30to34),
+    MIXED_35_to_44 = sum(male_mixed_age35to44+female_mixed_age35to44),
+    MIXED_45_to_54 = sum(male_mixed_age45to54+female_mixed_age45to54),
+    MIXED_55_to_64 = sum(male_mixed_age55to64+female_mixed_age55to64),
+    MIXED_65_over =  sum(male_mixed_age65to74+male_mixed_age75to84+male_mixed_age85over+ 
+                           female_mixed_age65to74+female_mixed_age75to84+female_mixed_age85over),
+    
+    # white not hisp
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_age18to19+female_w_nothisp_age20to24+female_w_nothisp_age25to29+female_w_nothisp_age30to34+
+                             female_w_nothisp_age35to44+female_w_nothisp_age45to54+female_w_nothisp_age65to74+female_w_nothisp_age75to84+
+                             female_w_nothisp_age85over), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+male_w_nothisp_age25to29+male_w_nothisp_age30to34+
+                           male_w_nothisp_age35to44+male_w_nothisp_age45to54+male_w_nothisp_age65to74+male_w_nothisp_age75to84+
+                           male_w_nothisp_age85over),
+    W_NOTHISP_TOTAL = sum(W_NOTHISP_FEMALE+W_NOTHISP_MALE),
+    W_NOTHISP_18_to_24 = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+female_w_nothisp_age18to19+female_w_nothisp_age20to24),
+    W_NOTHISP_25_to_34 = sum(male_w_nothisp_age25to29+male_w_nothisp_age30to34+female_w_nothisp_age25to29+female_w_nothisp_age30to34),
+    W_NOTHISP_35_to_44 = sum(male_w_nothisp_age35to44+female_w_nothisp_age35to44),
+    W_NOTHISP_45_to_54 = sum(male_w_nothisp_age45to54+female_w_nothisp_age45to54),
+    W_NOTHISP_55_to_64 = sum(male_w_nothisp_age55to64+female_w_nothisp_age55to64),
+    W_NOTHISP_65_over =  sum(male_w_nothisp_age65to74+male_w_nothisp_age75to84+male_w_nothisp_age85over+ 
+                               female_w_nothisp_age65to74+female_w_nothisp_age75to84+female_w_nothisp_age85over),
+    
+    # hisp
     HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
-                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
-                         female_hisp_age85over), 
+                        female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
+                        female_hisp_age85over), 
     HISP_MALE = sum(male_hisp_age18to19+male_hisp_age20to24+male_hisp_age25to29+male_hisp_age30to34+
-                       male_hisp_age35to44+male_hisp_age45to54+male_hisp_age65to74+male_hisp_age75to84+
-                       male_hisp_age85over),
+                      male_hisp_age35to44+male_hisp_age45to54+male_hisp_age65to74+male_hisp_age75to84+
+                      male_hisp_age85over),
     HISP_TOTAL = sum(HISP_FEMALE+HISP_MALE),
     HISP_18_to_24 = sum(male_hisp_age18to19+male_hisp_age20to24+female_hisp_age18to19+female_hisp_age20to24),
     HISP_25_to_34 = sum(male_hisp_age25to29+male_hisp_age30to34+female_hisp_age25to29+female_hisp_age30to34),
@@ -3925,23 +4542,34 @@ censustract_age <- censustract_age %>%
     HISP_45_to_54 = sum(male_hisp_age45to54+female_hisp_age45to54),
     HISP_55_to_64 = sum(male_hisp_age55to64+female_hisp_age55to64),
     HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
-                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
+                          female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
     
-    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
-    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
-    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
-    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
-    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    # all
+    ALL_FEMALE = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE), 
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_TOTAL = sum(ALL_FEMALE+ALL_MALE),
+    ALL_18_to_24 = sum(WHITE_18_to_24+BLACK_18_to_24+AI_AN_18_to_24+ASIAN_18_to_24+NHPI_18_to_24+OTHER_18_to_24+MIXED_18_to_24+W_NOTHISP_18_to_24+HISP_18_to_24),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_44 = sum(WHITE_35_to_44+BLACK_35_to_44+AI_AN_35_to_44+ASIAN_35_to_44+NHPI_35_to_44+OTHER_35_to_44+MIXED_35_to_44+W_NOTHISP_35_to_44+HISP_35_to_44),
+    ALL_45_to_54 = sum(WHITE_45_to_54+BLACK_45_to_54+AI_AN_45_to_54+ASIAN_45_to_54+NHPI_45_to_54+OTHER_45_to_54+MIXED_45_to_54+W_NOTHISP_45_to_54+HISP_45_to_54),
+    ALL_55_to_64 = sum(WHITE_55_to_64+BLACK_55_to_64+AI_AN_55_to_64+ASIAN_55_to_64+NHPI_55_to_64+OTHER_55_to_64+MIXED_55_to_64+W_NOTHISP_55_to_64+HISP_55_to_64),
+    ALL_65_over =  sum(WHITE_65_over+BLACK_65_over+AI_AN_65_over+ASIAN_65_over+NHPI_65_over+OTHER_65_over+MIXED_65_over+W_NOTHISP_65_over+HISP_65_over),
     
+    # # under-represented
+    # UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    # UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    # UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    # UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    # UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
   )
 
 
 # export
-write.csv(censustract_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_age.csv")
+write.csv(censustract_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract_age2.csv")
 
 
 ############ COUNTY ###########
@@ -4247,6 +4875,23 @@ censuscounty_age <- censuscounty_age %>% select(-contains("NAME"))
 censuscounty_age <- censuscounty_age %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    # white
+    WHITE_FEMALE = sum(female_white_age18to19+female_white_age20to24+female_white_age25to29+female_white_age30to34+
+                         female_white_age35to44+female_white_age45to54+female_white_age65to74+female_white_age75to84+
+                         female_white_age85over), 
+    WHITE_MALE = sum(male_white_age18to19+male_white_age20to24+male_white_age25to29+male_white_age30to34+
+                       male_white_age35to44+male_white_age45to54+male_white_age65to74+male_white_age75to84+
+                       male_white_age85over),
+    WHITE_TOTAL = sum(WHITE_FEMALE+WHITE_MALE),
+    WHITE_18_to_24 = sum(male_white_age18to19+male_white_age20to24+female_white_age18to19+female_white_age20to24),
+    WHITE_25_to_34 = sum(male_white_age25to29+male_white_age30to34+female_white_age25to29+female_white_age30to34),
+    WHITE_35_to_44 = sum(male_white_age35to44+female_white_age35to44),
+    WHITE_45_to_54 = sum(male_white_age45to54+female_white_age45to54),
+    WHITE_55_to_64 = sum(male_white_age55to64+female_white_age55to64),
+    WHITE_65_over =  sum(male_white_age65to74+male_white_age75to84+male_white_age85over+ 
+                           female_white_age65to74+female_white_age75to84+female_white_age85over),
+    
+    # black
     BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
                          female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
                          female_black_age85over), 
@@ -4262,6 +4907,103 @@ censuscounty_age <- censuscounty_age %>%
     BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
                            female_black_age65to74+female_black_age75to84+female_black_age85over),
     
+    # ai_an
+    AI_AN_FEMALE = sum(female_aian_age18to19+female_aian_age20to24+female_aian_age25to29+female_aian_age30to34+
+                         female_aian_age35to44+female_aian_age45to54+female_aian_age65to74+female_aian_age75to84+
+                         female_aian_age85over), 
+    AI_AN_MALE = sum(male_aian_age18to19+male_aian_age20to24+male_aian_age25to29+male_aian_age30to34+
+                       male_aian_age35to44+male_aian_age45to54+male_aian_age65to74+male_aian_age75to84+
+                       male_aian_age85over),
+    AI_AN_TOTAL = sum(AI_AN_FEMALE+AI_AN_MALE),
+    AI_AN_18_to_24 = sum(male_aian_age18to19+male_aian_age20to24+female_aian_age18to19+female_aian_age20to24),
+    AI_AN_25_to_34 = sum(male_aian_age25to29+male_aian_age30to34+female_aian_age25to29+female_aian_age30to34),
+    AI_AN_35_to_44 = sum(male_aian_age35to44+female_aian_age35to44),
+    AI_AN_45_to_54 = sum(male_aian_age45to54+female_aian_age45to54),
+    AI_AN_55_to_64 = sum(male_aian_age55to64+female_aian_age55to64),
+    AI_AN_65_over =  sum(male_aian_age65to74+male_aian_age75to84+male_aian_age85over+ 
+                           female_aian_age65to74+female_aian_age75to84+female_aian_age85over),
+    
+    # asian
+    ASIAN_FEMALE = sum(female_asian_age18to19+female_asian_age20to24+female_asian_age25to29+female_asian_age30to34+
+                         female_asian_age35to44+female_asian_age45to54+female_asian_age65to74+female_asian_age75to84+
+                         female_asian_age85over), 
+    ASIAN_MALE = sum(male_asian_age18to19+male_asian_age20to24+male_asian_age25to29+male_asian_age30to34+
+                       male_asian_age35to44+male_asian_age45to54+male_asian_age65to74+male_asian_age75to84+
+                       male_asian_age85over),
+    ASIAN_TOTAL = sum(ASIAN_FEMALE+ASIAN_MALE),
+    ASIAN_18_to_24 = sum(male_asian_age18to19+male_asian_age20to24+female_asian_age18to19+female_asian_age20to24),
+    ASIAN_25_to_34 = sum(male_asian_age25to29+male_asian_age30to34+female_asian_age25to29+female_asian_age30to34),
+    ASIAN_35_to_44 = sum(male_asian_age35to44+female_asian_age35to44),
+    ASIAN_45_to_54 = sum(male_asian_age45to54+female_asian_age45to54),
+    ASIAN_55_to_64 = sum(male_asian_age55to64+female_asian_age55to64),
+    ASIAN_65_over =  sum(male_asian_age65to74+male_asian_age75to84+male_asian_age85over+ 
+                           female_asian_age65to74+female_asian_age75to84+female_asian_age85over),
+    
+    # nhpi
+    NHPI_FEMALE = sum(female_nhpi_age18to19+female_nhpi_age20to24+female_nhpi_age25to29+female_nhpi_age30to34+
+                        female_nhpi_age35to44+female_nhpi_age45to54+female_nhpi_age65to74+female_nhpi_age75to84+
+                        female_nhpi_age85over), 
+    NHPI_MALE = sum(male_nhpi_age18to19+male_nhpi_age20to24+male_nhpi_age25to29+male_nhpi_age30to34+
+                      male_nhpi_age35to44+male_nhpi_age45to54+male_nhpi_age65to74+male_nhpi_age75to84+
+                      male_nhpi_age85over),
+    NHPI_TOTAL = sum(NHPI_FEMALE+NHPI_MALE),
+    NHPI_18_to_24 = sum(male_nhpi_age18to19+male_nhpi_age20to24+female_nhpi_age18to19+female_nhpi_age20to24),
+    NHPI_25_to_34 = sum(male_nhpi_age25to29+male_nhpi_age30to34+female_nhpi_age25to29+female_nhpi_age30to34),
+    NHPI_35_to_44 = sum(male_nhpi_age35to44+female_nhpi_age35to44),
+    NHPI_45_to_54 = sum(male_nhpi_age45to54+female_nhpi_age45to54),
+    NHPI_55_to_64 = sum(male_nhpi_age55to64+female_nhpi_age55to64),
+    NHPI_65_over =  sum(male_nhpi_age65to74+male_nhpi_age75to84+male_nhpi_age85over+ 
+                          female_nhpi_age65to74+female_nhpi_age75to84+female_nhpi_age85over),
+    
+    # other
+    OTHER_FEMALE = sum(female_other_age18to19+female_other_age20to24+female_other_age25to29+female_other_age30to34+
+                         female_other_age35to44+female_other_age45to54+female_other_age65to74+female_other_age75to84+
+                         female_other_age85over), 
+    OTHER_MALE = sum(male_other_age18to19+male_other_age20to24+male_other_age25to29+male_other_age30to34+
+                       male_other_age35to44+male_other_age45to54+male_other_age65to74+male_other_age75to84+
+                       male_other_age85over),
+    OTHER_TOTAL = sum(OTHER_FEMALE+OTHER_MALE),
+    OTHER_18_to_24 = sum(male_other_age18to19+male_other_age20to24+female_other_age18to19+female_other_age20to24),
+    OTHER_25_to_34 = sum(male_other_age25to29+male_other_age30to34+female_other_age25to29+female_other_age30to34),
+    OTHER_35_to_44 = sum(male_other_age35to44+female_other_age35to44),
+    OTHER_45_to_54 = sum(male_other_age45to54+female_other_age45to54),
+    OTHER_55_to_64 = sum(male_other_age55to64+female_other_age55to64),
+    OTHER_65_over =  sum(male_other_age65to74+male_other_age75to84+male_other_age85over+ 
+                           female_other_age65to74+female_other_age75to84+female_other_age85over),
+    
+    # mixed
+    MIXED_FEMALE = sum(female_mixed_age18to19+female_mixed_age20to24+female_mixed_age25to29+female_mixed_age30to34+
+                         female_mixed_age35to44+female_mixed_age45to54+female_mixed_age65to74+female_mixed_age75to84+
+                         female_mixed_age85over), 
+    MIXED_MALE = sum(male_mixed_age18to19+male_mixed_age20to24+male_mixed_age25to29+male_mixed_age30to34+
+                       male_mixed_age35to44+male_mixed_age45to54+male_mixed_age65to74+male_mixed_age75to84+
+                       male_mixed_age85over),
+    MIXED_TOTAL = sum(MIXED_FEMALE+MIXED_MALE),
+    MIXED_18_to_24 = sum(male_mixed_age18to19+male_mixed_age20to24+female_mixed_age18to19+female_mixed_age20to24),
+    MIXED_25_to_34 = sum(male_mixed_age25to29+male_mixed_age30to34+female_mixed_age25to29+female_mixed_age30to34),
+    MIXED_35_to_44 = sum(male_mixed_age35to44+female_mixed_age35to44),
+    MIXED_45_to_54 = sum(male_mixed_age45to54+female_mixed_age45to54),
+    MIXED_55_to_64 = sum(male_mixed_age55to64+female_mixed_age55to64),
+    MIXED_65_over =  sum(male_mixed_age65to74+male_mixed_age75to84+male_mixed_age85over+ 
+                           female_mixed_age65to74+female_mixed_age75to84+female_mixed_age85over),
+    
+    # white not hisp
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_age18to19+female_w_nothisp_age20to24+female_w_nothisp_age25to29+female_w_nothisp_age30to34+
+                             female_w_nothisp_age35to44+female_w_nothisp_age45to54+female_w_nothisp_age65to74+female_w_nothisp_age75to84+
+                             female_w_nothisp_age85over), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+male_w_nothisp_age25to29+male_w_nothisp_age30to34+
+                           male_w_nothisp_age35to44+male_w_nothisp_age45to54+male_w_nothisp_age65to74+male_w_nothisp_age75to84+
+                           male_w_nothisp_age85over),
+    W_NOTHISP_TOTAL = sum(W_NOTHISP_FEMALE+W_NOTHISP_MALE),
+    W_NOTHISP_18_to_24 = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+female_w_nothisp_age18to19+female_w_nothisp_age20to24),
+    W_NOTHISP_25_to_34 = sum(male_w_nothisp_age25to29+male_w_nothisp_age30to34+female_w_nothisp_age25to29+female_w_nothisp_age30to34),
+    W_NOTHISP_35_to_44 = sum(male_w_nothisp_age35to44+female_w_nothisp_age35to44),
+    W_NOTHISP_45_to_54 = sum(male_w_nothisp_age45to54+female_w_nothisp_age45to54),
+    W_NOTHISP_55_to_64 = sum(male_w_nothisp_age55to64+female_w_nothisp_age55to64),
+    W_NOTHISP_65_over =  sum(male_w_nothisp_age65to74+male_w_nothisp_age75to84+male_w_nothisp_age85over+ 
+                               female_w_nothisp_age65to74+female_w_nothisp_age75to84+female_w_nothisp_age85over),
+    
+    # hisp
     HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
                         female_hisp_age85over), 
@@ -4277,20 +5019,31 @@ censuscounty_age <- censuscounty_age %>%
     HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
     
-    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
-    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
-    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
-    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
-    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    # all
+    ALL_FEMALE = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE), 
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_TOTAL = sum(ALL_FEMALE+ALL_MALE),
+    ALL_18_to_24 = sum(WHITE_18_to_24+BLACK_18_to_24+AI_AN_18_to_24+ASIAN_18_to_24+NHPI_18_to_24+OTHER_18_to_24+MIXED_18_to_24+W_NOTHISP_18_to_24+HISP_18_to_24),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_44 = sum(WHITE_35_to_44+BLACK_35_to_44+AI_AN_35_to_44+ASIAN_35_to_44+NHPI_35_to_44+OTHER_35_to_44+MIXED_35_to_44+W_NOTHISP_35_to_44+HISP_35_to_44),
+    ALL_45_to_54 = sum(WHITE_45_to_54+BLACK_45_to_54+AI_AN_45_to_54+ASIAN_45_to_54+NHPI_45_to_54+OTHER_45_to_54+MIXED_45_to_54+W_NOTHISP_45_to_54+HISP_45_to_54),
+    ALL_55_to_64 = sum(WHITE_55_to_64+BLACK_55_to_64+AI_AN_55_to_64+ASIAN_55_to_64+NHPI_55_to_64+OTHER_55_to_64+MIXED_55_to_64+W_NOTHISP_55_to_64+HISP_55_to_64),
+    ALL_65_over =  sum(WHITE_65_over+BLACK_65_over+AI_AN_65_over+ASIAN_65_over+NHPI_65_over+OTHER_65_over+MIXED_65_over+W_NOTHISP_65_over+HISP_65_over),
     
+    # # under-represented
+    # UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    # UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    # UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    # UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    # UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
   )
 
 # export
-write.csv(censuscounty_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_age.csv")
+write.csv(censuscounty_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty_age2.csv")
 
 
 ############ STATE ############
@@ -4597,6 +5350,23 @@ censusstate_age <- censusstate_age %>% select(-contains("NAME"))
 censusstate_age <- censusstate_age %>%
   group_by(GEOID,full_geoid) %>%
   mutate(
+    # white
+    WHITE_FEMALE = sum(female_white_age18to19+female_white_age20to24+female_white_age25to29+female_white_age30to34+
+                         female_white_age35to44+female_white_age45to54+female_white_age65to74+female_white_age75to84+
+                         female_white_age85over), 
+    WHITE_MALE = sum(male_white_age18to19+male_white_age20to24+male_white_age25to29+male_white_age30to34+
+                       male_white_age35to44+male_white_age45to54+male_white_age65to74+male_white_age75to84+
+                       male_white_age85over),
+    WHITE_TOTAL = sum(WHITE_FEMALE+WHITE_MALE),
+    WHITE_18_to_24 = sum(male_white_age18to19+male_white_age20to24+female_white_age18to19+female_white_age20to24),
+    WHITE_25_to_34 = sum(male_white_age25to29+male_white_age30to34+female_white_age25to29+female_white_age30to34),
+    WHITE_35_to_44 = sum(male_white_age35to44+female_white_age35to44),
+    WHITE_45_to_54 = sum(male_white_age45to54+female_white_age45to54),
+    WHITE_55_to_64 = sum(male_white_age55to64+female_white_age55to64),
+    WHITE_65_over =  sum(male_white_age65to74+male_white_age75to84+male_white_age85over+ 
+                           female_white_age65to74+female_white_age75to84+female_white_age85over),
+    
+    # black
     BLACK_FEMALE = sum(female_black_age18to19+female_black_age20to24+female_black_age25to29+female_black_age30to34+
                          female_black_age35to44+female_black_age45to54+female_black_age65to74+female_black_age75to84+
                          female_black_age85over), 
@@ -4612,6 +5382,103 @@ censusstate_age <- censusstate_age %>%
     BLACK_65_over =  sum(male_black_age65to74+male_black_age75to84+male_black_age85over+ 
                            female_black_age65to74+female_black_age75to84+female_black_age85over),
     
+    # ai_an
+    AI_AN_FEMALE = sum(female_aian_age18to19+female_aian_age20to24+female_aian_age25to29+female_aian_age30to34+
+                         female_aian_age35to44+female_aian_age45to54+female_aian_age65to74+female_aian_age75to84+
+                         female_aian_age85over), 
+    AI_AN_MALE = sum(male_aian_age18to19+male_aian_age20to24+male_aian_age25to29+male_aian_age30to34+
+                       male_aian_age35to44+male_aian_age45to54+male_aian_age65to74+male_aian_age75to84+
+                       male_aian_age85over),
+    AI_AN_TOTAL = sum(AI_AN_FEMALE+AI_AN_MALE),
+    AI_AN_18_to_24 = sum(male_aian_age18to19+male_aian_age20to24+female_aian_age18to19+female_aian_age20to24),
+    AI_AN_25_to_34 = sum(male_aian_age25to29+male_aian_age30to34+female_aian_age25to29+female_aian_age30to34),
+    AI_AN_35_to_44 = sum(male_aian_age35to44+female_aian_age35to44),
+    AI_AN_45_to_54 = sum(male_aian_age45to54+female_aian_age45to54),
+    AI_AN_55_to_64 = sum(male_aian_age55to64+female_aian_age55to64),
+    AI_AN_65_over =  sum(male_aian_age65to74+male_aian_age75to84+male_aian_age85over+ 
+                           female_aian_age65to74+female_aian_age75to84+female_aian_age85over),
+    
+    # asian
+    ASIAN_FEMALE = sum(female_asian_age18to19+female_asian_age20to24+female_asian_age25to29+female_asian_age30to34+
+                         female_asian_age35to44+female_asian_age45to54+female_asian_age65to74+female_asian_age75to84+
+                         female_asian_age85over), 
+    ASIAN_MALE = sum(male_asian_age18to19+male_asian_age20to24+male_asian_age25to29+male_asian_age30to34+
+                       male_asian_age35to44+male_asian_age45to54+male_asian_age65to74+male_asian_age75to84+
+                       male_asian_age85over),
+    ASIAN_TOTAL = sum(ASIAN_FEMALE+ASIAN_MALE),
+    ASIAN_18_to_24 = sum(male_asian_age18to19+male_asian_age20to24+female_asian_age18to19+female_asian_age20to24),
+    ASIAN_25_to_34 = sum(male_asian_age25to29+male_asian_age30to34+female_asian_age25to29+female_asian_age30to34),
+    ASIAN_35_to_44 = sum(male_asian_age35to44+female_asian_age35to44),
+    ASIAN_45_to_54 = sum(male_asian_age45to54+female_asian_age45to54),
+    ASIAN_55_to_64 = sum(male_asian_age55to64+female_asian_age55to64),
+    ASIAN_65_over =  sum(male_asian_age65to74+male_asian_age75to84+male_asian_age85over+ 
+                           female_asian_age65to74+female_asian_age75to84+female_asian_age85over),
+    
+    # nhpi
+    NHPI_FEMALE = sum(female_nhpi_age18to19+female_nhpi_age20to24+female_nhpi_age25to29+female_nhpi_age30to34+
+                        female_nhpi_age35to44+female_nhpi_age45to54+female_nhpi_age65to74+female_nhpi_age75to84+
+                        female_nhpi_age85over), 
+    NHPI_MALE = sum(male_nhpi_age18to19+male_nhpi_age20to24+male_nhpi_age25to29+male_nhpi_age30to34+
+                      male_nhpi_age35to44+male_nhpi_age45to54+male_nhpi_age65to74+male_nhpi_age75to84+
+                      male_nhpi_age85over),
+    NHPI_TOTAL = sum(NHPI_FEMALE+NHPI_MALE),
+    NHPI_18_to_24 = sum(male_nhpi_age18to19+male_nhpi_age20to24+female_nhpi_age18to19+female_nhpi_age20to24),
+    NHPI_25_to_34 = sum(male_nhpi_age25to29+male_nhpi_age30to34+female_nhpi_age25to29+female_nhpi_age30to34),
+    NHPI_35_to_44 = sum(male_nhpi_age35to44+female_nhpi_age35to44),
+    NHPI_45_to_54 = sum(male_nhpi_age45to54+female_nhpi_age45to54),
+    NHPI_55_to_64 = sum(male_nhpi_age55to64+female_nhpi_age55to64),
+    NHPI_65_over =  sum(male_nhpi_age65to74+male_nhpi_age75to84+male_nhpi_age85over+ 
+                          female_nhpi_age65to74+female_nhpi_age75to84+female_nhpi_age85over),
+    
+    # other
+    OTHER_FEMALE = sum(female_other_age18to19+female_other_age20to24+female_other_age25to29+female_other_age30to34+
+                         female_other_age35to44+female_other_age45to54+female_other_age65to74+female_other_age75to84+
+                         female_other_age85over), 
+    OTHER_MALE = sum(male_other_age18to19+male_other_age20to24+male_other_age25to29+male_other_age30to34+
+                       male_other_age35to44+male_other_age45to54+male_other_age65to74+male_other_age75to84+
+                       male_other_age85over),
+    OTHER_TOTAL = sum(OTHER_FEMALE+OTHER_MALE),
+    OTHER_18_to_24 = sum(male_other_age18to19+male_other_age20to24+female_other_age18to19+female_other_age20to24),
+    OTHER_25_to_34 = sum(male_other_age25to29+male_other_age30to34+female_other_age25to29+female_other_age30to34),
+    OTHER_35_to_44 = sum(male_other_age35to44+female_other_age35to44),
+    OTHER_45_to_54 = sum(male_other_age45to54+female_other_age45to54),
+    OTHER_55_to_64 = sum(male_other_age55to64+female_other_age55to64),
+    OTHER_65_over =  sum(male_other_age65to74+male_other_age75to84+male_other_age85over+ 
+                           female_other_age65to74+female_other_age75to84+female_other_age85over),
+    
+    # mixed
+    MIXED_FEMALE = sum(female_mixed_age18to19+female_mixed_age20to24+female_mixed_age25to29+female_mixed_age30to34+
+                         female_mixed_age35to44+female_mixed_age45to54+female_mixed_age65to74+female_mixed_age75to84+
+                         female_mixed_age85over), 
+    MIXED_MALE = sum(male_mixed_age18to19+male_mixed_age20to24+male_mixed_age25to29+male_mixed_age30to34+
+                       male_mixed_age35to44+male_mixed_age45to54+male_mixed_age65to74+male_mixed_age75to84+
+                       male_mixed_age85over),
+    MIXED_TOTAL = sum(MIXED_FEMALE+MIXED_MALE),
+    MIXED_18_to_24 = sum(male_mixed_age18to19+male_mixed_age20to24+female_mixed_age18to19+female_mixed_age20to24),
+    MIXED_25_to_34 = sum(male_mixed_age25to29+male_mixed_age30to34+female_mixed_age25to29+female_mixed_age30to34),
+    MIXED_35_to_44 = sum(male_mixed_age35to44+female_mixed_age35to44),
+    MIXED_45_to_54 = sum(male_mixed_age45to54+female_mixed_age45to54),
+    MIXED_55_to_64 = sum(male_mixed_age55to64+female_mixed_age55to64),
+    MIXED_65_over =  sum(male_mixed_age65to74+male_mixed_age75to84+male_mixed_age85over+ 
+                           female_mixed_age65to74+female_mixed_age75to84+female_mixed_age85over),
+    
+    # white not hisp
+    W_NOTHISP_FEMALE = sum(female_w_nothisp_age18to19+female_w_nothisp_age20to24+female_w_nothisp_age25to29+female_w_nothisp_age30to34+
+                             female_w_nothisp_age35to44+female_w_nothisp_age45to54+female_w_nothisp_age65to74+female_w_nothisp_age75to84+
+                             female_w_nothisp_age85over), 
+    W_NOTHISP_MALE = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+male_w_nothisp_age25to29+male_w_nothisp_age30to34+
+                           male_w_nothisp_age35to44+male_w_nothisp_age45to54+male_w_nothisp_age65to74+male_w_nothisp_age75to84+
+                           male_w_nothisp_age85over),
+    W_NOTHISP_TOTAL = sum(W_NOTHISP_FEMALE+W_NOTHISP_MALE),
+    W_NOTHISP_18_to_24 = sum(male_w_nothisp_age18to19+male_w_nothisp_age20to24+female_w_nothisp_age18to19+female_w_nothisp_age20to24),
+    W_NOTHISP_25_to_34 = sum(male_w_nothisp_age25to29+male_w_nothisp_age30to34+female_w_nothisp_age25to29+female_w_nothisp_age30to34),
+    W_NOTHISP_35_to_44 = sum(male_w_nothisp_age35to44+female_w_nothisp_age35to44),
+    W_NOTHISP_45_to_54 = sum(male_w_nothisp_age45to54+female_w_nothisp_age45to54),
+    W_NOTHISP_55_to_64 = sum(male_w_nothisp_age55to64+female_w_nothisp_age55to64),
+    W_NOTHISP_65_over =  sum(male_w_nothisp_age65to74+male_w_nothisp_age75to84+male_w_nothisp_age85over+ 
+                               female_w_nothisp_age65to74+female_w_nothisp_age75to84+female_w_nothisp_age85over),
+    
+    # hisp
     HISP_FEMALE = sum(female_hisp_age18to19+female_hisp_age20to24+female_hisp_age25to29+female_hisp_age30to34+
                         female_hisp_age35to44+female_hisp_age45to54+female_hisp_age65to74+female_hisp_age75to84+
                         female_hisp_age85over), 
@@ -4627,19 +5494,30 @@ censusstate_age <- censusstate_age %>%
     HISP_65_over =  sum(male_hisp_age65to74+male_hisp_age75to84+male_hisp_age85over+ 
                           female_hisp_age65to74+female_hisp_age75to84+female_hisp_age85over),
     
-    UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
-    UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
-    UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
-    UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
-    UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
-    UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
-    UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
-    UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
-    UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
+    # all
+    ALL_FEMALE = sum(WHITE_FEMALE+BLACK_FEMALE+AI_AN_FEMALE+ASIAN_FEMALE+NHPI_FEMALE+OTHER_FEMALE+MIXED_FEMALE+W_NOTHISP_FEMALE+HISP_FEMALE), 
+    ALL_MALE = sum(WHITE_MALE+BLACK_MALE+AI_AN_MALE+ASIAN_MALE+NHPI_MALE+OTHER_MALE+MIXED_MALE+W_NOTHISP_MALE+HISP_MALE),
+    ALL_TOTAL = sum(ALL_FEMALE+ALL_MALE),
+    ALL_18_to_24 = sum(WHITE_18_to_24+BLACK_18_to_24+AI_AN_18_to_24+ASIAN_18_to_24+NHPI_18_to_24+OTHER_18_to_24+MIXED_18_to_24+W_NOTHISP_18_to_24+HISP_18_to_24),
+    ALL_25_to_34 = sum(WHITE_25_to_34+BLACK_25_to_34+AI_AN_25_to_34+ASIAN_25_to_34+NHPI_25_to_34+OTHER_25_to_34+MIXED_25_to_34+W_NOTHISP_25_to_34+HISP_25_to_34),
+    ALL_35_to_44 = sum(WHITE_35_to_44+BLACK_35_to_44+AI_AN_35_to_44+ASIAN_35_to_44+NHPI_35_to_44+OTHER_35_to_44+MIXED_35_to_44+W_NOTHISP_35_to_44+HISP_35_to_44),
+    ALL_45_to_54 = sum(WHITE_45_to_54+BLACK_45_to_54+AI_AN_45_to_54+ASIAN_45_to_54+NHPI_45_to_54+OTHER_45_to_54+MIXED_45_to_54+W_NOTHISP_45_to_54+HISP_45_to_54),
+    ALL_55_to_64 = sum(WHITE_55_to_64+BLACK_55_to_64+AI_AN_55_to_64+ASIAN_55_to_64+NHPI_55_to_64+OTHER_55_to_64+MIXED_55_to_64+W_NOTHISP_55_to_64+HISP_55_to_64),
+    ALL_65_over =  sum(WHITE_65_over+BLACK_65_over+AI_AN_65_over+ASIAN_65_over+NHPI_65_over+OTHER_65_over+MIXED_65_over+W_NOTHISP_65_over+HISP_65_over),
     
+    # # under-represented
+    # UNDERREP_FEMALE = sum(BLACK_FEMALE+HISP_FEMALE), 
+    # UNDERREP_MALE = sum(BLACK_MALE+HISP_MALE),
+    # UNDERREP_TOTAL = sum(UNDERREP_FEMALE+UNDERREP_MALE),
+    # UNDERREP_18_to_24 = sum(BLACK_18_to_24+HISP_18_to_24),
+    # UNDERREP_25_to_34 = sum(BLACK_25_to_34+HISP_25_to_34),
+    # UNDERREP_35_to_44 = sum(BLACK_35_to_44+HISP_35_to_44),
+    # UNDERREP_45_to_54 = sum(BLACK_45_to_54+HISP_45_to_54),
+    # UNDERREP_55_to_64 = sum(BLACK_55_to_64+HISP_55_to_64),
+    # UNDERREP_65_over =  sum(BLACK_65_over+HISP_65_over)
   )
 # export
-write.csv(censusstate_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_age.csv")
+write.csv(censusstate_age,"/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate_age2.csv")
 
 
 
