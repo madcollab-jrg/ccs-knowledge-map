@@ -235,7 +235,7 @@ clean_matrix_eval_chi <- function(questions_df) {
     # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
     # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
     contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
-    chi_squared_test <- chisq.test(contingency_table)
+    chi_squared_test <- chisq.test(contingency_table,correct = TRUE)
     
     # Create a dataframe with the Chi-Squared test results
     results_df <- data.frame(
@@ -266,7 +266,7 @@ clean_multi_eval_chi <- function(dataframe) {
               Most = sum(n[vulnerable == "Most"])) %>%
     rowwise() %>%
     do({
-      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      chi_test_result <- chisq.test(c(.$Least, .$Most),correct = TRUE)
       data.frame(question = .$question,
                  statistic = round(chi_test_result$statistic, 3),
                  pvalue = round(chi_test_result$p.value, 3),

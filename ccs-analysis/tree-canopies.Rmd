@@ -190,6 +190,19 @@ viz_clean_multi_eval <- function(dataframe,graph_title) {
     theme(axis.text.x = element_text(angle=45, hjust=1))
 }
 
+clean_matrix_eval_viz_all <- function(dataframe) {
+   ggplot(dataframe, aes(x = vulnerable, y = freq, fill = answer)) +
+    geom_bar(stat = "identity", position = "fill") +  # Use 'fill' to stack the bars to 100%
+    scale_y_continuous(labels = scales::percent_format()) +  # Use percent format for y-axis labels
+    labs(y = "Percentage", x = "Vulnerability Level", fill = "Answer") +
+    facet_wrap(~ question, scales = "free", ncol = 1) +  # Facet by the question variable
+    coord_flip() +  # Flip the axes to have vulnerability level on the y-axis
+    theme_minimal() +
+    theme(axis.text.x = element_text(hjust = 1)) +
+    scale_fill_nejm() +
+    theme(strip.text.y = element_text(angle = 0))  # Make facet labels horizontal
+}
+
 ####
 
 viz_box_multi <- function(dataframe,graph_title) {
@@ -221,7 +234,7 @@ clean_matrix_eval_chi <- function(questions_df) {
     # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
     # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
     contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
-    chi_squared_test <- chisq.test(contingency_table)
+    chi_squared_test <- chisq.test(contingency_table,correct = TRUE)
     
     # Create a dataframe with the Chi-Squared test results
     results_df <- data.frame(
@@ -252,7 +265,7 @@ clean_multi_eval_chi <- function(dataframe) {
               Most = sum(n[vulnerable == "Most"])) %>%
     rowwise() %>%
     do({
-      chi_test_result <- chisq.test(c(.$Least, .$Most))
+      chi_test_result <- chisq.test(c(.$Least, .$Most),correct = TRUE)
       data.frame(question = .$question,
                  statistic = round(chi_test_result$statistic, 3),
                  pvalue = round(chi_test_result$p.value, 3),
@@ -263,11 +276,65 @@ clean_multi_eval_chi <- function(dataframe) {
   return(results)
 }
 
+perform_topic_modeling <- function(df, attribute_name) {
+
+    # Lists to store plots and thoughts data frames
+  plots_list <- list()
+  thoughts_list <- list()
+  
+  for (attr_val in unique(df[[attribute_name]])) {
+
+  
+  
+    sub_df <- df[which(df[[attribute_name]] == attr_val),]
+
+    # Repeat the preprocessing and topic modeling steps for sub_df
+    processed_texts <- textProcessor(documents=sub_df$text_column, metadata=sub_df)
+    out <- prepDocuments(processed_texts$documents, processed_texts$vocab, processed_texts$meta)
+    docs <- out$documents
+    vocab <- out$vocab
+    meta <- out$meta
+
+    # Fit the topic model for the subgroup
+    topic_model <- stm(documents=docs, vocab=vocab, K=3, data=meta, max.em.its=10, init.type="Spectral")
+    
+    # Create a new plot window, plot, and then store the plot using recordPlot
+    plot_name <- paste0(attribute_name, "_", attr_val, "_plot")
+    plot.new()
+    plot(topic_model, type="summary", main=paste("Topic Model Summary -", attr_val, "Vulnerable"))
+    plots_list[[plot_name]] <- recordPlot()
+    dev.off()  # Close the plotting window
+    
+    # Extract and store thoughts in the list
+    thoughts_name <- paste0(attribute_name, "_", attr_val, "_thoughts")
+    thoughts <- findThoughts(topic_model, texts=sub_df$text_column[which(row_number(sub_df) %in% row_number(out$meta))], n=1)
+    
+    # Create a dataframe for thoughts and add attribute information
+    thoughts_sub_df <- data.frame(stack(thoughts$docs))
+    names(thoughts_sub_df)[1:2] <- c("Attribute","Thoughts")
+    thoughts_sub_df$type <- attr_val
+    
+    # Add to the list of thoughts dataframes
+    thoughts_list[[thoughts_name]] <- thoughts_sub_df  
+  }
+  
+     # Combine all thoughts data frames into one
+  all_thoughts_df <- do.call("rbind", thoughts_list)
+  
+  # Return a list containing both the plots and the combined thoughts dataframe
+  return(list("plots" = plots_list, "thoughts" = all_thoughts_df))
+
+}
+
+
 new_names <- c(
   "past_years","importance_of_benefits","agreement_about_trees","neighborhood_street_trees","tree_infrastructure_damage","tree_quality_life","tree_values","areas_needing_trees","preferred_tree_types","tree_goals","tree_support")
 
 # Selecting the columns to rename by their position using the colnames function
 colnames(tree_survey)[5:15] <- new_names
+
+##A chi-square test revealed highly significant differences in the types of challenges parents face when trying to enforce an activity constraint compared to a context constraint (χ2(8) = 51.7, p <.001). Post-hoc contingency-table analysis revealed that
+# specifically, parents are more likely to report that they have few or no challenges if they are trying to enforce an activity constraint (Z = 4.00, p < .001), and they are more likely to
 ```
 
 # Tree Canopy Survey
@@ -283,8 +350,6 @@ colnames(tree_survey)[5:15] <- new_names
    - Declined  
    - Stayed the same
 
-2. **How would you rate the overall care and maintenance of trees in your neighborhood?**  
-   (Open-ended response)
 
 3. **Please rate your level of agreement with each of the following statements:**  
    - Trees are important for maintaining a healthy community environment.  
@@ -788,101 +853,142 @@ tree_survey <- left_join(tree_survey, eji_response_analysis, by =c("census_tract
 #tree_survey
 
 # Experiences with tree canopies
-tree_survey_experiences <- tree_survey[c(3,5,9,11,12,14,15,86)]
-
+tree_survey_experiences <- tree_survey
 tree_survey_experiences <- tree_survey_experiences[which(!is.na(tree_survey_experiences$vulnerable)),]
-vulnerable_q5 <- clean_matrix_eval(tree_survey_experiences,"past_years",vulnerable)
-vulnerable_q5$answer <- factor(vulnerable_q5$answer, levels = rev(c("Decreased", "Stayed the same", "Increased", "I do not know")))
-
-vulnerable_q5_a <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[1]),]
-vulnerable_q5_b <- vulnerable_q5[which(vulnerable_q5$question==unique(vulnerable_q5$question)[2]),]
-vulnerable_q5viz_a <- clean_matrix_eval_viz(vulnerable_q5_a,"vulnerable")
-vulnerable_q5viz_b <-  clean_matrix_eval_viz(vulnerable_q5_b,"vulnerable")
-
-# print(results)
-```
 
 
-2. **Over the past 10 years, the number of trees in my neighborhood has:**  
-   - Increased  
-   - Decreased  
-   - Stayed the same  
-   - Unsure
-   
-```{r}
-datatable(vulnerable_q5_a) 
-vulnerable_q5viz_a
-#datatable(vulnerable_q5_chi_a)
-```
-   
+vulnerable_q1 <- clean_matrix_eval(tree_survey_experiences, past_years,vulnerable)
+vulnerable_q1 <- vulnerable_q1[which(!is.na(vulnerable_q1$vulnerable)),]
+vulnerable_q1$answer <- factor(vulnerable_q1$answer, levels = rev(c("Decreased", "Stayed the same", "Increased", "I do not know")))
+vulnerable_q1_viz <- clean_matrix_eval_viz_all(vulnerable_q1)
+vulnerable_q1_chi <- clean_matrix_eval_chi(vulnerable_q1)
 
-3. **Over the past 10 years, the overall health and quality of trees (both public and private) in your neighborhood has:**  
-   - Improved  
-   - Declined  
-   - Stayed the same
+vulnerable_q2 <- clean_matrix_eval(tree_survey_experiences,importance_of_benefits,vulnerable)
+vulnerable_q2 <- vulnerable_q2[which(!is.na(vulnerable_q1$vulnerable)),]
+vulnerable_q2$answer <- factor(vulnerable_q2$answer, levels = rev(c("Strongly Agree", "Agree", "Neutral", "Disagree","Strongly Disagree")))
+vulnerable_q2_viz <- clean_matrix_eval_viz_all(vulnerable_q2)
 
-```{r}
-datatable(vulnerable_q5_b) 
-vulnerable_q5viz_b
-#datatable(vulnerable_q5_chi_b)
-```
+vulnerable_q3 <- clean_matrix_eval(tree_survey_experiences,agreement_about_trees,vulnerable)
+vulnerable_q3 <- vulnerable_q3[which(!is.na(vulnerable_q3$vulnerable)),]
+vulnerable_q3$answer <- factor(vulnerable_q3$answer, levels = rev(c("Strongly Agree", "Agree", "Neutral", "Disagree","Strongly Disagree")))
+vulnerable_q3_viz <- clean_matrix_eval_viz_all(vulnerable_q3)
 
-```{r include = FALSE, warning=FALSE}
-vulnerable_q9 <- clean_multi_eval(tree_survey_experiences,tree_infrastructure_damage,vulnerable)
-vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Tree Related Damage in My Community")
+#4 neighborhood_street_trees (drop down)
+
+vulnerable_q5 <- clean_multi_eval(tree_survey_experiences,tree_infrastructure_damage,vulnerable)
+vulnerable_q5 <- vulnerable_q5[which(!is.na(vulnerable_q5$vulnerable)),]
+vulnerable_q5_viz <- viz_clean_multi_eval(vulnerable_q5,"Tree Related Damage in My Community")
+vulnerable_q5_chi <- clean_multi_eval_chi(vulnerable_q5)
+
+vulnerable_q6 <- data.frame(tree_survey_experiences$tree_quality_life,tree_survey_experiences$vulnerable)
+names(vulnerable_q6)[1:2] <- c("text_column","vulnerable")
+vulnerable_q6_stm <- perform_topic_modeling(vulnerable_q6, "vulnerable")
+vulnerable_q6_stm_thoughts <-  data.frame(vulnerable_q6_stm$thoughts)
+rownames(vulnerable_q6_stm_thoughts) <- 1:dim(vulnerable_q6_stm_thoughts)[1]
+
+vulnerable_q7 <- clean_multi_eval(tree_survey_experiences,tree_values,vulnerable)
+vulnerable_q7 <- vulnerable_q7[which(!is.na(vulnerable_q7$vulnerable)),]
+vulnerable_q7_viz <- viz_clean_multi_eval(vulnerable_q7,"Tree Values")
+vulnerable_q7_chi <- clean_multi_eval_chi(vulnerable_q7)
+
+vulnerable_q8 <- clean_multi_eval(tree_survey_experiences,areas_needing_trees,vulnerable)
+vulnerable_q8 <- vulnerable_q8[which(!is.na(vulnerable_q8$vulnerable)),]
+vulnerable_q8_viz <- viz_clean_multi_eval(vulnerable_q8,"Tree Needs")
+vulnerable_q8_chi <- clean_multi_eval_chi(vulnerable_q8)
+
+vulnerable_q9 <- clean_multi_eval(tree_survey_experiences,preferred_tree_types,vulnerable)
+vulnerable_q9 <- vulnerable_q9[which(!is.na(vulnerable_q9$vulnerable)),]
+vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Tree Types")
 vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
+
+vulnerable_q10 <- clean_multi_eval(tree_survey_experiences,tree_goals,vulnerable)
+vulnerable_q10 <- vulnerable_q10[which(!is.na(vulnerable_q10$vulnerable)),]
+vulnerable_q10_viz <- viz_clean_multi_eval(vulnerable_q10,"Tree Goals")
+vulnerable_q10_chi <- clean_multi_eval_chi(vulnerable_q10)
+
+vulnerable_q11 <- clean_multi_eval(tree_survey_experiences,tree_support,vulnerable)
+vulnerable_q11 <- vulnerable_q10[which(!is.na(vulnerable_q11$vulnerable)),]
+vulnerable_q11_viz <- viz_clean_multi_eval(vulnerable_q11,"Tree Support")
+vulnerable_q11_chi <- clean_multi_eval_chi(vulnerable_q11)
 ```
 
+1. **Over the past 10 years**, Required
+```{r}
+datatable(vulnerable_q1)
+vulnerable_q1_viz
+datatable(vulnerable_q1_chi)
+```
+
+2. **Please rate the importance of each of the following benefits of trees:** Required  
+```{r}
+datatable(vulnerable_q2)
+vulnerable_q2_viz
+```
+   
+3. **Please rate your level of agreement with each of the following statements:** Required  
+```{r}
+datatable(vulnerable_q3)
+vulnerable_q3_viz
+```
+
+4. **Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grow over the road)** Required
+```{r}
+
+```
+
+5.**Have you observed tree-related damage to infrastructure in your neighborhood?** Select all that apply Required
+```{r}
+datatable(vulnerable_q5)
+vulnerable_q5_viz
+datatable(vulnerable_q5_chi)
+```
+
+6. **How do trees impact your quality of life and the quality of your community?** Required
+```{r}
+vulnerable_q6_stm$plots$vulnerable_Least_plot
+```
+
+```{r }
+vulnerable_q6_stm$plots$vulnerable_Most_plot
+```
+
+```{r }
+datatable(vulnerable_q6_stm_thoughts)
+```
+
+7. **Which aspects of trees do you value? Select all that apply.** Required
+```{r}
+datatable(vulnerable_q7)
+vulnerable_q7_viz
+datatable(vulnerable_q7_chi)
+```
+
+8. **What general areas in your community need more trees? Select all that apply.** Required
+```{r}
+datatable(vulnerable_q8)
+vulnerable_q8_viz
+datatable(vulnerable_q8_chi)
+```
+
+9. **What type of trees would you like to see planted?** Check all that apply Required
 ```{r}
 datatable(vulnerable_q9)
 vulnerable_q9_viz
 datatable(vulnerable_q9_chi)
 ```
 
-```{r, include = FALSE, warning=FALSE}
-vulnerable_q11 <- clean_multi_eval(tree_survey_experiences,tree_values,vulnerable)
-vulnerable_q11_viz <- viz_clean_multi_eval(vulnerable_q11,"Tree Values")
-vulnerable_q11_chi <- clean_multi_eval_chi(vulnerable_q11)
+10. **What tree related goals would you like to see prioritized?** Select up 3 Required
+```{r, include=FALSE}
+datatable(vulnerable_q10)
+vulnerable_q10_viz
+datatable(vulnerable_q10_chi)
 ```
 
+11. **If you are interested in helping to support the Town's tree planting efforts, which of the following activities would you be willing to participate in? Select all that apply.** Required
 ```{r}
 datatable(vulnerable_q11)
 vulnerable_q11_viz
 datatable(vulnerable_q11_chi)
-```
-```{r, include=FALSE, echo=FALSE, warning=FALSE}
-vulnerable_q12 <- clean_multi_eval(tree_survey_experiences,areas_needing_trees,vulnerable)
-vulnerable_q12_viz <- viz_clean_multi_eval(vulnerable_q12,"Tree Needs")
-vulnerable_q12_chi <- clean_multi_eval_chi(vulnerable_q12)
-```
-
-```{r}
-datatable(vulnerable_q12)
-vulnerable_q12_viz
-datatable(vulnerable_q12_chi)
-```
-```{r, include=FALSE}
-vulnerable_q14 <- clean_multi_eval(tree_survey_experiences,tree_goals,vulnerable)
-vulnerable_q14_viz <- viz_clean_multi_eval(vulnerable_q14,"Tree Goals")
-vulnerable_q14_chi <- clean_multi_eval_chi(vulnerable_q14)
-```
-
-```{r}
-datatable(vulnerable_q14)
-vulnerable_q14_viz
-datatable(vulnerable_q14_chi)
-```
-
-```{r, include=FALSE}
-vulnerable_q15 <- clean_multi_eval(tree_survey_experiences,tree_support,vulnerable)
-vulnerable_q15_viz <- viz_clean_multi_eval(vulnerable_q15,"Tree Support")
-vulnerable_q15_chi <- clean_multi_eval_chi(vulnerable_q15)
-```
-
-```{r}
-datatable(vulnerable_q15)
-vulnerable_q15_viz
-datatable(vulnerable_q15_chi)
 ```
 
 
