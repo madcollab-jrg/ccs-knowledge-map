@@ -253,9 +253,9 @@ ccs_actions_NA <- ccs_actions[which(is.na(ccs_actions$org) | ccs_actions$org =="
 
 
 #######################################
-write.csv(ccs_actions_ecolatino,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/ccs_actions_ecolatino.csv")
-write.csv(ccs_actions_urbantriage,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/ccs_actions_urbantriage.csv")
-write.csv(ccs_actions_NA,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/ccs_actions_NA.csv")
+#write.csv(ccs_actions_ecolatino,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/ccs_actions_ecolatino.csv")
+#write.csv(ccs_actions_urbantriage,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/ccs_actions_urbantriage.csv")
+#write.csv(ccs_actions_NA,"/Volumes/cbjackson2/ccs-knowledge/participant_actions/ccs_actions_NA.csv")
 
 ###########################################
 ####### CLEAN CCS DATA FOR CCS-KM #########
@@ -419,8 +419,14 @@ congress_districts <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/censu
 congress_districts$GEOID20 <- format(congress_districts$GEOID20, scientific = FALSE)
 participant_geo <- merge(participant_geo,congress_districts[,c("GEOID20","NAMELSAD","district_GEOID","CDSESSN")], by.x ="census_block_full", by.y = "GEOID20", all.x=TRUE) 
 
+# UPPER
+senate_districts <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/assemblydistrict_match.csv") 
+names(senate_districts)[c(5,17,18)] <- c("census_tract_full","senate_geoid","senate_name")
+participant_geo <- merge(participant_geo,senate_districts[,c("census_tract_full","SLDUST","senate_geoid","senate_name")], 
+                         by ="census_tract_full", all.x=TRUE) 
 
-assembly_districts <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/assemblydistrict_match.csv") 
+# LOWEWR
+assembly_districts <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/lowerdistrict_match.csv") 
 names(assembly_districts)[c(5,17,18)] <- c("census_tract_full","assembly_geoid","assembley_name")
 participant_geo <- merge(participant_geo,assembly_districts[,c("census_tract_full","SLDUST","assembly_geoid","assembley_name")], 
                          by ="census_tract_full", all.x=TRUE) 
@@ -486,22 +492,74 @@ wiassembly_uppernames <- read_csv("/Volumes/cbjackson2/ccs-knowledge/census-data
 wiassembly_uppernames <- wiassembly_uppernames[,c(2:3)]
 
 
-census_names <- read_csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv") 
+#census_names <- read_csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv") # This doesn't have all the data 
+#census_values <- participant_geo %>% 
+#  distinct(census_block_full, .keep_all=TRUE) %>%
+#  select(state_fips:census_block_full) 
+#census_values <- merge(census_values,census_names[,c("geoid","name","COUNTY","Location")], by.x= "census_tract_full", by.y = "geoid", all.x=TRUE)
+
+svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+
+participant_geo <- merge(participant_geo,svi_tract[,c("FIPS","COUNTY","LOCATION")], by.x= "census_tract_full", by.y = "FIPS", all.x=TRUE)
+
+# name, County, Location
 
 census_values <- participant_geo %>% 
-  distinct(census_block_full, .keep_all=TRUE) %>%
-  select(state_fips:census_block_full) 
+  select("census_tract_full", "state_fips", "county_fips", "census_tract", "census_block", 
+           "zip", "hisp_code", "race_recode", "income_recode", "edu_recode","COUNTY","LOCATION", "census_block_full", 
+           "congress_district", "NAMELSAD", "district_GEOID", 
+           "CDSESSN", "SLDUST", "assembly_geoid", "assembley_name")
+census_values$name <- str_extract(census_values$LOCATION, "(?<=Census Tract )\\d+\\.?\\d*")
 
-census_values <- merge(census_values,census_names[,c("geoid","name","COUNTY","Location")], by.x= "census_tract_full", by.y = "geoid", all.x=TRUE)
-census_values$census_block_full_name <- paste0("Block:"," ",census_values$census_block,",",census_values$Location)
+census_values$census_block_full_name <- paste0("  ","-","Block:"," ",census_values$census_block,",",census_values$LOCATION)
+survey_block_values <- unique(census_values$census_block_full_name[which(!is.na(census_values$LOCATION))])
+
+census_values$countyformat <- paste0("  ","-"," ",census_values$COUNTY)
+survey_county_values <- unique(census_values$countyformat)
+
+survey_tract_values <- unique(census_values$LOCATION)
+
+census_values$zipformat <- paste0("  ","-"," ",census_values$zip)
+survey_zip_values <- unique(census_values$zipformat)
+
+census_values$congressformat <- paste0("  ","-"," ",census_values$NAMELSAD)
+survey_congress_values <- unique(census_values$congressformat)
+
+
+#different formats stone.yaml
+# COUNTY.... "dane: 55025"
+# TRACT... "2.04: "55025000204"
+# zipcode... "34787: "34787"
+# state_upper... "55001: "State Senate District 1 (2018), Wisconsin"
+# state_lower... "55001: "Assembly District 1 (2018), Wisconsin"
+# congress...5501: "Congressional District 1 (116th Congress), Wisconsin"
+
+#different formats census_items.yaml
+# county ... " - Dane"
+# tract... "- Census Tract 1, Dane County, Wisconsin"
+# zipcode... "- 53070"
+
 
 write.csv(questions_tree_survey,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/tree_questions.csv")
 write.csv(questions_heat_survey,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/heat_questions.csv")
 write.csv(questions_air_survey,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/air_questions.csv")
 write.csv(census_values,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/census_values.csv")
-write.csv(congressdistrict_names,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/congress_values.csv")
-write.csv(wiassembly_lowernames,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/wiassembly_lower.csv")
-write.csv(wiassembly_uppernames,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/wiassembly_upper.csv")
+
+writeLines(survey_block_values,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/yaml-census_items/survey_block_values.txt")
+writeLines(survey_county_values,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/yaml-census_items/survey_county_values.txt")
+writeLines(survey_tract_values,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/yaml-census_items/survey_tract_values.txt")
+writeLines(survey_zip_values,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/yaml-census_items/survey_congress_values.txt")
+writeLines(survey_congress_values,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/yaml-census_items/survey_congress_values.txt")
+
+
+
+write.csv(survey_wiassembly_lower,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/survey_wiassembly_lower.csv")
+write.csv(survey_wiassembly_upper,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/survey_wiassembly_upper.csv")
+
+
+write.csv(congressdistrict_names,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/all_congress_values.csv")
+write.csv(wiassembly_lowernames,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/all_wiassembly_lower.csv")
+write.csv(wiassembly_uppernames,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/filter_inputs/all_wiassembly_upper.csv")
 
 
 

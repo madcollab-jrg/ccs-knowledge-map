@@ -49,6 +49,11 @@ Trees Greenery,Trees can reduce flooding during summer.,Multi-Choice,,0,4
 Carbon,Climate pollutants come from transportation and buildings that burn lots of fossil fuels etc.,Multi-Choice,,0,1
 Carbon,Carbon dioxide can be removed by growing more trees.,Multi-Choice,,0,2
 Carbon,Carbon dioxide can be removed by new technologies.,Multi-Choice,,0,3
+Carbon,Do you agree/disagree that new technology can slow down climate change?,Multi-Choice,,0,4
+Carbon,"If there is new technology to slow down climate change, how likely are you willing to use it in your community?",Multi-Choice,,0,5
+Carbon,Who do you think should be responsible for ensuring that new technology is developed to slow down climate change?,Multi-Choice,,0,6
+Carbon,Who do you think should be responsible for ensuring that new technology is deployed equitably in our community?,Multi-Choice,,0,7
+Carbon,What are your concerns of deploying new technologies such as the carbon dioxide removal storage in your neighborhood?,Open-ended,,0,8
 Energy,How important is energy saving at home to your everyday life,Multi-Choice,,0,1
 Energy,Do you agree/disagree that energy saving has impacted your quality of life?,Multi-Choice,,0,2
 General,What do you think are the most urgent environmental issues facting your community?,Open-ended,,0,1
@@ -64,15 +69,10 @@ General,I want to work with other community members to take actions to improve e
 General,I can create positive changes in my life. ,Multi-Choice,,0,11
 General,I have the ownership over environment problems facing my community. ,Multi-Choice,,0,12
 General,What are your goals to improve the quality of environment?,Open-ended,,0,13
-General,Do you agree/disagree that new technology can slow down climate change?,Multi-Choice,,0,14
-General,"If there is new technology to slow down climate change, how likely are you willing to use it in your community?",Multi-Choice,,0,15
-General,Who do you think should be responsible for ensuring that new technology is developed to slow down climate change?,Multi-Choice,,0,16
-General,Who do you think should be responsible for ensuring that new technology is deployed equitably in our community?,Multi-Choice,,0,17
-General,What are your concerns of deploying new technologies such as the carbon dioxide removal storage in your neighborhood?,Open-ended,,0,18
-General,Climate change affects my health.,Multi-Choice,,0,19
-General,"In the future, what is the most convenient way for you to share your opinions about environmental issues and other social issues?",Multi-Choice,,0,20
-General,Do you agree or disagree with the statement that climate change is happening?,Multi-Choice,,0,21
-General,Do you agree or disagree with the statement that climate change is caused by human activities?,Multi-Choice,,0,22
+General,Climate change affects my health.,Multi-Choice,,0,14
+General,"In the future, what is the most convenient way for you to share your opinions about environmental issues and other social issues?",Multi-Choice,,0,15
+General,Do you agree or disagree with the statement that climate change is happening?,Multi-Choice,,0,16
+General,Do you agree or disagree with the statement that climate change is caused by human activities?,Multi-Choice,,0,17
 Heat Health,How important is extreme heat to your everyday life ,Multi-Choice,,0,1
 Heat Health,Do you agree/disagree that extreme heat has impacted your life?,Multi-Choice,,0,2
 Heat Health,Insulation and weatherization are ways to reduce energy consumption at my home.,Multi-Choice,,0,3

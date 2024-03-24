@@ -11,12 +11,7 @@ Q10: I want to work with other community members to take actions to improve envi
 Q11: I can create positive changes in my life. 
 Q12: I have the ownership over environment problems facing my community. 
 Q13: What are your goals to improve the quality of environment?
-Q14: Do you agree/disagree that new technology can slow down climate change?
-Q15: If there is new technology to slow down climate change, how likely are you willing to use it in your community?
-Q16: Who do you think should be responsible for ensuring that new technology is developed to slow down climate change?
-Q17: Who do you think should be responsible for ensuring that new technology is deployed equitably in our community?
-Q18: What are your concerns of deploying new technologies such as the carbon dioxide removal storage in your neighborhood?
-Q19: Climate change affects my health.
-Q20: In the future, what is the most convenient way for you to share your opinions about environmental issues and other social issues?
-Q21: Do you agree or disagree with the statement that climate change is happening?
-Q22: Do you agree or disagree with the statement that climate change is caused by human activities?
+Q14: Climate change affects my health.
+Q15: In the future, what is the most convenient way for you to share your opinions about environmental issues and other social issues?
+Q16: Do you agree or disagree with the statement that climate change is happening?
+Q17: Do you agree or disagree with the statement that climate change is caused by human activities?

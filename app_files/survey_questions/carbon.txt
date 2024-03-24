@@ -1,3 +1,8 @@
 Q1: Climate pollutants come from transportation and buildings that burn lots of fossil fuels etc.
 Q2: Carbon dioxide can be removed by growing more trees.
 Q3: Carbon dioxide can be removed by new technologies.
+Q4: Do you agree/disagree that new technology can slow down climate change?
+Q5: If there is new technology to slow down climate change, how likely are you willing to use it in your community?
+Q6: Who do you think should be responsible for ensuring that new technology is developed to slow down climate change?
+Q7: Who do you think should be responsible for ensuring that new technology is deployed equitably in our community?
+Q8: What are your concerns of deploying new technologies such as the carbon dioxide removal storage in your neighborhood?
