@@ -277,6 +277,8 @@ clean_multi_eval_chi <- function(dataframe) {
   return(results)
 }
 
+
+##########
 names(air_survey)[5:14] <- c('air_quality_experience',
  'pollution_health_impact',
  'pollution_sources_identification',
@@ -472,6 +474,7 @@ svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
 # Which variables are important to include in the analysis?
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
+# https://www.dhs.wisconsin.gov/epht/environmental-justice.htm 
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
 eji <- eji[which(!is.na(eji$RPL_EBM)),]
 eji <- eji[which(eji$COUNTY == c("Dane","Jefferson")),]
@@ -525,7 +528,7 @@ options(scipen=999)
 # Load the shapefile
 #wisconsin_blocks <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
 
-wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
+wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2022_55_tract/tl_2022_55_tract.shp")
 
 # Filter to include only your tracts
 #tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
@@ -536,9 +539,11 @@ target_tracts <- c(unique(air_survey$census_tract_full))
 wisconsin_tracts_filtered <- wisconsin_tract %>%
     filter(as.character(GEOID) %in% target_tracts)
 
+
 eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid)
 
-wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid"))
+
+wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid")) 
 
 # Plot using ggplot2
 county_data <- ggplot() +
@@ -565,15 +570,20 @@ In our analysis, we categorized vulnerability based on the Environmental Burden 
 datatable(summary_eji)
 ```
 
-
 ```{r include=FALSE, warning=FALSE, }
 air_survey$census_tract_full <- as.character(air_survey$census_tract_full) # CHANGE NAME
 # Group people into least/most vulnerable areas 
-air_survey <- left_join(air_survey, eji_response_analysis, by =c("census_tract_full"="geoid")) # CHANGE NAME
-#tree_survey
+air_survey <- left_join(air_survey, eji_response_analysis, by =c("census_tract_full"="geoid")) 
+
+# ISSUE HERE WITH JOINING. MANY ITEMS NOT INCLUDED
 
 air_survey_experiences <- air_survey[which(!is.na(air_survey$vulnerable)),]
 # Experiences with airquality
+
+
+#prop_test_A <- prop.test(x = c(high_vuln_props["A"], low_vuln_props["A"]),
+#                          n = c(sum(cont_table["High", ]), sum(cont_table["Low", ])),
+#                          alternative = "two.sided")
 
 vulnerable_q2 <- clean_multi_eval(air_survey_experiences,pollution_health_impact,vulnerable)
 vulnerable_q2_viz <- viz_clean_multi_eval(vulnerable_q2,"Pollution Health Impacts")
