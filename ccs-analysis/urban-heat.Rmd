@@ -418,12 +418,15 @@ data_blocks <- c(unique(heat_survey$census_block_full))
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
-eji <- eji[which(!is.na(eji$RPL_EBM)),]
+#eji <- eji[which(!is.na(eji$RPL_EBM)),]
 eji <- eji[which(eji$COUNTY %in% c("Dane","Jefferson")),]
 
 # Calculate quartiles
-Q1 <- quantile(eji$RPL_EBM, 0.25)
-Q3 <- quantile(eji$RPL_EBM, 0.75)
+Q1 <- quantile(eji$RPL_EBM, 0.25,na.rm = TRUE)
+Q3 <- quantile(eji$RPL_EBM, 0.75,na.rm = TRUE)
+
+data_tracts[which(!data_tracts %in% eji$geoid)]
+
 
 eji_response <- eji[which(eji$geoid %in% data_tracts),]
 eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Least","Most")
@@ -467,7 +470,6 @@ summary_eji <- eji_response_analysis %>%
   summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
 
 summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
-
 
 library(sf)          # for handling spatial data
 library(tigris)
