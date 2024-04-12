@@ -257,28 +257,40 @@ clean_matrix_eval_chi <- function(questions_df) {
 
 
 clean_multi_eval_chi <- function(dataframe) {
-  # Ensure 'n' is treated as numeric
-  dataframe$n <- as.numeric(dataframe$n)
-  
-  results <- dataframe %>%
-    group_by(question) %>%
-    summarise(Least = sum(n[vulnerable == "Least"]),
-              Most = sum(n[vulnerable == "Most"])) %>%
-    rowwise() %>%
-    do({
-      chi_test_result <- chisq.test(c(.$Least, .$Most),correct = TRUE)
-      data.frame(question = .$question,
-                 statistic = round(chi_test_result$statistic, 3),
-                 pvalue = round(chi_test_result$p.value, 3),
-                 degreeof = round(as.numeric(chi_test_result$parameter), 3))
-    }) %>%
-    ungroup()
-  
-  return(results)
+  dataframe$total <- NULL
+  dataframe$freq <- NULL
+  dataframe$freq <- as.numeric(dataframe$n)
+  dataframe$n <- NULL
+ table_data <- xtabs(freq ~ vulnerable + question, data=dataframe)
+ chi_square_result <- chisq.test(table_data)
+ return(chi_square_result)
 }
 
 
+<<<<<<< Updated upstream
 ##########
+=======
+clean_multi_eval_fisher <- function(dataframe) {
+  results <- dataframe %>%
+  group_by(question) %>%
+  summarise(
+    Least_with = n[vulnerable == "Least"],
+    Most_with = n[vulnerable == "Most"],
+    Least_without = total[vulnerable == "Least"] - n[vulnerable == "Least"],
+    Most_without = total[vulnerable == "Most"] - n[vulnerable == "Most"]
+  ) %>%
+  rowwise() %>%
+  do({
+    tbl <- matrix(c(.$Least_with, .$Most_with, .$Least_without, .$Most_without), nrow = 2)
+    test_result <- fisher.test(tbl)
+    data.frame(., Odds_Ratio = test_result$estimate["odds ratio"], P_Value = test_result$p.value)
+  })
+}
+
+
+
+
+>>>>>>> Stashed changes
 names(air_survey)[5:14] <- c('air_quality_experience',
  'pollution_health_impact',
  'pollution_sources_identification',
@@ -365,30 +377,41 @@ Correlation Analysis - Explore correlations between SVI/EJI scores and survey re
 
 ```{r, include=FALSE}
 
-pol_impact <- clean_multi(air_survey,pollution_health_impact)
+pol_impact <- clean_multi(air_survey,pollution_health_impact) # Multiple Response
 pol_impact_viz <- viz_box_multi(pol_impact,"Health Issues")
 
-pol_sources <- clean_multi(air_survey,pollution_sources_identification)
+
+pol_sources <- clean_multi(air_survey,pollution_sources_identification) #Multiple Response
 pol_sources <- pol_sources[which(pol_sources$freq >0),]
 pol_sources_viz <- viz_box_multi(pol_sources,"Pollution Sources Issues")
 
-pol_changes <- clean_box(air_survey,quality_change_perception)
+pol_changes <- clean_box(air_survey,quality_change_perception) # Single Response
 pol_changes <- pol_changes[which(pol_changes$freq >0),]
 pol_changes_viz <- viz_box_multi(pol_changes,"Community Air Quality Changes")
 
-pol_contam <- clean_multi(air_survey,contaminants_awareness_knowledge)
+pol_contam <- clean_multi(air_survey,contaminants_awareness_knowledge)# Single Choice
 pol_contam <- pol_contam[which(pol_contam$freq >0),]
 pol_contam_viz <- viz_box_multi(pol_contam,"Awareness of Contaminants")
 
-pol_sensor <- clean_multi(air_survey,sensor_location_suggestions)
+pol_sensor <- clean_multi(air_survey,sensor_location_suggestions) # Multiple Response 
 pol_sensor <- pol_sensor[which(pol_sensor$freq >0),]
 pol_sensor_viz <- viz_box_multi(pol_sensor,"Location of Sensors")
 
-pol_alerts <- clean_multi(air_survey,alert_reception_preference)
+# Assuming your dataframe is named df and the column containing the text is named text_column
+air_survey <- air_survey %>%
+  mutate(alert_reception_preference = gsub("Newsletter from the city/county to your email", "Newsletters from the city/county to your email", alert_reception_preference),
+         alert_reception_preference = gsub("neighborhood associations", "Neighborhood associations", alert_reception_preference))
+
+pol_alerts <- clean_multi(air_survey,alert_reception_preference) # Multiple choice
 pol_alerts <- pol_alerts[which(pol_alerts$freq >0),]
 pol_alerts_viz <- viz_box_multi(pol_alerts,"Air Quality Alerts")
 
-pol_interest <- clean_box(air_survey,deployment_participation_interest)
+
+air_survey <- air_survey %>%
+  mutate(deployment_participation_interest = gsub("Attending the community outreach event", "Attending a community outreach event", deployment_participation_interest),
+         deployment_participation_interest = gsub("Connect with local working group to be the messenger to deliver this information to your neighborhood", "Connecting with local working group to be the messenger to deliver this information to your neighborhood", deployment_participation_interest))
+
+pol_interest <- clean_box(air_survey,deployment_participation_interest) #  Single Response
 pol_interest <- pol_interest[which(pol_interest$freq >0),]
 pol_interest_viz <- viz_box_multi(pol_interest,"Deployment Interest")
 ```
@@ -468,24 +491,38 @@ data_tracts <- c(unique(air_survey$census_tract_full))
 data_blocks <- c(unique(air_survey$census_block_full))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
-svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
-svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+#vi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+#svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+
+#svi_eval <- svi_tract[which(svi_tract$COUNTY == c("Dane","Jefferson")),]
+# Calculate quartiles
+#Q1 <- quantile(svi_eval$RPL_THEMES, 0.25)
+#Q3 <- quantile(svi_eval$RPL_THEMES, 0.75)
+
+#svi_response$vulnerable <- ifelse(svi_response$RPL_THEMES > Q3, "Most","Least")
+#svi_response$FIPS <- as.character(svi_response$FIPS)
 
 # Which variables are important to include in the analysis?
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
+<<<<<<< Updated upstream
 # https://www.dhs.wisconsin.gov/epht/environmental-justice.htm 
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
 eji <- eji[which(!is.na(eji$RPL_EBM)),]
 eji <- eji[which(eji$COUNTY == c("Dane","Jefferson")),]
+=======
+#eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+#eji <- eji[which(!is.na(eji$RPL_EBM)),]
+#eji_eval <- eji[which(eji$COUNTY == c("Dane","Jefferson")),]
+>>>>>>> Stashed changes
 
 # Calculate quartiles
-Q1 <- quantile(eji$RPL_EBM, 0.25)
-Q3 <- quantile(eji$RPL_EBM, 0.75)
+#Q1 <- quantile(eji_eval$RPL_EBM, 0.25)
+#Q3 <- quantile(eji_eval$RPL_EBM, 0.75)
 
-eji_response <- eji[which(eji$geoid %in% data_tracts),]
-eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Most","Least")
-eji_response_analysis <- eji_response %>%
+#eji_response <- eji[which(eji$geoid %in% data_tracts),]
+eji$vulnerable <- ifelse(eji$RPL_EBM > Q3, "Most","Least")
+eji_response_analysis <- eji %>%
   dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
 # Which indicators are important to include in the analysis? 
 
@@ -502,8 +539,8 @@ eji_response_analysis <- eji_response %>%
 eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
 
 #https://www.epa.gov/ejscreen/understanding-ejscreen-results
-ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
-ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
+#ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+#ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
 ```
@@ -513,6 +550,7 @@ ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_trac
 # Summarize our data
 
 summary_eji <- eji_response_analysis %>%
+  filter(geoid %in% data_tracts) %>%
   group_by(vulnerable) %>%
   summarise(across(.cols = 12:21, .fns = list(mean = ~mean(.x, na.rm = TRUE))))
 
@@ -521,6 +559,7 @@ summary_eji <- summary_eji %>% mutate_if(is.numeric, round, 3)
 
 library(sf)          # for handling spatial data
 library(tigris)
+library(plotly)
 options(tigris_use_cache = TRUE)
 options(scipen=999)
 
@@ -557,11 +596,13 @@ county_data <- ggplot() +
                       axis.text = element_blank(),
                       axis.ticks = element_blank()) +
   labs(title = "Environmental Burden Highlighted Census Tracts")
+
+
 ```
 
 
 ```{r}
-county_data
+ggplotly(county_data)
 ```
 
 In our analysis, we categorized vulnerability based on the Environmental Burden Module (RPL_EBM) percentile ranks derived from the 2022 Environmental Justice Index. To do this, we first determined the 25th (Q1) and 75th (Q3) percentile values of the RPL_EBM distribution. These percentile values served as thresholds to categorize regions based on their environmental burden. Specifically, regions with an RPL_EBM value greater than the 75th percentile (Q3) were categorized as "Most Vulnerable", indicating that they are in the top quartile of environmental burden and, therefore, face higher vulnerability to environmental injustices. Conversely, regions not exceeding this threshold were categorized as "Least Vulnerable". This method of categorization allows us to identify areas with the most significant environmental challenges and prioritize them for interventions and resource allocation.
@@ -573,9 +614,15 @@ datatable(summary_eji)
 ```{r include=FALSE, warning=FALSE, }
 air_survey$census_tract_full <- as.character(air_survey$census_tract_full) # CHANGE NAME
 # Group people into least/most vulnerable areas 
+<<<<<<< Updated upstream
 air_survey <- left_join(air_survey, eji_response_analysis, by =c("census_tract_full"="geoid")) 
 
 # ISSUE HERE WITH JOINING. MANY ITEMS NOT INCLUDED
+=======
+#air_survey <- left_join(air_survey, svi_response, by =c("census_tract_full"="geoid")) # CHANGE NAME
+eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid )
+air_survey <- left_join(air_survey, eji_response_analysis, by =c("census_tract_full"="geoid")) # CHANGE NAME
+>>>>>>> Stashed changes
 
 air_survey_experiences <- air_survey[which(!is.na(air_survey$vulnerable)),]
 # Experiences with airquality
@@ -588,26 +635,32 @@ air_survey_experiences <- air_survey[which(!is.na(air_survey$vulnerable)),]
 vulnerable_q2 <- clean_multi_eval(air_survey_experiences,pollution_health_impact,vulnerable)
 vulnerable_q2_viz <- viz_clean_multi_eval(vulnerable_q2,"Pollution Health Impacts")
 vulnerable_q2_chi <- clean_multi_eval_chi(vulnerable_q2)
+vulnerable_q2_fisher <- clean_multi_eval_fisher(vulnerable_q2)
 
 vulnerable_q3 <- clean_multi_eval(air_survey_experiences,pollution_sources_identification,vulnerable)
 vulnerable_q3_viz <- viz_clean_multi_eval(vulnerable_q3,"Pollution Sources Issues")
 vulnerable_q3_chi <- clean_multi_eval_chi(vulnerable_q3)
+vulnerable_q3_fisher <- clean_multi_eval_fisher(vulnerable_q3)
 
 vulnerable_q4 <- clean_multi_eval(air_survey_experiences,quality_change_perception,vulnerable)
 vulnerable_q4_viz <- viz_clean_multi_eval(vulnerable_q4,"Community Air Quality Changes")
 vulnerable_q4_chi <- clean_multi_eval_chi(vulnerable_q4)
+vulnerable_q4_fisher <- clean_multi_eval_fisher(vulnerable_q4)
 
 vulnerable_q6 <- clean_multi_eval(air_survey_experiences,contaminants_awareness_knowledge,vulnerable)
 vulnerable_q6_viz <- viz_clean_multi_eval(vulnerable_q6,"Awareness of Contaminants")
 vulnerable_q6_chi <- clean_multi_eval_chi(vulnerable_q6)
+vulnerable_q6_fisher <- clean_multi_eval_fisher(vulnerable_q6)
 
 vulnerable_q7 <- clean_multi_eval(air_survey_experiences,sensor_location_suggestions,vulnerable)
 vulnerable_q7_viz <- viz_clean_multi_eval(vulnerable_q7,"Location of Sensors")
 vulnerable_q7_chi <- clean_multi_eval_chi(vulnerable_q7)
+vulnerable_q7_fisher <- clean_multi_eval_fisher(vulnerable_q7)
 
 vulnerable_q9 <- clean_multi_eval(air_survey_experiences,alert_reception_preference,vulnerable)
 vulnerable_q9_viz <- viz_clean_multi_eval(vulnerable_q9,"Air Quality Alerts")
 vulnerable_q9_chi <- clean_multi_eval_chi(vulnerable_q9)
+vulnerable_q9_fisher <- clean_multi_eval_fisher(vulnerable_q9)
 
 vulnerable_q10 <-clean_box_eval(air_survey_experiences,deployment_participation_interest,vulnerable)
 vulnerable_q10_viz <- viz_clean_box_eval(vulnerable_q10,"Deployment Interest")
@@ -621,7 +674,7 @@ vulnerable_q10_viz <- viz_clean_box_eval(vulnerable_q10,"Deployment Interest")
 ```{r}
 datatable(vulnerable_q2)
 vulnerable_q2_viz
-datatable(vulnerable_q2_chi)
+vulnerable_q2_chi
 ```
 
 3. **What do you think are the sources of air pollution in your community?** (Multi-choice)  
@@ -633,7 +686,7 @@ datatable(vulnerable_q2_chi)
 ```{r}
 datatable(vulnerable_q3)
 vulnerable_q3_viz
-datatable(vulnerable_q3_chi)
+vulnerable_q3_chi
 ```
 
 4. **Have you noticed any changes in air quality in your community over the past 5 years?** (Select Box)  

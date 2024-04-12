@@ -20,7 +20,18 @@ library(ggsci)
 library(gridExtra)
 library(stringr)
 library(broom) # For tidy chi-squared test results
+<<<<<<< Updated upstream
 library(stm)
+=======
+library(data.table)
+
+#https://www.nature.com/articles/s41598-024-55437-3 
+# Visualizations (https://indrajeetpatil.github.io/ggstatsplot/)
+# http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/76-add-p-values-and-significance-levels-to-ggplots/#google_vignette
+#nhttps://www.datanovia.com/en/blog/ggpubr-how-to-add-p-values-generated-elsewhere-to-a-ggplot/
+# https://www.nature.com/articles/s41562-023-01813-4 
+# https://static-content.springer.com/esm/art%3A10.1038%2Fs41434-024-00450-4/MediaObjects/41434_2024_450_MOESM1_ESM.pdf 
+>>>>>>> Stashed changes
 
 potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
                      330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
@@ -28,8 +39,8 @@ potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
                      362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 374, 376, 378, 379, 380,
                      381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399)
 
-heat_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv")
-heat_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_map.csv")
+heat_survey <- fread("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv")
+heat_map <- fread("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_map.csv")
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 heat_survey <- heat_survey %>%
@@ -411,8 +422,10 @@ data_tracts <- c(unique(heat_survey$census_tract_full))
 data_blocks <- c(unique(heat_survey$census_block_full))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
-#svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
-#svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+
+
 
 # Which variables are important to include in the analysis?
 
