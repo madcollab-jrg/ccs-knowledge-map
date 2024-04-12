@@ -11,7 +11,7 @@ library(cld2)
 library(datasets)
 
 
-gl_auth("/Volumes/cbjackson2/ccs-knowledge/translate-ccs-ac3757553e16.json")
+gl_auth("/Volumes/cbjackson2/ccs-knowledge/translation-419902-f4c0ba327a57.json")
 gl_auto_auth()
 ###########################################################
 ####### IMPORT/COMBINE DATASETS FROM RESEARCH DRIVE #######
@@ -424,10 +424,9 @@ participant_geo  <-  participant_geo %>%
 
 
 
-# UPPER
 senate_districts <- read_csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/assemblydistrict_match.csv") 
 names(senate_districts)[c(5,17,18)] <- c("census_tract_full","wisenate_geoid","wisenate_name")
-participant_geo <- merge(participant_geo,senate_districts[,c("census_tract_full","wisenate_geoid","wisenate_name")], 
+participant_geo2 <- merge(participant_geo,senate_districts[,c("census_tract_full","wisenate_geoid","wisenate_name")], 
                          by ="census_tract_full", all.x=TRUE) 
 participant_geo$wisenate_name <- paste0("State Senate District"," ",participant_geo$wisenate_name)
 

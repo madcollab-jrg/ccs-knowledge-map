@@ -20,6 +20,7 @@ library(ggsci)
 library(gridExtra)
 library(stringr)
 library(broom) # For tidy chi-squared test results
+library(stm)
 
 potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
                      330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
@@ -283,52 +284,51 @@ clean_multi_eval_chi <- function(dataframe) {
 perform_topic_modeling <- function(df, attribute_name) {
 
     # Lists to store plots and thoughts data frames
-  plots_list <- list()
-  thoughts_list <- list()
-  
-  for (attr_val in unique(df[[attribute_name]])) {
-
-  
-  
-    sub_df <- df[which(df[[attribute_name]] == attr_val),]
-
-    # Repeat the preprocessing and topic modeling steps for sub_df
-    processed_texts <- textProcessor(documents=sub_df$text_column, metadata=sub_df)
-    out <- prepDocuments(processed_texts$documents, processed_texts$vocab, processed_texts$meta)
-    docs <- out$documents
-    vocab <- out$vocab
-    meta <- out$meta
-
-    # Fit the topic model for the subgroup
-    topic_model <- stm(documents=docs, vocab=vocab, K=3, data=meta, max.em.its=10, init.type="Spectral")
+    plots_list <- list()
+    thoughts_list <- list()
     
-    # Create a new plot window, plot, and then store the plot using recordPlot
-    plot_name <- paste0(attribute_name, "_", attr_val, "_plot")
-    plot.new()
-    plot(topic_model, type="summary", main=paste("Topic Model Summary -", attr_val, "Vulnerable"))
-    plots_list[[plot_name]] <- recordPlot()
-    dev.off()  # Close the plotting window
-    
-    # Extract and store thoughts in the list
-    thoughts_name <- paste0(attribute_name, "_", attr_val, "_thoughts")
-    thoughts <- findThoughts(topic_model, texts=sub_df$text_column[which(row_number(sub_df) %in% row_number(out$meta))], n=1)
-    
-    # Create a dataframe for thoughts and add attribute information
-    thoughts_sub_df <- data.frame(stack(thoughts$docs))
-    names(thoughts_sub_df)[1:2] <- c("Attribute","Thoughts")
-    thoughts_sub_df$type <- attr_val
-    
-    # Add to the list of thoughts dataframes
-    thoughts_list[[thoughts_name]] <- thoughts_sub_df  
-  }
+    for (attr_val in unique(df[[attribute_name]])) {
   
-     # Combine all thoughts data frames into one
-  all_thoughts_df <- do.call("rbind", thoughts_list)
-  
-  # Return a list containing both the plots and the combined thoughts dataframe
-  return(list("plots" = plots_list, "thoughts" = all_thoughts_df))
+        #sub_df <- df[which(df[[attribute_name]] == attr_val),]
+             sub_df <- vulnerable_q1[which(vulnerable_q1["vulnerable"] == "Most"),]
 
+        # Repeat the preprocessing and topic modeling steps for sub_df
+        processed_texts <- textProcessor(documents=vulnerable_q1$text_column, metadata=vulnerable_q1)
+        out <- prepDocuments(processed_texts$documents, processed_texts$vocab, processed_texts$meta)
+        docs <- out$documents
+        vocab <- out$vocab
+        meta <- out$meta
+
+        # Fit the topic model for the subgroup
+        topic_model <- stm(documents=docs, vocab=vocab, K=2, data=meta, max.em.its=10, init.type="Spectral")
+        
+        # Create a new plot window, plot, and then store the plot using recordPlot
+        plot_name <- paste0(attribute_name, "_", attr_val, "_plot")
+        
+        plot.new()
+        plot(topic_model, type="summary", main=paste("Topic Model Summary -", attr_val, "Vulnerable"))
+        plots_list[[plot_name]] <- recordPlot()
+        dev.off()  # Close the plotting window
+     
+
+        # Then, pass these texts to 'findThoughts'
+        thoughts <- findThoughts(topic_model, texts=modeled_texts, topics=c(1,2), n=3)
+        # Create a dataframe for thoughts and add attribute information
+        thoughts_sub_df <- data.frame(stack(thoughts$docs))
+        names(thoughts_sub_df)[1:2] <- c("Attribute","Thoughts")
+        thoughts_sub_df$type <- attr_val
+        
+        # Add to the list of thoughts dataframes
+        thoughts_list[[paste0(attribute_name, "_", attr_val, "_thoughts")]] <- thoughts_sub_df  
+    }
+    
+    # Combine all thoughts data frames into one
+    all_thoughts_df <- do.call("rbind", thoughts_list)
+    
+    # Return a list containing both the plots and the combined thoughts dataframe
+    return(list("plots" = plots_list, "thoughts" = all_thoughts_df))
 }
+
 
 names(heat_survey)[5:12] <- c("urban_heat_experience",
     "summer_activity_frequency",
@@ -525,11 +525,11 @@ heat_survey <- left_join(heat_survey, eji_response_analysis, by =c("census_tract
 heat_survey_experiences <- heat_survey
 heat_survey_experiences <- heat_survey_experiences[which(!is.na(heat_survey_experiences$vulnerable)),]
 
-vulnerable_q1 <- data.frame(heat_survey_experiences$urban_heat_experience,heat_survey_experiences$vulnerable)
-names(vulnerable_q1)[1:2] <- c("text_column","vulnerable")
-vulnerable_q1_stm <- perform_topic_modeling(vulnerable_q1, "vulnerable")
-vulnerable_q1_stm_thoughts <-  data.frame(vulnerable_q1_stm$thoughts)
-rownames(vulnerable_q1_stm_thoughts) <- 1:dim(vulnerable_q1_stm_thoughts)[1]
+# vulnerable_q1 <- data.frame(heat_survey_experiences$urban_heat_experience,heat_survey_experiences$vulnerable)
+# names(vulnerable_q1)[1:2] <- c("text_column","vulnerable")
+# vulnerable_q1_stm <- perform_topic_modeling(vulnerable_q1, "vulnerable")
+# vulnerable_q1_stm_thoughts <-  data.frame(vulnerable_q1_stm$thoughts)
+# rownames(vulnerable_q1_stm_thoughts) <- 1:dim(vulnerable_q1_stm_thoughts)[1]
 
 ### Add Questions analysis
 vulnerable_q2 <- clean_matrix_eval(heat_survey_experiences, summer_activity_frequency,vulnerable)
@@ -538,22 +538,22 @@ vulnerable_q2$answer <- factor(vulnerable_q2$answer, levels = rev(c("Always", "O
 vulnerable_q2_viz <- clean_matrix_eval_viz_all(vulnerable_q2)
 vulnerable_q2_chi <- clean_matrix_eval_chi(vulnerable_q2)
 
-vulnerable_q3 <- data.frame(heat_survey_experiences$disproportionate_heat_impact,heat_survey_experiences$vulnerable)
-names(vulnerable_q3)[1:2] <- c("text_column","vulnerable")
-vulnerable_q3_stm <- perform_topic_modeling(vulnerable_q3, "vulnerable")
-vulnerable_q3_stm_thoughts <-  data.frame(vulnerable_q3_stm$thoughts)
-rownames(vulnerable_q3_stm_thoughts) <- 1:dim(vulnerable_q3_stm_thoughts)[1]
+# vulnerable_q3 <- data.frame(heat_survey_experiences$disproportionate_heat_impact,heat_survey_experiences$vulnerable)
+# names(vulnerable_q3)[1:2] <- c("text_column","vulnerable")
+# vulnerable_q3_stm <- perform_topic_modeling(vulnerable_q3, "vulnerable")
+# vulnerable_q3_stm_thoughts <-  data.frame(vulnerable_q3_stm$thoughts)
+# rownames(vulnerable_q3_stm_thoughts) <- 1:dim(vulnerable_q3_stm_thoughts)[1]
 
 vulnerable_q4 <- clean_multi_eval(heat_survey_experiences, personal_heat_actions,vulnerable)
 vulnerable_q4 <- vulnerable_q4[which(!is.na(vulnerable_q4$vulnerable)),]
 vulnerable_q4_viz <- viz_clean_multi_eval(vulnerable_q4, "Personal Heat Actions")
 vulnerable_q4_chi <- clean_multi_eval_chi(vulnerable_q4)
 
-vulnerable_q5 <- data.frame(heat_survey_experiences$government_heat_mitigation,heat_survey_experiences$vulnerable)
-names(vulnerable_q5)[1:2] <- c("text_column","vulnerable")
-vulnerable_q5_stm <- perform_topic_modeling(vulnerable_q5, "vulnerable")
-vulnerable_q5_stm_thoughts <-  data.frame(vulnerable_q5_stm$thoughts)
-rownames(vulnerable_q5_stm_thoughts) <- 1:dim(vulnerable_q5_stm_thoughts)[1]
+# vulnerable_q5 <- data.frame(heat_survey_experiences$government_heat_mitigation,heat_survey_experiences$vulnerable)
+# names(vulnerable_q5)[1:2] <- c("text_column","vulnerable")
+# vulnerable_q5_stm <- perform_topic_modeling(vulnerable_q5, "vulnerable")
+# vulnerable_q5_stm_thoughts <-  data.frame(vulnerable_q5_stm$thoughts)
+# rownames(vulnerable_q5_stm_thoughts) <- 1:dim(vulnerable_q5_stm_thoughts)[1]
 
 vulnerable_q6 <- clean_multi_eval(heat_survey_experiences, heat_information_sources,vulnerable)
 vulnerable_q6 <- vulnerable_q6[which(!is.na(vulnerable_q6$vulnerable)),]
@@ -565,25 +565,25 @@ vulnerable_q7 <- vulnerable_q7[which(!is.na(vulnerable_q7$vulnerable)),]
 vulnerable_q7_viz <- viz_clean_multi_eval(vulnerable_q7, "Community Heat Participation")
 vulnerable_q7_chi <- clean_multi_eval_chi(vulnerable_q7)
 
-vulnerable_q8 <- data.frame(heat_survey_experiences$heat_education_needs,heat_survey_experiences$vulnerable)
-names(vulnerable_q8)[1:2] <- c("text_column","vulnerable")
-vulnerable_q8_stm <- perform_topic_modeling(vulnerable_q8, "vulnerable")
-vulnerable_q8_stm_thoughts <-  data.frame(vulnerable_q8_stm$thoughts)
-rownames(vulnerable_q8_stm_thoughts) <- 1:dim(vulnerable_q8_stm_thoughts)[1]
+# vulnerable_q8 <- data.frame(heat_survey_experiences$heat_education_needs,heat_survey_experiences$vulnerable)
+# names(vulnerable_q8)[1:2] <- c("text_column","vulnerable")
+# vulnerable_q8_stm <- perform_topic_modeling(vulnerable_q8, "vulnerable")
+# vulnerable_q8_stm_thoughts <-  data.frame(vulnerable_q8_stm$thoughts)
+# rownames(vulnerable_q8_stm_thoughts) <- 1:dim(vulnerable_q8_stm_thoughts)[1]
 ```
 
 1  **Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences.**  
 
 ```{r}
-vulnerable_q1_stm$plots$vulnerable_Least_plot
+#vulnerable_q1_stm$plots$vulnerable_Least_plot
 ```
 
 ```{r }
-vulnerable_q1_stm$plots$vulnerable_Most_plot
+#vulnerable_q1_stm$plots$vulnerable_Most_plot
 ```
 
 ```{r }
-datatable(vulnerable_q1_stm_thoughts)
+#datatable(vulnerable_q1_stm_thoughts)
 ```
 
 2. **Please rate how frequently you have done each of the following during summer months and during extreme heat on a scale from 1 to 5, where 1 means "Never" and 5 means "Always"** Required
@@ -596,15 +596,15 @@ datatable(vulnerable_q2_chi)
 
 3. **How are individuals disproportionately affected by urban heat in your community?** Required
 ```{r}
-vulnerable_q3_stm$plots$vulnerable_Least_plot
+#vulnerable_q3_stm$plots$vulnerable_Least_plot
 ```
 
 ```{r }
-vulnerable_q3_stm$plots$vulnerable_Most_plot
+#vulnerable_q3_stm$plots$vulnerable_Most_plot
 ```
 
 ```{r }
-datatable(vulnerable_q3_stm_thoughts)
+#datatable(vulnerable_q3_stm_thoughts)
 ```
 
 4. **Which of the following personal steps have you taken to reduce your contribution to urban heat and reduce greenhouse emissions?** 
@@ -616,15 +616,15 @@ datatable(vulnerable_q4_chi)
 
 5. **What can local government do to help mitigate urban heat in your community?** Required
 ```{r}
-vulnerable_q5_stm$plots$vulnerable_Least_plot
+#vulnerable_q5_stm$plots$vulnerable_Least_plot
 ```
 
 ```{r }
-vulnerable_q5_stm$plots$vulnerable_Most_plot
+#vulnerable_q5_stm$plots$vulnerable_Most_plot
 ```
 
 ```{r }
-datatable(vulnerable_q5_stm_thoughts)
+#datatable(vulnerable_q5_stm_thoughts)
 ```
 
 6. **Where do you currently go for information about heat (waves)? And how do you usually learn about extremely hot weather?** Required
@@ -643,13 +643,13 @@ datatable(vulnerable_q7_chi)
 
 8. **In order to become more informed about urban heat and mitigation strategies, what specific information would you require?** Required
 ```{r}
-vulnerable_q8_stm$plots$vulnerable_Least_plot
+#vulnerable_q8_stm$plots$vulnerable_Least_plot
 ```
 
 ```{r }
-vulnerable_q8_stm$plots$vulnerable_Most_plot
+#vulnerable_q8_stm$plots$vulnerable_Most_plot
 ```
 
 ```{r }
-datatable(vulnerable_q8_stm_thoughts)
+#datatable(vulnerable_q8_stm_thoughts)
 ```
