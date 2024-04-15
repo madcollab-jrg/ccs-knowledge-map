@@ -20,9 +20,7 @@ library(ggsci)
 library(gridExtra)
 library(stringr)
 library(broom) # For tidy chi-squared test results
-<<<<<<< Updated upstream
 library(stm)
-=======
 library(data.table)
 
 #https://www.nature.com/articles/s41598-024-55437-3 
@@ -31,21 +29,27 @@ library(data.table)
 #nhttps://www.datanovia.com/en/blog/ggpubr-how-to-add-p-values-generated-elsewhere-to-a-ggplot/
 # https://www.nature.com/articles/s41562-023-01813-4 
 # https://static-content.springer.com/esm/art%3A10.1038%2Fs41434-024-00450-4/MediaObjects/41434_2024_450_MOESM1_ESM.pdf 
->>>>>>> Stashed changes
 
 potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
                      330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
                      346, 348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359, 360, 361, 
                      362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 374, 376, 378, 379, 380,
-                     381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399)
+                     381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399,18,23,28)
+
+participant_geographies <- fread("/Volumes/cbjackson2/ccs-knowledge/ccs-data[papers]/participant_geographies.csv")
+
 
 heat_survey <- fread("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_survey.csv")
+heat_survey <- heat_survey %>%
+  select(3,5:12) %>%
+  filter(!`Contribution ID` %in% potential_fakes)
+## REPLACE GEOGRAPHY DATA
+
 heat_map <- fread("/Volumes/cbjackson2/ccs-knowledge/ccs-data/urban-heat/heat_map.csv")
 
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 heat_survey <- heat_survey %>%
-  distinct(Contribution.ID, .keep_all = TRUE)
-
+  distinct(`Contribution ID`, .keep_all = TRUE)
 
 ### ### ### ### ### ### ### ### ### ## 
 ### Functions for MATRIX QUESTIONS ### 
@@ -140,9 +144,6 @@ summary_data <- summary_data  %>%
 
 return(summary_data)
 }
-
-
-
 
 ### ### ### ### ### ### ### ### ### #
 ### Functions for MULTI QUESTIONS ### 
@@ -246,7 +247,7 @@ clean_matrix_eval_chi <- function(questions_df) {
   # Loop through each unique question in the questions dataframe
   for(i in unique(questions_df$question)){
     data <- questions_df %>% filter(question == i)
-    
+
     # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
     # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
     contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
@@ -275,10 +276,13 @@ clean_multi_eval_chi <- function(dataframe) {
   # Ensure 'n' is treated as numeric
   dataframe$n <- as.numeric(dataframe$n)
   
+  dataframe <- vulnerable_q4 ##
+  dataframe$n <- as.numeric(vulnerable_q4$n)#
+  
   results <- dataframe %>%
     group_by(question) %>%
-    summarise(Least = sum(n[vulnerable == "Least"]),
-              Most = sum(n[vulnerable == "Most"])) %>%
+    summarise(Least = sum(n[vulnerable == "Less severe"]),
+              Most = sum(n[vulnerable == "High"])) %>%
     rowwise() %>%
     do({
       chi_test_result <- chisq.test(c(.$Least, .$Most),correct = TRUE)
@@ -291,6 +295,8 @@ clean_multi_eval_chi <- function(dataframe) {
   
   return(results)
 }
+
+
 
 perform_topic_modeling <- function(df, attribute_name) {
 
@@ -341,7 +347,7 @@ perform_topic_modeling <- function(df, attribute_name) {
 }
 
 
-names(heat_survey)[5:12] <- c("urban_heat_experience",
+names(heat_survey)[2:9] <- c("urban_heat_experience",
     "summer_activity_frequency",
     "disproportionate_heat_impact",
     "personal_heat_actions",
@@ -408,43 +414,46 @@ community_heat_participation_viz
 ```{r place-analysis, include=FALSE, cache=FALSE}
 
 # The EJ dataframe has descriptions of their neighborhoods, we could examine perceptions and solutions. We might need to highlight contrasting (interesting) insights. Depending on match, we could make argument for more knowledge about harms
+names(heat_survey)[1] <- "Contribution.ID"
+heat_survey <- merge(heat_survey,participant_geographies,by="Contribution.ID",all.x = TRUE)
 
-# tree_survey <- tree_survey %>%
-#   mutate(
-#     county_code = sprintf("%03d", as.integer(county_fips)),
-#     census_tract = sprintf("%06d", as.integer(census_tract)),
-#     census_block = sprintf("%04d", as.integer(census_block)),
-#     census_tract_full = paste0(state_fips, county_code, census_tract),
-#     census_block_full = paste0(state_fips, county_code, census_tract, census_block),
-#   )
-
-data_tracts <- c(unique(heat_survey$census_tract_full))
-data_blocks <- c(unique(heat_survey$census_block_full))
+data_tracts_2010 <- as.character(c(unique(heat_survey$Census_Tract_GEOID_2010)))
+data_tracts_2020 <- as.character(c(unique(heat_survey$Census_Tract_GEOID_2020)))
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
 svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
-svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts),]
+svi_tract$FIPS <- as.character(svi_tract$FIPS)
+data_tracts <- as.character(data_tracts) 
 
+svi_compute <- svi_tract[which(svi_tract$COUNTY %in% c("Dane")),]
+Q1_svi <- quantile(svi_compute$RPL_THEMES, 0.25,na.rm = TRUE)
+Q3_svi <- quantile(svi_compute$RPL_THEMES, 0.75,na.rm = TRUE)
 
-
-# Which variables are important to include in the analysis?
+svi_response <- svi_tract[which(svi_tract$FIPS %in% data_tracts_2020),]
+not_svi_found <- data_tracts[which(! data_tracts_2020 %in% svi_response$FIPS)] #6 of 82 not found in data
+svi_response$vulnerable <- ifelse(svi_response$RPL_THEMES > Q3_svi, "High","Less severe")
 
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
+# Data Dictionary: Census tract boundaries are taken from 2019 TIGER/ Line Files and are based on the 2010 decennial census.   https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
+
 eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
 #eji <- eji[which(!is.na(eji$RPL_EBM)),]
-eji <- eji[which(eji$COUNTY %in% c("Dane","Jefferson")),]
+eji_compute <- eji[which(eji$COUNTY %in% c("Dane")),]
+# RPL_EBM is the rank environmental burden measure (EBM) while SPL_EBM is the composite score for the environmental burden measure
+#Q1_eji <- quantile(eji_compute$RPL_EBM, 0.25,na.rm = TRUE) 
+#Q3_eji <- quantile(eji_compute$RPL_EBM, 0.75,na.rm = TRUE)
 
-# Calculate quartiles
-Q1 <- quantile(eji$RPL_EBM, 0.25,na.rm = TRUE)
-Q3 <- quantile(eji$RPL_EBM, 0.75,na.rm = TRUE)
-
-data_tracts[which(!data_tracts %in% eji$geoid)]
+Q1_eji <- quantile(eji_compute$SPL_EBM , 0.25,na.rm = TRUE) 
+Q3_eji <- quantile(eji_compute$SPL_EBM , 0.75,na.rm = TRUE)
 
 
-eji_response <- eji[which(eji$geoid %in% data_tracts),]
-eji_response$vulnerable <- ifelse(eji_response$RPL_EBM > Q3, "Least","Most")
+eji$geoid <- as.factor(eji$geoid)
+eji_response <- eji[which(eji$geoid %in% data_tracts_2010),]
+not_eji_found <- data_tracts[which(! data_tracts_2010 %in% eji_response$geoid)] #17 of 82 not found in data
+eji_response$vulnerable <- ifelse(eji_response$SPL_EBM > Q3_eji, "High","Less severe")
+
 eji_response_analysis <- eji_response %>%
-  dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
+  dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,SPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
 # Which indicators are important to include in the analysis? 
 
 # Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
@@ -492,14 +501,14 @@ options(scipen=999)
 
 # Load the shapefile
 #wisconsin_blocks <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
-
-wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
+#wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
+wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2019_55_tract//tl_2019_55_tract.shp")
 
 # Filter to include only your tracts
 #tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
 # Ensure the 'GEOID' format matches that of your dataframe and adjust "geoid" accordingly
-target_tracts <- c(unique(heat_survey$census_tract_full))
-
+target_tracts <- c(unique(heat_survey$Census_Tract_GEOID_2010))
+target_tracts <- as.character(target_tracts)
 # Convert your 'geoid' values to character if they are not already, to ensure matching works
 wisconsin_tracts_filtered <- wisconsin_tract %>%
     filter(as.character(GEOID) %in% target_tracts)
@@ -507,10 +516,10 @@ wisconsin_tracts_filtered <- wisconsin_tract %>%
 eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid)
 
 wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid"))
-
+wisconsin_tracts_filtered <- wisconsin_tracts_filtered[which(wisconsin_tracts_filtered$COUNTYFP != "131"),]
 # Plot using ggplot2
 county_data <- ggplot() +
-  geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
+  geom_sf(data =wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
     scale_fill_gradient(low = "lightblue", high = "darkblue", name = "EJI ranking") + # Customize color scale as needed
   theme_minimal() +
    theme_bw() + theme(panel.border = element_blank(), 
@@ -519,7 +528,8 @@ county_data <- ggplot() +
                       axis.line = element_blank(),
                       axis.text = element_blank(),
                       axis.ticks = element_blank()) +
-  labs(title = "Environmental Burden Highlighted Census Tracts")
+  labs(title = "Environmental Burden Census Tracts (2019 Map)")
+
 ```
 
 ```{r}
@@ -532,11 +542,37 @@ In our analysis, we categorized vulnerability based on the Environmental Burden 
 datatable(summary_eji)
 ```
 
+```{r}
+chi_squared_tests <- function(df) {
+  # Create an empty list to store results
+  results <- list()
+  
+  # Loop through each unique question in the dataframe
+  for (question2 in unique(df$question)) {
+    # Subset the dataframe for the current question
+    subset_df <- subset(df, question == question2)
+    
+    # Create the contingency table with 'yes' and 'no' counts
+    contingency_table <- matrix(c(subset_df$yes, subset_df$no), nrow = 2)
+    
+    # Perform the chi-squared test
+    test_result <- chisq.test(contingency_table)
+    
+    # Store the result with the question as the name
+    results[[question2]] <- test_result
+  }
+  
+  # Return the list of results
+  return(results)
+}
+
+```
+
 
 ```{r include=FALSE, warning=FALSE}
-heat_survey$census_tract_full <- as.character(heat_survey$census_tract_full)
+heat_survey$Census_Tract_GEOID_2010 <- as.character(heat_survey$Census_Tract_GEOID_2010)
 # Group people into least/most vulnerable areas 
-heat_survey <- left_join(heat_survey, eji_response_analysis, by =c("census_tract_full"="geoid"))
+heat_survey <- left_join(heat_survey, eji_response_analysis, by =c("Census_Tract_GEOID_2010"="geoid"))
 heat_survey_experiences <- heat_survey
 heat_survey_experiences <- heat_survey_experiences[which(!is.na(heat_survey_experiences$vulnerable)),]
 
@@ -561,8 +597,11 @@ vulnerable_q2_chi <- clean_matrix_eval_chi(vulnerable_q2)
 
 vulnerable_q4 <- clean_multi_eval(heat_survey_experiences, personal_heat_actions,vulnerable)
 vulnerable_q4 <- vulnerable_q4[which(!is.na(vulnerable_q4$vulnerable)),]
+names(vulnerable_q4)[3] <- "yes"
+vulnerable_q4$no <- vulnerable_q4$total - vulnerable_q4$yes
+
 vulnerable_q4_viz <- viz_clean_multi_eval(vulnerable_q4, "Personal Heat Actions")
-vulnerable_q4_chi <- clean_multi_eval_chi(vulnerable_q4)
+chi_squared_tests(vulnerable_q4)
 
 # vulnerable_q5 <- data.frame(heat_survey_experiences$government_heat_mitigation,heat_survey_experiences$vulnerable)
 # names(vulnerable_q5)[1:2] <- c("text_column","vulnerable")
@@ -572,13 +611,20 @@ vulnerable_q4_chi <- clean_multi_eval_chi(vulnerable_q4)
 
 vulnerable_q6 <- clean_multi_eval(heat_survey_experiences, heat_information_sources,vulnerable)
 vulnerable_q6 <- vulnerable_q6[which(!is.na(vulnerable_q6$vulnerable)),]
+names(vulnerable_q6)[3] <- "yes"
+vulnerable_q6$no <- vulnerable_q6$total - vulnerable_q6$yes
+
 vulnerable_q6_viz <- viz_clean_multi_eval(vulnerable_q6, "Heat Information Sources")
-vulnerable_q6_chi <- clean_multi_eval_chi(vulnerable_q6)
+chi_squared_tests(vulnerable_q6)
 
 vulnerable_q7 <- clean_multi_eval(heat_survey_experiences, community_heat_participation,vulnerable)
 vulnerable_q7 <- vulnerable_q7[which(!is.na(vulnerable_q7$vulnerable)),]
+names(vulnerable_q7)[3] <- "yes"
+vulnerable_q7$no <- vulnerable_q7$total - vulnerable_q7$yes
+
+
 vulnerable_q7_viz <- viz_clean_multi_eval(vulnerable_q7, "Community Heat Participation")
-vulnerable_q7_chi <- clean_multi_eval_chi(vulnerable_q7)
+chi_squared_tests(vulnerable_q7)
 
 # vulnerable_q8 <- data.frame(heat_survey_experiences$heat_education_needs,heat_survey_experiences$vulnerable)
 # names(vulnerable_q8)[1:2] <- c("text_column","vulnerable")
