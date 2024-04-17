@@ -67,18 +67,18 @@ get_survey_statistics <- function(
   tryCatch(
     {
       # Print inputs for debugging
-      cat("Survey:", survey, "\n")
-      cat("Census Level:", census_level, "\n")
-      cat("Queries:", queries, "\n")
-      cat("Census Code:", census_code, "\n")
-      cat("Target Population:", target_pop, "\n")
-      cat("Save:", save, "\n")
-      cat("File Name:", fname, "\n")
+      # cat("Survey:", survey, "\n")
+      # cat("Census Level:", census_level, "\n")
+      # cat("Queries:", queries, "\n")
+      # cat("Census Code:", census_code, "\n")
+      # cat("Target Population:", target_pop, "\n")
+      # cat("Save:", save, "\n")
+      # cat("File Name:", fname, "\n")
 
       n <- length(queries)
       survey_df <- read.csv(survey)
 
-      tbl_data <- data.frame(matrix(ncol = 1, nrow = 26))
+      tbl_data <- data.frame(matrix(ncol = 1, nrow = 27))
       colnames(tbl_data) <- c("Total")
       rownames(tbl_data) <- c(
         "Male", "Female",
@@ -94,15 +94,16 @@ get_survey_statistics <- function(
         "Black or African American",
         "Hispanic", "White", "Asian",
         "Native Hawaiian Pacific Islander",
-        "American Indian Alaskan Native"
+        "American Indian Alaskan Native",
+        "Mixed"
       )
 
       for (i in 1:n) {
         query_to_be_generated <- queries[[i]]
 
-        print("rrr")
+        # print("rrr")
 
-        print(query_to_be_generated)
+        # print(query_to_be_generated)
 
         # add census code to the query
         if (census_level == "county") {
@@ -137,7 +138,7 @@ get_survey_statistics <- function(
         }
         tbl_data[query_to_be_generated$row, query_to_be_generated$col] <- data
       }
-      print("123")
+      # print("123")
       save(tbl_data, file = fname)
     },
     error = function(e) {
@@ -156,7 +157,7 @@ QUERY_TYPE_MAP <- c(
   "gender" = "_genderedu.csv"
 )
 CENSUS_MAP <- c(
-  # "congress" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip",
+  # "congress" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress",
   # "zipcode" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip",
   "tract" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract",
   "state" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate",
@@ -204,7 +205,7 @@ for (survey in SURVEYS) {
         sep = ""
       )
       print(paste("Starting:", name))
-      print(str(queries_to_compile))
+      # print(str(queries_to_compile))
       get_survey_statistics(survey_dataset, rep_level, queries_to_compile,
         census_code, target_pops,
         save = TRUE, fname = name

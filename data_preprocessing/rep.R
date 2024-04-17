@@ -54,7 +54,7 @@ get_survey_statistics <- function(
       survey_df <- read.csv(survey)
 
       # Create a dataframe for storing statistics
-      tbl_data <- data.frame(matrix(ncol = 1, nrow = 26))
+      tbl_data <- data.frame(matrix(ncol = 1, nrow = 27))
       colnames(tbl_data) <- c("Total")
       rownames(tbl_data) <- c(
         "Male", "Female",
@@ -70,7 +70,8 @@ get_survey_statistics <- function(
         "Black or African American",
         "Hispanic", "White", "Asian",
         "Native Hawaiian Pacific Islander",
-        "American Indian Alaskan Native"
+        "American Indian Alaskan Native",
+        "Mixed"
       )
 
       n <- length(queries)
@@ -113,8 +114,8 @@ get_survey_statistics <- function(
 
         tbl_data[query_to_be_generated$row, query_to_be_generated$col] <- data
       }
-      print(tbl_data)
-      print(fname)
+      # print(tbl_data)
+      # print(fname)
 
       # Save statistics
       save(tbl_data, file = fname)

@@ -53,164 +53,6 @@ make_color_mapping <- function(column, options) {
   return(color_mapping)
 }
 
-# text_questions <- function(survey_data, demographic_variable) {
-#   # Import stoplist
-#   malletwords <-
-#     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
-#       character(),
-#       quote = ""
-#     )
-
-#   # Extract example question and demographic data
-#   example_open <- survey_data
-#   names(example_open)[2] <- "response"
-
-#   example_open$response_cleaned <- tolower(gsub(
-#     "[[:punct:]]", " ",
-#     example_open$response
-#   ))
-#   example_open$response_cleaned <- removeWords(
-#     example_open$response_cleaned,
-#     c(stopwords("english"), malletwords)
-#   )
-#   example_open$response_cleaned <-
-#     lemmatize_words(example_open$response_cleaned)
-
-#   ###### BIGRAMS
-#   bigram_response <- example_open %>%
-#     unnest_tokens(unigram,
-#       response_cleaned,
-#       token = "ngrams", n = 2
-#     )
-
-#   bigram_response.m <- bigram_response %>%
-#     pivot_longer(!`Contribution.ID`:Gender,
-#       names_to = "tokens",
-#       values_to = "word"
-#     )
-
-#   # Summarize data by demographic factors - Gender,
-#   # Hispanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth,
-#   # Annual Household Income level, Education Level
-#   bigram_summary <- bigram_response.m %>%
-#     group_by(!!sym(demographic_variable), word) %>%
-#     summarise(count = n()) %>%
-#     mutate(freq = round(count / sum(count), digits = 2))
-
-#   # Filter data for plot
-#   filtered_data <- bigram_summary %>%
-#     filter(freq >= 0.02)
-
-#   print(filtered_data)
-
-#   legendtext <- switch(demographic_variable,
-#     "Gender" = "Gender",
-#     "income_recode" = "Income Groups",
-#     "edu_recode" = "Education Levels",
-#     "Year.of.Birth" = "Age Group",
-#     "Unknown Demographic" = "Unknown Demographic"
-#   )
-#   # Create ggplot object for word cloud
-#   word_cloud_plot <- ggplot(filtered_data, aes(
-#     x = 1, y = 1, label = word,
-#     size = count,
-#     # color = freq
-#     color = !!as.name(demographic_variable)
-#   )) +
-#     geom_text(aes(size = count, color = !!as.name(demographic_variable)),
-#       position = position_jitter(width = 0.1, height = 0.1)
-#     ) +
-#     labs(color = legendtext) +
-#     scale_size(range = c(2, 20)) +
-#     scale_color_brewer(palette = "Set2") + # Use a gradient color scale
-#     theme_void() + # Remove grid lines and axes
-#     theme(
-#       plot.margin = margin(5, 5, 5, 5), # Adjust plot margins
-#       panel.grid = element_blank(), # Remove grid lines
-#       panel.border = element_blank(), # Remove panel border
-#       axis.text = element_blank(), # Remove axis text
-#       axis.ticks = element_blank() # Remove axis ticks
-#     )
-
-#   # Convert ggplot object to plotly
-#   word_cloud_plotly <- ggplotly(word_cloud_plot)
-
-#   return(word_cloud_plotly)
-# }
-
-# text_questions <- function(survey_data, demographic_variable) {
-#   # Import stoplist
-#   malletwords <-
-#     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
-#       character(),
-#       quote = ""
-#     )
-
-#   # Extract example question and demographic data
-#   example_open <- survey_data
-#   names(example_open)[2] <- "response"
-
-#   example_open$response_cleaned <- tolower(gsub(
-#     "[[:punct:]]", " ",
-#     example_open$response
-#   ))
-#   example_open$response_cleaned <- removeWords(
-#     example_open$response_cleaned,
-#     c(stopwords("english"), malletwords)
-#   )
-#   example_open$response_cleaned <-
-#     lemmatize_words(example_open$response_cleaned)
-
-#   ###### BIGRAMS
-#   bigram_response <- example_open %>%
-#     unnest_tokens(unigram,
-#       response_cleaned,
-#       token = "ngrams", n = 2
-#     )
-
-#   bigram_response.m <- bigram_response %>%
-#     pivot_longer(!`Contribution.ID`:Gender,
-#       names_to = "tokens",
-#       values_to = "word"
-#     )
-
-#   # Summarize data by demographic factors - Gender,
-#   # Hispanic/Latino/Spanish Origin, Race / Ethnicity, Year of Birth,
-#   # Annual Household Income level, Education Level
-#   bigram_summary <- bigram_response.m %>%
-#     group_by(!!sym(demographic_variable), word) %>%
-#     summarise(count = n()) %>%
-#     mutate(freq = round(count / sum(count), digits = 2)) %>%
-#     arrange(desc(freq)) %>%
-#     group_by(!!sym(demographic_variable)) %>%
-#     top_n(8)
-
-#   print(bigram_summary)
-
-#   legendtext <- switch(demographic_variable,
-#     "Gender" = "Gender",
-#     "income_recode" = "Income Groups",
-#     "edu_recode" = "Education Levels",
-#     "Year.of.Birth" = "Age Group",
-#     "Unknown Demographic" = "Unknown Demographic"
-#   )
-
-#   bigram_summary <- bigram_summary %>%
-#     filter(freq >= 0.05)
-
-
-#   # Create structured topic model bar chart
-#   structured_topic_model_plot <- ggplot(bigram_summary, aes(
-#     x = reorder(word, -freq), y = freq, fill = !!as.name(demographic_variable)
-#   )) +
-#     geom_bar(stat = "identity") +
-#     labs(x = "Word", y = "Frequency", fill = legendtext) +
-#     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-#     ggtitle("Structured Topic Model")
-
-#   return(structured_topic_model_plot)
-# }
-
 text_questions <- function(survey_data, demographic_variable) {
   # Import stoplist
   malletwords <-
@@ -725,6 +567,7 @@ resulting_graphics <- function(
     input, output, survey_data, is_survey,
     question = NA, question_type = NA, question_subtype = NA,
     demographic_desc = NA) {
+  print("running")
   # Populate the survey results boxes with the required graphics
   reaction <- observeEvent(input$run_report, {
     req(input$survey)
@@ -870,14 +713,14 @@ resulting_graphics <- function(
             age_var
           ))
         } else if (demographic_desc == "gender") {
-          # output$survey_results <- renderPlotly(text_questions(
+          output$survey_results <- renderPlotly(text_questions(
+              data_for_visualization,
+              gender_var
+          ))
+          # output$survey_results <- renderPlotly(perform_topic_modeling(
           #   data_for_visualization,
           #   gender_var
           # ))
-          output$survey_results <- renderPlotly(perform_topic_modeling(
-            data_for_visualization,
-            gender_var
-          ))
         }
       } else if (q_type == "multi-choice") {
         if (demographic_desc == "income") {

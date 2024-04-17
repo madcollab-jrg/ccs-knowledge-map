@@ -34,7 +34,6 @@ reporting_tool_body <- function() {
     column(
       8,
       get_data_description_ui(),
-      # representative_ui()
       survey_results_ui(),
       uiOutput("results")
     ),

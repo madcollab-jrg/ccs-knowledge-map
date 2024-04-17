@@ -1,6 +1,5 @@
 source("table.R")
 library(gt)
-library(gtsummary)
 
 result_rows <- list(
   "gender" = 1:2,
@@ -11,18 +10,25 @@ result_rows <- list(
 )
 
 get_data_description_ui <- function() {
+  # print(demo_desc)
+  # Data description UI.
+  #
+  # Return:
+  #   box containing the necessary components of
+  #   the data description UI.
+  #   See get_data_desc_rep_reaction()
+  #   for the components.
   data_description <- box(
     title = HTML("<div class='card-title'><h1 class='page-subtitle'>
     [Survey] Representativeness by [Demographic] Compared to [Geography]</h1>
     <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"),
     gt_output("new_table"),
-    downloadButton("downloadTable",
-      label = "Save Table",
-      class = "button-common"
+    actionButton(
+      inputId = "downloadTable", label = "Save Table",
+      gradient = TRUE, class = "button-common"
     ),
-    # change
-    actionLink("info_page", "See how representativeness is calculated"),
     callout(
+      # ionicon("alert"),
       title = HTML("<p class='page-para'>Representativeness is low for one or
       more [Demographic] categories.</p>"),
       actionLink("strategies", "Strategies"),
@@ -62,12 +68,16 @@ get_data_desc_rep_reaction <- function(
     input, output, surveyIds,
     survey_data = NA, census_data = NA, file_loc = NA, file_sum = NA,
     demographic_desc) {
-  reactiveValuesObj <- reactiveValues(gt_tbl = NULL)
-
+  # When run report is pressed populate the data description box with table.
+  # Table should have counts of people who answered the survey within wisconsin,
+  # and split up into sub categories.
+  # Example: using demographic_desc
   reaction <- observeEvent(input$run_report, {
-    survey.selected <- input[["survey"]]
+    survey.selected <- input[["survey"]] # survey selected
 
+    # if the survey box is not empty - that is an option has been selected
     if (survey.selected != "") {
+      # id of the survey selected
       survey.selected.Id <- surveyIds[survey.selected]
       survey.selected.question <- input[[survey.selected.Id]]
       n <- 0
@@ -83,49 +93,36 @@ get_data_desc_rep_reaction <- function(
       }
 
       if (input$census_level != "") {
+        print(survey_data)
+        print(census_data)
+        print(demographic_desc)
+
+
         data_loc <-
-          paste("/Volumes/cbjackson2/ccs-knowledge/results_summary/",
-            file_loc(),
-            sep = ""
-          )
+          paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-count.RData")
 
         data_loc_rep <-
-          paste("/Volumes/cbjackson2/ccs-knowledge/results_representativeness/",
-            file_loc(),
-            sep = ""
-          )
+          paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-rep.RData")
 
-        print(data_loc)
-        print(file_loc())
-        data_loc <- get_table(data_loc)
-        tbl_data <- data_loc[[1]]
-        rows_to_extract <- result_rows[[demographic_desc]]
-        tbl_data_filtered <- tbl_data[rows_to_extract, , drop = FALSE]
+
+        tbl_data <- get_table(data_loc)[[1]]
+        rows_to_extract <- result_rows[["race"]]
+        tbl_data_filtered <- tbl_data[rows_to_extract, ]
+        tbl_data_filtered <- data.frame(Value = tbl_data_filtered) ### ADDITION
         gt_tbl <- gt(tbl_data_filtered, rownames_to_stub = TRUE)
-
-        if (!inherits(tbl_data_filtered, "data.frame") &&
-          !inherits(tbl_data_filtered, "tbl_df")) {
-          tbl_data_filtered <- as.data.frame(tbl_data_filtered)
-        }
-
-        # print(tbl_data)
-        print(tbl_data_filtered)
-
-        # str(tbl_data_filtered_rep)
 
         loaded_data <- get_table(data_loc_rep)
         tbl_data_rep <- loaded_data[[1]]
         rows_to_extract <- result_rows[[demographic_desc]]
-        tbl_data_filtered_rep <- tbl_data_rep[rows_to_extract, , drop = FALSE]
-        if (!inherits(tbl_data_filtered_rep, "data.frame") &&
-          !inherits(tbl_data_filtered_rep, "tbl_df")) {
-          tbl_data_filtered_rep <- as.data.frame(tbl_data_filtered_rep)
-        }
+        tbl_data_filtered_rep <- tbl_data_rep[rows_to_extract, ]
+        tbl_data_filtered_rep <-
+          data.frame(Value = tbl_data_filtered_rep) ### ADDITION
         gt_tbl <- gt(tbl_data_filtered_rep, rownames_to_stub = TRUE)
 
         tbl_data_filtered$row_names <- rownames(tbl_data_filtered)
         tbl_data_filtered_rep$row_names <- rownames(tbl_data_filtered_rep)
 
+        # Merge two tables by row name
         merged_tbl_data <- merge(
           tbl_data_filtered,
           tbl_data_filtered_rep,
@@ -133,47 +130,45 @@ get_data_desc_rep_reaction <- function(
           all = TRUE
         )
 
-        if (!inherits(merged_tbl_data, "data.frame") &&
-          !inherits(merged_tbl_data, "tbl_df")) {
-          merged_tbl_data <- as.data.frame(merged_tbl_data)
-        }
-
+        # Remove the row numbers (serial numbering):
         rownames(merged_tbl_data) <- NULL
 
-        print(merged_tbl_data)
-
-        print(str(merged_tbl_data))
-
-        # merged_tbl_data <- merged_tbl_data %>%
-        #   dplyr::select(-c(1, 2))
-
+        # Rename the columns as needed:
         colnames(merged_tbl_data) <- c(
           "group",
-          "Total Count Survey",
-          "Total Rep."
+          "Total Count Survey", "Total Rep."
         )
 
+
+        # Convert the "group" column to factor
         merged_tbl_data$group <- factor(merged_tbl_data$group,
           levels = unique(merged_tbl_data$group)
         )
         merged_tbl_data$group <- as.character(merged_tbl_data$group)
 
-        print(merged_tbl_data)
+        print(str(merged_tbl_data))
 
+        # Extract only the columns needed for color calculation
         rep_data_numeric <- merged_tbl_data[, c(
           "Total Rep."
         )]
 
+        # Ensure all values are numeric
         rep_data_numeric <- as.matrix(rep_data_numeric)
         rep_data_numeric <- as.numeric(rep_data_numeric)
 
-        colors <- get_pal(
+        # Calculate colors based on numeric values
+        colors <- NULL
+        colors <- get_pal( # ADDITION
           min(rep_data_numeric, na.rm = TRUE),
           max(rep_data_numeric, na.rm = TRUE)
         )
 
+        # Create gt table from the merged data
         gt_tbl <- gt(merged_tbl_data, rownames_to_stub = FALSE)
 
+
+        # Formatting decimals
         gt_tbl <- gt_tbl %>%
           fmt_number(
             columns = c(
@@ -182,16 +177,18 @@ get_data_desc_rep_reaction <- function(
             decimals = 2
           )
 
+        # Assiging color
         gt_tbl <- gt_tbl %>%
           data_color(
-            method = "numeric",
+            # method = "numeric",
             colors = colors,
             columns = c(
               "Total Rep."
             )
           )
 
-        gt_tbl <- gt_tbl %>%
+        gt_tbl <-
+          gt_tbl %>%
           tab_style(
             style = cell_text(
               size = pct(80), color = "#1A1A1A",
@@ -207,25 +204,9 @@ get_data_desc_rep_reaction <- function(
             locations = list(cells_title(), cells_row_groups())
           ) %>%
           tab_options(data_row.padding = px(10), footnotes.font.size = pct(65))
-
-        reactiveValuesObj$gt_tbl <- gt_tbl
         output$new_table <- render_gt(gt_tbl)
       }
     }
   })
-
-  output$downloadTable <- downloadHandler(
-    filename = function() {
-      paste(input$survey, "_", input$demographic,
-        "_representativeness.csv",
-        sep = ""
-      )
-    },
-    content = function(con) {
-      write.csv(reactiveValuesObj$gt_tbl, con,
-        fileEncoding = "UTF-8"
-      )
-    }
-  )
   return(reaction)
 }

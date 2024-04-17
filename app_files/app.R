@@ -8,8 +8,9 @@ library(yaml)
 library(shinyjs)
 
 source("selection_box.R")
-source("data_description_box.R")
+# source("data_description_box.R")
 source("graphics_representative.R")
+source("solving-data-box.R")
 source("survey_results.R")
 source("data_util.R")
 source("reporting_tool.R")
@@ -90,8 +91,6 @@ census_level_input_to_data <-
 
 input_to_data_survey <- c(
   "Air Quality Survey" = "air-quality/air_survey.csv",
-  # "Community Ideas Survey" = "ej-report/ej_report.csv",
-  "Story From the Community Survey" = "ej-storytile/ej_story.csv",
   "Environmental Justice Survey" = "ej-survey/ej_survey.csv",
   "Tree Canopy Survey" = "tree-canopy/tree_survey.csv",
   "Urban Heat Survey" = "urban-heat/heat_survey.csv",
@@ -342,11 +341,12 @@ server <- function(input, output, session) {
   get_representative_reactive(input, output, file_to_get)
 
   # results graphics
-  resulting_graphics(
-    input, output, survey_data, is_survey,
-    question_number, question_type, question_subtype,
-    demographic_desc = demographic_data()
-  )
+
+  # resulting_graphics(
+  #  input, output, survey_data, is_survey,
+  #  question_number, question_type, question_subtype,
+  #  demographic_desc = demographic_data()
+  # )
 
   # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {
