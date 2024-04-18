@@ -93,20 +93,31 @@ get_data_desc_rep_reaction <- function(
       }
 
       if (input$census_level != "") {
-        print(survey_data)
-        print(census_data)
-        print(demographic_desc)
+        # print(survey_data)
+        # print(census_data)
+        # print(demographic_desc)
 
+
+        # data_loc <-
+        #   paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-count.RData")
+
+        # data_loc_rep <-
+        #   paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-rep.RData")
 
         data_loc <-
-          paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-count.RData")
+          paste("/Volumes/cbjackson2/ccs-knowledge/results_summary/",
+            file_loc(),
+            sep = ""
+          )
 
         data_loc_rep <-
-          paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-rep.RData")
-
+          paste("/Volumes/cbjackson2/ccs-knowledge/results_representativeness/",
+            file_loc(),
+            sep = ""
+          )
 
         tbl_data <- get_table(data_loc)[[1]]
-        rows_to_extract <- result_rows[["race"]]
+        rows_to_extract <- result_rows[[demographic_desc]]
         tbl_data_filtered <- tbl_data[rows_to_extract, ]
         tbl_data_filtered <- data.frame(Value = tbl_data_filtered) ### ADDITION
         gt_tbl <- gt(tbl_data_filtered, rownames_to_stub = TRUE)
