@@ -1,5 +1,5 @@
-library(shinydashboard)
 library(bs4Dash)
+library(shinydashboard)
 
 # About Page
 about_tab_body <- function() {

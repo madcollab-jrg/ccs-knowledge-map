@@ -1,5 +1,5 @@
-library(shinydashboard)
 library(bs4Dash)
+library(shinydashboard)
 
 tags$head(
   tags$link(rel = "stylesheet", type = "text/css", href = "home.css")
@@ -7,7 +7,7 @@ tags$head(
 
 # Home Page
 home_tab_body <- function() {
-  fluidRow( # nolint
+  fluidRow(# nolint
     class = "home-row",
     column(
       6,

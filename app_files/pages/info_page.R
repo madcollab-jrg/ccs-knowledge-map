@@ -1,5 +1,6 @@
-library(shinydashboard)
 library(bs4Dash)
+library(shinydashboard)
+
 
 # Info Page
 info_tab_body <- function() {
