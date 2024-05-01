@@ -342,11 +342,11 @@ server <- function(input, output, session) {
 
   # results graphics
 
-  # resulting_graphics(
-  #  input, output, survey_data, is_survey,
-  #  question_number, question_type, question_subtype,
-  #  demographic_desc = demographic_data()
-  # )
+  resulting_graphics(
+    input, output, survey_data, is_survey,
+    question_number, question_type, question_subtype,
+    demographic_desc = demographic_data()
+  )
 
   # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {

@@ -245,7 +245,7 @@ survey_box_ui <- function(surveys) {
         style = "display: none;",
         "STEP 4: Choose which demography you want to examine"
       ),
-      choices = c("Age", "Gender", "Income", "Education"),
+      choices = c("Age", "Gender", "Income", "Education", "Race"),
       options = list(
         placeholder = "Please select an option below",
         onInitialize = I('function() { this.setValue(""); }')

@@ -175,6 +175,12 @@ get_data_desc_rep_reaction <- function(
           max(rep_data_numeric, na.rm = TRUE)
         )
 
+        merged_tbl_data <- merged_tbl_data[, -1]
+
+        colnames(merged_tbl_data) <- c(
+          "Total Count Survey", "Total Rep."
+        )
+
         # Create gt table from the merged data
         gt_tbl <- gt(merged_tbl_data, rownames_to_stub = FALSE)
 
@@ -191,7 +197,7 @@ get_data_desc_rep_reaction <- function(
         # Assiging color
         gt_tbl <- gt_tbl %>%
           data_color(
-            # method = "numeric",
+            method = "numeric",
             colors = colors,
             columns = c(
               "Total Rep."
