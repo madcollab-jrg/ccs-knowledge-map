@@ -33,6 +33,12 @@ get_census_items <- function(census_item) {
     survey_questions <- possible_values$county
   } else if (census_item == "'Zipcode'") {
     survey_questions <- possible_values$zip
+  } else if (census_item == "'State Lower'") {
+    survey_questions <- possible_values$state_lower
+  } else if (census_item == "'State Upper'") {
+    survey_questions <- possible_values$state_upper
+  } else if (census_item == "'Congress'") {
+    survey_questions <- possible_values$congress
   }
   return(survey_questions)
 }
@@ -216,7 +222,9 @@ survey_box_ui <- function(surveys) {
       ),
       choices = c(
         "Census Tract", "Census State", "Census County",
-        "Zipcode"
+        "Zipcode", "State Lower",
+        "State Upper",
+        "Congress"
       ),
       options = list(
         placeholder = "Please select an option below",
@@ -230,6 +238,9 @@ survey_box_ui <- function(surveys) {
     make_conditional_panel_census("'Census State'", "census_state_items"),
     make_conditional_panel_census("'Census County'", "census_county_items"),
     make_conditional_panel_census("'Zipcode'", "census_zipcode_items"),
+    make_conditional_panel_census("'State Lower'", "census_state_lower_items"),
+    make_conditional_panel_census("'State Upper'", "census_state_upper_items"),
+    make_conditional_panel_census("'Congress'", "census_congress_items"),
     p(""),
     p(""),
     # use to compute representation

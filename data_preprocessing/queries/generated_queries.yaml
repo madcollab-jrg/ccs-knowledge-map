@@ -244,8 +244,8 @@ query21:
   row: Black or African American
   surveillance_query:
     query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
+    subpop: BLACK_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
       race_recode: Black or African American
@@ -257,8 +257,8 @@ query22:
   row: Hispanic
   surveillance_query:
     query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
+    subpop: HISP_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
       # hisp_code: Hispanic
@@ -271,8 +271,8 @@ query23:
   row: White
   surveillance_query:
     query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
+    subpop: WHITE_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
       race_recode: White
@@ -284,56 +284,47 @@ query24:
   row: Asian
   surveillance_query:
     query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
+    subpop: ASIAN_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
       race_recode: Asian
       min: 'yes'
   type: race
+
 query25:
-  col: Total
-  row: Asian
-  surveillance_query:
-    query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      race_recode: Asian
-      min: 'yes'
-  type: race
-query26:
   col: Total
   row: Mixed
   surveillance_query:
     query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
+    subpop: MIXED_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
       race_recode: Mixed
       min: 'yes'
   type: race
-query27:
+
+query26:
   col: Total
   row: Native Hawaiian Pacific Islander
   surveillance_query:
     query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
+    subpop: NHPI_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
       race_recode: Native Hawaiian Pacific Islander
       min: 'yes'
   type: race
-query28:
+
+query27:
   col: Total
   row: American Indian Alaskan Native
   surveillance_query:
     query: null
-    subpop: UNDERREP_TOTAL
-    target_pop: null
+    subpop: AI_AN_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
       race_recode: American Indian Alaskan Native

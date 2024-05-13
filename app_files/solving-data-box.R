@@ -9,8 +9,22 @@ result_rows <- list(
   "race" = 21:27
 )
 
+row_names <- list(
+  "Male", "Female",
+  "18-24", "25-34", "35-44", "45-54", "55-64", "65 or over",
+  "Less than high school", "High-school graduate",
+  "Some college/Technical school",
+  "Bachelor's and higher",
+  "Less than $25,000", "$25,000 to $34,999",
+  "$35,000 to $49,999", "$50,000 to $74,999",
+  "$75,000 to $99,999", "$100,000 to $149,999",
+  "$150,000 to $199,999", "$200,000 or more",
+  "Black or African American", "Hispanic", "White",
+  "Asian", "Native Hawaiian Pacific Islander",
+  "American Indian Alaskan Native", "Mixed"
+)
+
 get_data_description_ui <- function() {
-  # print(demo_desc)
   # Data description UI.
   #
   # Return:
@@ -97,18 +111,12 @@ get_data_desc_rep_reaction <- function(
         # print(census_data)
         # print(demographic_desc)
 
-
-        # data_loc <-
-        #   paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-count.RData")
-
-        # data_loc_rep <-
-        #   paste("/Users/shelciaabi/Downloads/error-example/air-quality-survey-county-55025-rep.RData")
-
         data_loc <-
           paste("/Volumes/cbjackson2/ccs-knowledge/results_summary/",
             file_loc(),
             sep = ""
           )
+        # print(data_loc)
 
         data_loc_rep <-
           paste("/Volumes/cbjackson2/ccs-knowledge/results_representativeness/",
@@ -116,11 +124,16 @@ get_data_desc_rep_reaction <- function(
             sep = ""
           )
 
+        print(data_loc_rep)
+        # print(demographic_desc)
+
         tbl_data <- get_table(data_loc)[[1]]
         rows_to_extract <- result_rows[[demographic_desc]]
         tbl_data_filtered <- tbl_data[rows_to_extract, ]
         tbl_data_filtered <- data.frame(Value = tbl_data_filtered) ### ADDITION
         gt_tbl <- gt(tbl_data_filtered, rownames_to_stub = TRUE)
+
+        print(tbl_data_filtered)
 
         loaded_data <- get_table(data_loc_rep)
         tbl_data_rep <- loaded_data[[1]]
@@ -132,6 +145,8 @@ get_data_desc_rep_reaction <- function(
 
         tbl_data_filtered$row_names <- rownames(tbl_data_filtered)
         tbl_data_filtered_rep$row_names <- rownames(tbl_data_filtered_rep)
+
+        print(tbl_data_filtered_rep)
 
         # Merge two tables by row name
         merged_tbl_data <- merge(
@@ -150,17 +165,24 @@ get_data_desc_rep_reaction <- function(
           "Total Count Survey", "Total Rep."
         )
 
-
         # Convert the "group" column to factor
         merged_tbl_data$group <- factor(merged_tbl_data$group,
           levels = unique(merged_tbl_data$group)
         )
         merged_tbl_data$group <- as.character(merged_tbl_data$group)
 
-        print(str(merged_tbl_data))
+
+        # merged_tbl_data$group <- rownames(tbl_data_filtered)
+
+        merged_tbl_data$group <- row_names[result_rows[[demographic_desc]]]
+
+        # print(str(merged_tbl_data))
+
+        print(merged_tbl_data)
 
         # Extract only the columns needed for color calculation
         rep_data_numeric <- merged_tbl_data[, c(
+          "Total Count Survey",
           "Total Rep."
         )]
 
@@ -175,15 +197,18 @@ get_data_desc_rep_reaction <- function(
           max(rep_data_numeric, na.rm = TRUE)
         )
 
-        merged_tbl_data <- merged_tbl_data[, -1]
-
-        colnames(merged_tbl_data) <- c(
-          "Total Count Survey", "Total Rep."
-        )
+        # There's error in here for newly added demogrpahic variables
+        # Warning: Error in dplyr::as_tibble: Column 4 must be named.
+        # Use `.name_repair` to specify repair.
+        # Caused by error in `repaired_names()`:
+        # ! Names can't be empty.
+        # ✖ Empty name found at location 4.
+        #   1: shiny::runApp
+        # Warning: Error in dplyr::mutate: Can't transform a data
+        # frame with `NA` or `""` names.
 
         # Create gt table from the merged data
         gt_tbl <- gt(merged_tbl_data, rownames_to_stub = FALSE)
-
 
         # Formatting decimals
         gt_tbl <- gt_tbl %>%

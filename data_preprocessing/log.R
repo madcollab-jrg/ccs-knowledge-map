@@ -9,18 +9,27 @@ library(dplyr)
 
 # Function to calculate characteristic odds in survey data
 survey_characteristic_odds <- function(df, x, census_level, log = TRUE) {
+  # print(head(df))
   if (length(x) == 0) {
     stop("No characteristics given!")
   }
 
   print(paste("arg:", census_level, x))
-  # print(state_fips)
 
-  df <- df %>% filter(!is.na(state_fips) & !!sym(census_level) == x[[census_level]])
+  # print(paste("census_level", x[[census_level]]))
+
+  census_level <- "district_GEOID"
+
+  # df <-
+  #   df %>% filter(!is.na(state_fips) & !!sym(census_level) == x[[census_level]])
   # df <- df %>% filter(!!sym(census_level) == x[[census_level]])
+
+  # df <- df %>% filter(!!sym("district_GEOID") == x[["district_GEOID"]])
+  df <- df %>% filter(!!sym("district_GEOID") %in% x[["district_GEOID"]])
+
   n <- nrow(df)
 
-  print(nrow(df))
+  print(paste("nrow(df):", nrow(df)))
 
   if (n == 0) {
     warning("n is 0")
@@ -48,18 +57,28 @@ survey_characteristic_odds <- function(df, x, census_level, log = TRUE) {
 }
 
 # Function to calculate characteristic odds in surveillance data
-surveillance_characteristic_odds <- function(df, x, log = TRUE) {
+surveillance_characteristic_odds <- function(df, x, query_type, log = TRUE) {
   count_x <- 0
 
   query <- x[["query"]]
   subpop <- x[["subpop"]]
 
+  print(query)
+
   for (c in names(query)) {
     df <- df %>% filter(!!sym(c) == query[[c]])
   }
+  print(query_type)
 
   count_x <- 0
-  n <- df[[x[["target_pop"]]]]
+  # n <- df[[x[["target_pop"]]]]
+  if (query_type == "race") {
+    n <- df[["ALL_TOTAL"]]
+  } else {
+    n <- df[[x[["target_pop"]]]]
+  }
+
+  print(paste("n:", n, x[["target_pop"]]))
 
   if (n == 0) {
     warning("n is 0")
@@ -80,7 +99,9 @@ surveillance_characteristic_odds <- function(df, x, log = TRUE) {
 }
 
 # Function to calculate log disparity between survey and surveillance data
-log_disparity <- function(survey_df, surv_df, x_survey, x_surv, census_level) {
+log_disparity <- function(
+    survey_df, surv_df, x_survey, x_surv, census_level,
+    query_type) {
   # census_level <- "zipcode"
   to_return <- list("log_disparity" = NA)
   survey_odds <-
@@ -89,7 +110,7 @@ log_disparity <- function(survey_df, surv_df, x_survey, x_surv, census_level) {
       log = TRUE
     )
   surveillance_odds <-
-    surveillance_characteristic_odds(surv_df, x_surv, log = TRUE)
+    surveillance_characteristic_odds(surv_df, x_surv, query_type, log = TRUE)
 
   print("----")
   print(survey_odds)

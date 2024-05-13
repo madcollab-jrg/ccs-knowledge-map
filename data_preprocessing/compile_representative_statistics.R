@@ -100,11 +100,6 @@ get_survey_statistics <- function(
 
       for (i in 1:n) {
         query_to_be_generated <- queries[[i]]
-
-        # print("rrr")
-
-        # print(query_to_be_generated)
-
         # add census code to the query
         if (census_level == "county") {
           if (census_code == 55025) {
@@ -118,6 +113,8 @@ get_survey_statistics <- function(
         query <-
           generate_queries(query_to_be_generated, census_code, target_pop)
         query_type <- queries[[i]]$type
+
+        print("Queries:", query, "\n")
 
         # get statistics
         surveillance_data_loc <-
@@ -138,7 +135,6 @@ get_survey_statistics <- function(
         }
         tbl_data[query_to_be_generated$row, query_to_be_generated$col] <- data
       }
-      # print("123")
       save(tbl_data, file = fname)
     },
     error = function(e) {

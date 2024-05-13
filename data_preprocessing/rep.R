@@ -97,14 +97,22 @@ get_survey_statistics <- function(
         query_type <- queries[[i]]$type
 
         # Get statistics
-        surveillance_data_loc <- paste(CENSUS_MAP[[census_level]],
-          QUERY_TYPE_MAP[[query_type]],
-          sep = ""
-        )
+        if (query_type == "race") {
+          surveillance_data_loc <- paste(CENSUS_MAP[[census_level]],
+            QUERY_TYPE_MAP_RACE[[query_type]],
+            sep = ""
+          )
+        } else {
+          surveillance_data_loc <- paste(CENSUS_MAP[[census_level]],
+            QUERY_TYPE_MAP[[query_type]],
+            sep = ""
+          )
+        }
+
         surveillance <- read.csv(surveillance_data_loc)
         statistics <- log_disparity(
           survey_df, surveillance, query$surveyq, query$surveillanceq,
-          CENSUS_TO_SURVEY_COL[[census_level]]
+          CENSUS_TO_SURVEY_COL[[census_level]], query_type
         )
         data <- statistics[["log_disparity"]]
 
@@ -137,16 +145,26 @@ QUERY_TYPE_MAP <- c(
   "age" = "_age.csv",
   "income" = "_income.csv",
   "education" = "_genderedu.csv",
-  "gender" = "_genderedu.csv"
+  "gender" = "_genderedu.csv",
+  "race" = "_genderedu.csv"
 )
+
+QUERY_TYPE_MAP_RACE <- c(
+  "age" = "_age2.csv",
+  "income" = "_income2.csv",
+  "education" = "_genderedu2.csv",
+  "gender" = "_genderedu2.csv",
+  "race" = "_genderedu2.csv"
+)
+
 CENSUS_MAP <- c(
-  "tract" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract",
-  "state" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate",
-  "county" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty",
-  "zipcode" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip",
-  "state_upper" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper",
-  "state_lower" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower",
-  "congress" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress"
+  "tract" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/tract/censustract", # nolint: line_length_linter.
+  "state" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state/censusstate", # nolint
+  "county" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/county/censuscounty", # nolint
+  "zipcode" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/zip/censuszip", # nolint
+  "state_upper" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_upper/state_upper", # nolint
+  "state_lower" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/state_lower/state_lower", # nolint
+  "congress" = "/Volumes/cbjackson2/ccs-knowledge/census-data/census/congress/censuscongress" # nolint
 )
 CENSUS_TO_SURVEY_COL <- c(
   "tract" = "census_tract_full",

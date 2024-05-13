@@ -53,169 +53,192 @@ make_color_mapping <- function(column, options) {
   return(color_mapping)
 }
 
+# text_questions <- function(survey_data, demographic_variable) {
+#   # Import stoplist
+#   malletwords <-
+#     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
+#       character(),
+#       quote = ""
+#     )
+
+#   # Extract example question and demographic data
+#   example_open <- survey_data
+#   names(example_open)[2] <- "response"
+
+#   example_open$response_cleaned <- tolower(gsub(
+#     "[[:punct:]]", " ",
+#     example_open$response
+#   ))
+#   example_open$response_cleaned <- removeWords(
+#     example_open$response_cleaned,
+#     c(stopwords("english"), malletwords)
+#   )
+#   example_open$response_cleaned <-
+#     lemmatize_words(example_open$response_cleaned)
+
+#   # Create a corpus
+#   corpus <- Corpus(VectorSource(example_open$response_cleaned))
+
+#   # Create a document-term matrix
+#   dtm <- DocumentTermMatrix(corpus)
+
+#   # Fit structured topic model
+#   stm_model <- stm(
+#     texts = example_open$response_cleaned,
+#     data = example_open,
+#     K = 8,
+#     prevalence = ~.,
+#     max.em.its = 25,
+#     seed = 1
+#   )
+
+#   # Extract top words for each topic
+#   top_words <- labelTopics(stm_model, n = 10)
+
+#   # Create dataframe with top words and topics
+#   top_words_df <- data.frame(
+#     topic = rep(1:8, each = 10),
+#     word = unlist(top_words),
+#     stringsAsFactors = FALSE
+#   )
+
+#   # Create structured topic model plot
+#   stm_plot <- ggplot(top_words_df, aes(x = reorder(word, -topic), y = topic)) +
+#     geom_point(size = 3, aes(color = as.factor(topic))) +
+#     scale_color_discrete(name = "Topic") +
+#     labs(x = "Word", y = "Topic") +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#     ggtitle("Structured Topic Model")
+
+#   return(stm_plot)
+# }
+
+# removeWords <- function(corpus, words) {
+#   corpus <- gsub(paste(words, collapse = "|"), "", corpus)
+#   return(corpus)
+# }
+
+# text_questions <- function(survey_data, demographic_variable) {
+#   library(stm)
+#   library(tm)
+#   library(ggplot2)
+
+#   # Preprocess the text data
+#   malletwords <-
+#     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
+#       character(),
+#       quote = ""
+#     )
+
+#   # Extract example question and demographic data
+#   example_open <- survey_data
+#   names(example_open)[2] <- "response"
+
+#   example_open$response_cleaned <- tolower(gsub(
+#     "[[:punct:]]", " ",
+#     example_open$response
+#   ))
+#   # example_open$response_cleaned <- removeWords(
+#   #   example_open$response_cleaned,
+#   #   c(stopwords("english"), malletwords)
+#   # )
+#   example_open$response_cleaned <-
+#     lemmatize_words(example_open$response_cleaned)
+
+#   survey_data <- example_open
+
+#   # Create document-term matrix
+#   corpus <- Corpus(VectorSource(survey_data$response_cleaned))
+#   dtm <- DocumentTermMatrix(corpus)
+
+#   # Check the structure and content of dtm
+#   print("###################")
+#   print(str(dtm))
+#   print(dtm)
+#   print("###################")
+
+#   # Fit the STM model
+#   tryCatch(
+#     {
+#       stm_model <-
+#         stm(stm::textProcessor(survey_data$response_cleaned)$documents,
+#           # vocab = colnames(dtm),
+#           vocab = colnames(as.matrix(dtm)),
+#           K = 2,
+#           data = survey_data,
+#           prevalence = ~demographic_variable,
+#           max.em.its = 25,
+#           seed = 1
+#         )
+#     },
+#     error = function(e) {
+#       print("Error occurred during STM model fitting:")
+#       print(e)
+#       return(NULL)
+#     }
+#   )
+
+#   if (exists("stm_model")) {
+#     # Extract the top 2 topics
+#     top_topics <- labelTopics(stm_model, n = 2)
+
+#     # Visualize the topics
+#     stm_plot <- ggplot(data = top_topics, aes(
+#       x = term, y = beta,
+#       fill = topic
+#     )) +
+#       geom_col(position = position_dodge()) +
+#       facet_wrap(~topic) +
+#       labs(x = "Word", y = "Frequency", fill = "Topic")
+
+#     return(stm_plot)
+#   } else {
+#     print("STM model fitting failed. Check for errors.")
+#     return(NULL)
+#   }
+# }
+
 text_questions <- function(survey_data, demographic_variable) {
-  # Import stoplist
-  malletwords <-
-    scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
-      character(),
-      quote = ""
-    )
-
-  # Extract example question and demographic data
-  example_open <- survey_data
-  names(example_open)[2] <- "response"
-
-  example_open$response_cleaned <- tolower(gsub(
-    "[[:punct:]]", " ",
-    example_open$response
-  ))
-  example_open$response_cleaned <- removeWords(
-    example_open$response_cleaned,
-    c(stopwords("english"), malletwords)
-  )
-  example_open$response_cleaned <-
-    lemmatize_words(example_open$response_cleaned)
-
-  # Create a corpus
-  corpus <- Corpus(VectorSource(example_open$response_cleaned))
-
-  # Create a document-term matrix
-  dtm <- DocumentTermMatrix(corpus)
-
-  # Fit structured topic model
-  stm_model <- stm(
-    texts = example_open$response_cleaned,
-    data = example_open,
-    K = 8,
-    prevalence = ~.,
-    max.em.its = 25,
-    seed = 1
-  )
-
-  # Extract top words for each topic
-  top_words <- labelTopics(stm_model, n = 10)
-
-  # Create dataframe with top words and topics
-  top_words_df <- data.frame(
-    topic = rep(1:8, each = 10),
-    word = unlist(top_words),
-    stringsAsFactors = FALSE
-  )
-
-  # Create structured topic model plot
-  stm_plot <- ggplot(top_words_df, aes(x = reorder(word, -topic), y = topic)) +
-    geom_point(size = 3, aes(color = as.factor(topic))) +
-    scale_color_discrete(name = "Topic") +
-    labs(x = "Word", y = "Topic") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    ggtitle("Structured Topic Model")
-
-  return(stm_plot)
-}
-
-perform_topic_modeling <- function(
-    survey_data, demographic_variable,
-    num_topics = 8) {
-  # Import stoplist
-  malletwords <-
-    scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
-      character(),
-      quote = ""
-    )
-
-  # Extract example question and demographic data
-  example_open <- survey_data
-  names(example_open)[2] <- "response"
-
-  example_open$response_cleaned <- tolower(gsub(
-    "[[:punct:]]", " ",
-    example_open$response
-  ))
-  example_open$response_cleaned <- removeWords(
-    example_open$response_cleaned,
-    c(stopwords("english"), malletwords)
-  )
-  example_open$response_cleaned <-
-    lemmatize_words(example_open$response_cleaned)
-
-  survey_data <- example_open
-
-  # Preprocess the text data
-  processed_texts <- textProcessor(
+  processed_data <- textProcessor(
     documents = survey_data$response,
     metadata = survey_data
+    # tokenize = "words",
+    # removeStopwords = TRUE,
+    # removePunctuation = TRUE,
+    # removeNumbers = TRUE,
+    # stripWhitespace = TRUE
   )
-  out <- prepDocuments(
-    processed_texts$documents, processed_texts$vocab,
-    processed_texts$meta
-  )
-  docs <- out$documents
-  vocab <- out$vocab
-  meta <- out$meta
 
+  your_data <- processed_data$documents
   # Fit the STM model
-  num_topics <- 2 # Choose an appropriate number of topics
-  topic_model <- stm(
-    documents = docs, vocab = vocab,
-    K = num_topics, data = meta, max.em.its = 300, init.type = "Spectral"
+  stm_model <- stm(
+    documents = your_data,
+    num_topics = 2,
+    init.type = "Spectral"
   )
 
-  print("***********")
-  top_words <- labelTopics(topic_model)
-  print(top_words)
+  # Extract the topic labels and frequencies
+  topic_labels <- tidy(stm_model, matrix = "beta")$term
+  topic_freqs <- tidy(stm_model, matrix = "gamma")$gamma
 
-  topic_words <- top_words$prob
-  topics1 <- topic_words[1, ]
-  topics2 <- topic_words[2, ]
-
-  topics1 <- paste(topics1, collapse = ", ")
-  topics2 <- paste(topics2, collapse = ", ")
-
-  topics1 <- paste("Topic 1 - ", topics1)
-  topics2 <- paste("Topic 2 - ", topics2)
-
-  print(topics1)
-  print(topics2)
-
-  print("***********")
-
-
-  # Get document-topic matrix
-  doc_topic_matrix <- topic_model$theta
-
-  # Convert matrix to data frame
-  doc_topic_df <- as.data.frame(doc_topic_matrix)
-  doc_topic_df$Document <- rownames(doc_topic_df)
-
-  # Melt the data frame for plotting
-  doc_topic_melted <- reshape2::melt(doc_topic_df, id.vars = "Document")
-
-  # print(doc_topic_melted)
-
-  # Get top words associated with each topic
-  # top_words <- terms(topic_model, 10)
-
-  # print(top_words)
-
-  scatter_plot <- plot_ly() %>%
-    add_trace(
-      x = 1:nrow(doc_topic_matrix), y = doc_topic_matrix[, 1], mode = "markers",
-      name = topics1,
-      marker = list(color = "#007dcb")
-    ) %>%
-    add_trace(
-      x = 1:nrow(doc_topic_matrix), y = doc_topic_matrix[, 2], mode = "markers",
-      name = topics2, marker = list(color = "#e39400")
-    ) %>%
+  fig <- plot_ly(
+    x = ~topic_labels,
+    y = ~topic_freqs,
+    type = "bar",
+    color = ~topic_labels,
+    colors = "set1"
+  ) %>%
     layout(
-      title = "Topic Modelling",
-      xaxis = list(title = "Document Index"),
-      yaxis = list(title = "Proportion of Topic"),
-      showlegend = TRUE
+      title = "Structured Topic Model",
+      xaxis = list(title = "Topic Labels"),
+      yaxis = list(title = "Topic Frequencies"),
+      barmode = "stack"
     )
 
-  return(scatter_plot)
+  return(fig)
 }
+
+
 
 matrix_questions <- function(example_matrix, demographic_variable, q_type) {
   names(example_matrix)[2] <- "response"
@@ -301,6 +324,11 @@ matrix_questions <- function(example_matrix, demographic_variable, q_type) {
       color_var <- ~Year.of.Birth
       legendgroup <- ~Year.of.Birth
       legendtext <- "Age Group"
+    },
+    "race_recode" = {
+      color_var <- ~race_recode
+      legendgroup <- ~race_recode
+      legendtext <- "Race"
     }
   )
 
@@ -385,7 +413,9 @@ multi_choice_questions <- function(
   }
   multi_summary$wrapped_labels <- wrap_labels(multi_summary$response)
 
-  print(multi_summary)
+  # print(multi_summary)
+
+  print(demographic_variable)
 
   # based on demographics determine the variables
   switch(demographic_variable,
@@ -408,6 +438,11 @@ multi_choice_questions <- function(
       color_var <- ~Year.of.Birth
       legendgroup <- ~Year.of.Birth
       legendtext <- "Age Group"
+    },
+    "race_recode" = {
+      color_var <- ~race_recode
+      legendgroup <- ~race_recode
+      legendtext <- "Race"
     }
   )
 
@@ -517,6 +552,11 @@ select_box_questions <- function(
       color_var <- ~Year.of.Birth
       legendgroup <- ~Year.of.Birth
       legendtext <- "Age Group"
+    },
+    "race_recode" = {
+      color_var <- ~race_recode
+      legendgroup <- ~race_recode
+      legendtext <- "Race"
     }
   )
 
@@ -558,7 +598,8 @@ demographic_data_to_var <- c(
   "age" = "age_var",
   "gender" = "gender_var",
   "income" = "income_var",
-  "education" = "edu_var"
+  "education" = "edu_var",
+  "race" = "race_var"
 )
 
 data_for_visualization <- NA
@@ -571,14 +612,14 @@ resulting_graphics <- function(
   # Populate the survey results boxes with the required graphics
   reaction <- observeEvent(input$run_report, {
     req(input$survey)
-    print(question_type())
+    # print(question_type())
     q_type <- question_type()
     survey_flag <- is_survey()
-    print(q_type)
-    message(q_type)
-    print(input$survey)
-    print(survey_flag)
-    print("1243")
+    # print(q_type)
+    # message(q_type)
+    # print(input$survey)
+    # print(survey_flag)
+    # print("1243")
 
     if (q_type != "Ranking" & survey_flag) {
       # Unsure how rank type questions are suppose to be displayed
@@ -590,6 +631,7 @@ resulting_graphics <- function(
       edu_var <- "edu_recode"
       age_var <- "Year.of.Birth"
       gender_var <- "Gender"
+      race_var <- "race_recode"
 
       # subcategories options + color mapping
       income_options <- c(
@@ -615,6 +657,13 @@ resulting_graphics <- function(
       # Called multi-options in previous
       gender_options <- c(NA, "Non-binary", "Male", "Female")
       gender_color_mapping <- make_color_mapping(gender_var, gender_options)
+
+      race_options <- c(
+        NA, "Black or African American", "Hispanic", "White",
+        "Asian", "Native Hawaiian Pacific Islander",
+        "American Indian Alaskan Native", "Mixed"
+      )
+      race_color_mapping <- make_color_mapping(race_var, race_options)
 
       # get data and change year of birth
       data <- survey_data()
@@ -669,12 +718,12 @@ resulting_graphics <- function(
         data_for_visualization <- data[, c(1, question_num + 1, 7:10, 6)]
       }
 
-      # print("okok")
       # print based on question type
-      message(q_type)
+      # message(q_type)
       if (q_type == "matrix") {
         q_subtype <- question_subtype()
-        message(q_subtype)
+        # message(q_subtype)
+        message(demographic_desc)
         if (demographic_desc == "income") {
           output$survey_results <- renderPlotly(matrix_questions(
             data_for_visualization,
@@ -695,6 +744,11 @@ resulting_graphics <- function(
             data_for_visualization,
             gender_var, q_subtype
           ))
+        } else if (demographic_desc == "race") {
+          output$survey_results <- renderPlotly(matrix_questions(
+            data_for_visualization,
+            race_var, q_subtype
+          ))
         }
       } else if (q_type == "open-ended") {
         if (demographic_desc == "income") {
@@ -714,13 +768,18 @@ resulting_graphics <- function(
           ))
         } else if (demographic_desc == "gender") {
           output$survey_results <- renderPlotly(text_questions(
-              data_for_visualization,
-              gender_var
+            data_for_visualization,
+            gender_var
           ))
           # output$survey_results <- renderPlotly(perform_topic_modeling(
           #   data_for_visualization,
           #   gender_var
           # ))
+        } else if (demographic_desc == "race") {
+          output$survey_results <- renderPlotly(text_questions(
+            data_for_visualization,
+            race_var
+          ))
         }
       } else if (q_type == "multi-choice") {
         if (demographic_desc == "income") {
@@ -743,6 +802,11 @@ resulting_graphics <- function(
             data_for_visualization,
             gender_var, NA, gender_color_mapping, gender_options
           ))
+        } else if (demographic_desc == "race") {
+          output$survey_results <- renderPlotly(multi_choice_questions(
+            data_for_visualization,
+            race_var, NA, race_color_mapping, race_options
+          ))
         }
       } else if (q_type == "select box") {
         if (demographic_desc == "income") {
@@ -764,6 +828,11 @@ resulting_graphics <- function(
           output$survey_results <- renderPlotly(select_box_questions(
             data_for_visualization,
             gender_var, NA, gender_color_mapping, gender_options
+          ))
+        } else if (demographic_desc == "race") {
+          output$survey_results <- renderPlotly(select_box_questions(
+            data_for_visualization,
+            race_var, NA, race_color_mapping, race_options
           ))
         }
       }

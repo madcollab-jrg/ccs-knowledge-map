@@ -5,8 +5,7 @@ library(dplyr)
 get_summary_statistics <- function(
     survey, census_level, queries,
     census_code, save = TRUE, fname = "") {
-  # print(census_code)
-  # print(census_level)
+  print(paste("census:", census_code, census_level))
   # print(queries)
   n <- length(queries)
   survey_df <- read.csv(survey)
@@ -33,7 +32,7 @@ get_summary_statistics <- function(
   for (i in 1:n) {
     query_to_be_generated <- queries[[i]]
 
-    print(census_level)
+    # print(census_level)
 
     # add census code to the query
     if (census_level == "tract") {
@@ -59,7 +58,7 @@ get_summary_statistics <- function(
   }
 
   print(tbl_data)
-  print(fname)
+  # print(fname)
   save(tbl_data, file = fname)
 }
 
@@ -69,32 +68,32 @@ demographic_data <-
 
 SURVEYS <- c(
   # old surveys
-  # "air-quality-map",
+  # "air-quality-map"
   # "air-quality-survey"
-  # "ej-survey"
+  # "ej-survey",
   # "ej-report"
-  # "ej-storytile"
-  # "tree-canopy-map"
+  "ej-storytile"
+  # "tree-canopy-map",
   # "tree-canopy-survey"
-  # "urban-heat-map"
+  # "urban-heat-map",
   # "urban-heat-survey"
   # new surveys
-  "carbon-concerns",
-  "energy-concerns",
-  "general-survey",
-  "health-impacts",
-  "tree-knowledge"
+  # "carbon-concerns",
+  # "energy-concerns",
+  # "general-survey",
+  # "health-impacts",
+  # "tree-knowledge"
 )
 
 # SURVEYS = c("air-quality-map")
 CENSUS_TO_SURVEY_COL <- c(
-  "zipcode" = "zip"
-  # "tract" = "census_tract_full",
-  # "state" = "state_fips",
-  # "county" = "county_fips",
-  # "state_upper" = "district_GEOID",
-  # "state_lower" = "assembly_geoid",
-  # "congress" = "congress_district"
+  "zipcode" = "zip",
+  "tract" = "census_tract_full",
+  "state" = "state_fips",
+  "county" = "county_fips",
+  "state_upper" = "assembly_geoid",
+  "state_lower" = "assembly_geoid",
+  "congress" = "district_GEOID"
 )
 
 HEAD <- "/Volumes/cbjackson2/ccs-knowledge/results_summary/"

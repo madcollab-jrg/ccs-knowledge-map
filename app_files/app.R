@@ -64,7 +64,10 @@ censusInputId <- c(
   "Census Tract" = "census_tract_items",
   "Census State" = "census_state_items",
   "Census County" = "census_county_items",
-  "Zipcode" = "census_zipcode_items"
+  "Zipcode" = "census_zipcode_items",
+  "State Lower" = "census_state_lower_items",
+  "State Upper" = "census_state_upper_items",
+  "Congress" = "census_congress_items"
 )
 input_to_data_demo <- c(
   "Air Quality Survey" = "air-quality-survey",
@@ -84,7 +87,10 @@ census_input_to_data <- c(
   "Census Tract" = "tract",
   "Census State" = "state",
   "Census County" = "county",
-  "Zipcode" = "zipcode"
+  "Zipcode" = "zipcode",
+  "State Lower" = "state_lower",
+  "State Upper" = "state_upper",
+  "Congress" = "congress"
 )
 census_level_input_to_data <-
   read_yaml("census_items/census_level_to_results.yaml")
@@ -127,7 +133,8 @@ demographic_desc_to_data <- c(
   "Age" = "age",
   "Gender" = "gender",
   "Income" = "income",
-  "Education" = "education"
+  "Education" = "education",
+  "Race" = "race"
 )
 
 ui <- dashboardPage(
@@ -216,6 +223,10 @@ server <- function(input, output, session) {
           input_to_data_survey_desc[[name]], ".csv",
           sep = ""
         ))
+      # print(paste(survey_data_loc, input_to_data_survey_desc[[name]], "/",
+      #   input_to_data_survey_desc[[name]], ".csv",
+      #   sep = ""
+      # ))
       survey_data[, -1]
     }
   )

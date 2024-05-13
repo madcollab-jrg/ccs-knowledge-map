@@ -69,3 +69,152 @@ zipcode:
   - 53726
   - 95207
 
+state_upper:
+  - State Senate District 1 (2018), Wisconsin
+  - State Senate District 2 (2018), Wisconsin
+  - State Senate District 3 (2018), Wisconsin
+  - State Senate District 4 (2018), Wisconsin
+  - State Senate District 5 (2018), Wisconsin
+  - State Senate District 6 (2018), Wisconsin
+  - State Senate District 7 (2018), Wisconsin
+  - State Senate District 8 (2018), Wisconsin
+  - State Senate District 9 (2018), Wisconsin
+  - State Senate District 10 (2018), Wisconsin
+  - State Senate District 11 (2018), Wisconsin
+  - State Senate District 12 (2018), Wisconsin
+  - State Senate District 13 (2018), Wisconsin
+  - State Senate District 14 (2018), Wisconsin
+  - State Senate District 15 (2018), Wisconsin
+  - State Senate District 16 (2018), Wisconsin
+  - State Senate District 17 (2018), Wisconsin
+  - State Senate District 18 (2018), Wisconsin
+  - State Senate District 19 (2018), Wisconsin
+  - State Senate District 20 (2018), Wisconsin
+  - State Senate District 21 (2018), Wisconsin
+  - State Senate District 22 (2018), Wisconsin
+  - State Senate District 23 (2018), Wisconsin
+  - State Senate District 24 (2018), Wisconsin
+  - State Senate District 25 (2018), Wisconsin
+  - State Senate District 26 (2018), Wisconsin
+  - State Senate District 27 (2018), Wisconsin
+  - State Senate District 28 (2018), Wisconsin
+  - State Senate District 29 (2018), Wisconsin
+  - State Senate District 30 (2018), Wisconsin
+  - State Senate District 31 (2018), Wisconsin
+  - State Senate District 32 (2018), Wisconsin
+  - State Senate District 33 (2018), Wisconsin
+  
+
+# The link is 
+state_lower: 
+  - Assembly District 1 (2018), Wisconsin
+  - Assembly District 2 (2018), Wisconsin
+  - Assembly District 3 (2018), Wisconsin
+  - Assembly District 4 (2018), Wisconsin
+  - Assembly District 5 (2018), Wisconsin
+  - Assembly District 6 (2018), Wisconsin
+  - Assembly District 7 (2018), Wisconsin
+  - Assembly District 8 (2018), Wisconsin
+  - Assembly District 9 (2018), Wisconsin
+  - Assembly District 10 (2018), Wisconsin
+  - Assembly District 11 (2018), Wisconsin
+  - Assembly District 12 (2018), Wisconsin
+  - Assembly District 13 (2018), Wisconsin
+  - Assembly District 14 (2018), Wisconsin
+  - Assembly District 15 (2018), Wisconsin
+  - Assembly District 16 (2018), Wisconsin
+  - Assembly District 17 (2018), Wisconsin
+  - Assembly District 18 (2018), Wisconsin
+  - Assembly District 19 (2018), Wisconsin
+  - Assembly District 20 (2018), Wisconsin
+  - Assembly District 21 (2018), Wisconsin
+  - Assembly District 22 (2018), Wisconsin
+  - Assembly District 23 (2018), Wisconsin
+  - Assembly District 24 (2018), Wisconsin
+  - Assembly District 25 (2018), Wisconsin
+  - Assembly District 26 (2018), Wisconsin
+  - Assembly District 27 (2018), Wisconsin
+  - Assembly District 28 (2018), Wisconsin
+  - Assembly District 29 (2018), Wisconsin
+  - Assembly District 30 (2018), Wisconsin
+  - Assembly District 31 (2018), Wisconsin
+  - Assembly District 32 (2018), Wisconsin
+  - Assembly District 33 (2018), Wisconsin
+  - Assembly District 34 (2018), Wisconsin
+  - Assembly District 35 (2018), Wisconsin
+  - Assembly District 36 (2018), Wisconsin
+  - Assembly District 37 (2018), Wisconsin
+  - Assembly District 38 (2018), Wisconsin
+  - Assembly District 39 (2018), Wisconsin
+  - Assembly District 40 (2018), Wisconsin
+  - Assembly District 41 (2018), Wisconsin
+  - Assembly District 42 (2018), Wisconsin
+  - Assembly District 43 (2018), Wisconsin
+  - Assembly District 44 (2018), Wisconsin
+  - Assembly District 45 (2018), Wisconsin
+  - Assembly District 46 (2018), Wisconsin
+  - Assembly District 47 (2018), Wisconsin
+  - Assembly District 48 (2018), Wisconsin
+  - Assembly District 49 (2018), Wisconsin
+  - Assembly District 50 (2018), Wisconsin
+  - Assembly District 51 (2018), Wisconsin
+  - Assembly District 52 (2018), Wisconsin
+  - Assembly District 53 (2018), Wisconsin
+  - Assembly District 54 (2018), Wisconsin
+  - Assembly District 55 (2018), Wisconsin
+  - Assembly District 56 (2018), Wisconsin
+  - Assembly District 57 (2018), Wisconsin
+  - Assembly District 58 (2018), Wisconsin
+  - Assembly District 59 (2018), Wisconsin
+  - Assembly District 60 (2018), Wisconsin
+  - Assembly District 61 (2018), Wisconsin
+  - Assembly District 62 (2018), Wisconsin
+  - Assembly District 63 (2018), Wisconsin
+  - Assembly District 64 (2018), Wisconsin
+  - Assembly District 65 (2018), Wisconsin
+  - Assembly District 66 (2018), Wisconsin
+  - Assembly District 67 (2018), Wisconsin
+  - Assembly District 68 (2018), Wisconsin
+  - Assembly District 69 (2018), Wisconsin
+  - Assembly District 70 (2018), Wisconsin
+  - Assembly District 71 (2018), Wisconsin
+  - Assembly District 72 (2018), Wisconsin
+  - Assembly District 73 (2018), Wisconsin
+  - Assembly District 74 (2018), Wisconsin
+  - Assembly District 75 (2018), Wisconsin
+  - Assembly District 76 (2018), Wisconsin
+  - Assembly District 77 (2018), Wisconsin
+  - Assembly District 78 (2018), Wisconsin
+  - Assembly District 79 (2018), Wisconsin
+  - Assembly District 80 (2018), Wisconsin
+  - Assembly District 81 (2018), Wisconsin
+  - Assembly District 82 (2018), Wisconsin
+  - Assembly District 83 (2018), Wisconsin
+  - Assembly District 84 (2018), Wisconsin
+  - Assembly District 85 (2018), Wisconsin
+  - Assembly District 86 (2018), Wisconsin
+  - Assembly District 87 (2018), Wisconsin
+  - Assembly District 88 (2018), Wisconsin
+  - Assembly District 89 (2018), Wisconsin
+  - Assembly District 90 (2018), Wisconsin
+  - Assembly District 91 (2018), Wisconsin
+  - Assembly District 92 (2018), Wisconsin
+  - Assembly District 93 (2018), Wisconsin
+  - Assembly District 94 (2018), Wisconsin
+  - Assembly District 95 (2018), Wisconsin
+  - Assembly District 96 (2018), Wisconsin
+  - Assembly District 97 (2018), Wisconsin
+  - Assembly District 98 (2018), Wisconsin
+  - Assembly District 99 (2018), Wisconsin
+
+
+  # the connection in the data files is district_GEOID in CCS Data and GEOID in Census files (all are included below)
+congress:
+  - 5501, Congressional District 1 (116th Congress), Wisconsin
+  - 5502, Congressional District 2 (116th Congress), Wisconsin
+  - 5503, Congressional District 3 (116th Congress), Wisconsin
+  - 5504, Congressional District 4 (116th Congress), Wisconsin
+  - 5505, Congressional District 5 (116th Congress), Wisconsin
+  - 5506, Congressional District 6 (116th Congress), Wisconsin
+  - 5507, Congressional District 7 (116th Congress), Wisconsin
+  - 5508, Congressional District 8 (116th Congress), Wisconsin
