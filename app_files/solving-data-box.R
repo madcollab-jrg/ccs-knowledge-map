@@ -24,7 +24,7 @@ row_names <- list(
   "American Indian Alaskan Native", "Mixed"
 )
 
-get_data_description_ui <- function() {
+get_data_description_ui <- function(survey, demographic, geography, demo) {
   # Data description UI.
   #
   # Return:
@@ -33,18 +33,40 @@ get_data_description_ui <- function() {
   #   See get_data_desc_rep_reaction()
   #   for the components.
   data_description <- box(
-    title = HTML("<div class='card-title'><h1 class='page-subtitle'>
-    [Survey] Representativeness by [Demographic] Compared to [Geography]</h1>
-    <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"),
+    # title = HTML("<div class='card-title'><h1 class='page-subtitle'>
+    # [Survey] Representativeness by [Demographic] Compared to [Geography]</h1>
+    # <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"),
+    title = HTML(paste(
+      "<div class='card-title'><h1 class='page-subtitle'>", "<span>",
+      survey, "</span>", "Representativeness by", "<span>", demographic,
+      "</span>", "Compared to", geography, "</h1>
+      <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"
+    )),
     gt_output("new_table"),
     actionButton(
       inputId = "downloadTable", label = "Save Table",
       gradient = TRUE, class = "button-common"
     ),
     callout(
+      # title = HTML(paste(
+      #   "<div style='display: inline;'>",
+      #   "<p class='page-para'>Representativeness is low for one or more, </p>",
+      #   "<span>",
+      #   demographic,
+      #   "</span>",
+      #   "<p class='page-para'> ,categories.</p>",
+      #   "</div>"
+      # )),
+      title = HTML(paste(
+        "<div style='display: inline;'>",
+        "<p class='page-para'>Representativeness is low for one or more, </p>",
+        "<span>",
+        demo,
+        "</span>",
+        "<p class='page-para'> ,categories.</p>",
+        "</div>"
+      )),
       # ionicon("alert"),
-      title = HTML("<p class='page-para'>Representativeness is low for one or
-      more [Demographic] categories.</p>"),
       actionLink("strategies", "Strategies"),
       status = "danger",
       width = 12,

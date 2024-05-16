@@ -167,6 +167,16 @@ text,
   font-weight: 600 !important;
 }
 
+.shiny-text-output {
+  display: inline !important;
+}
+
+.callout .shiny-text-output {
+  color: #fff !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+}
+
 @media screen and (min-width: 900px) {
   .nav-link[data-widget="pushmenu"] {
     display: none !important;

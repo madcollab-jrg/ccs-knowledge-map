@@ -18,10 +18,7 @@ surveys <- c(
   "General Survey", "Health Impacts"
 )
 
-reporting_tool_body <- function() {
-  # browser()
-  # print(demographic_data)
-  # reactively display results box
+reporting_tool_body <- function(survey, demographic, geography, demo, demog) {
   dashboard_body <- fluidRow(
     useShinyjs(),
     class = "container-row",
@@ -33,8 +30,8 @@ reporting_tool_body <- function() {
     ),
     column(
       8,
-      get_data_description_ui(),
-      survey_results_ui(),
+      get_data_description_ui(survey, demographic, geography, demo),
+      survey_results_ui(demog),
       uiOutput("results")
     ),
   )

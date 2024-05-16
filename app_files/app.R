@@ -186,7 +186,11 @@ ui <- dashboardPage(
       tabItem(tabName = "avail_data", avail_data_tab_body()),
       tabItem(
         tabName = "reporting_tool",
-        reporting_tool_body()
+        reporting_tool_body(
+          textOutput("survey"), textOutput("demographic"),
+          textOutput("census_level"), textOutput("demo"),
+          textOutput("demog")
+        )
       ),
       tabItem(tabName = "about", about_tab_body()),
       tabItem(tabName = "info_page", info_tab_body()),
@@ -202,6 +206,27 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output, session) {
+  # Function to update the selected survey, demo, level
+  output$survey <- renderText({
+    paste(input$survey)
+  })
+
+  output$demographic <- renderText({
+    paste(input$demographic)
+  })
+
+  output$demo <- renderText({
+    paste(input$demographic)
+  })
+
+  output$demog <- renderText({
+    paste(input$demographic)
+  })
+
+  output$census_level <- renderText({
+    paste(input$census_level)
+  })
+
   demographic_data_loc <-
     "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
   # survey_data_loc <- "/Volumes/cbjackson2/ccs-knowledge/ccs-data/"
