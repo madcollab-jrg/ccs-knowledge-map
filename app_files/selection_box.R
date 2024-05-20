@@ -182,28 +182,46 @@ survey_box_ui <- function(surveys) {
       "ej_report_qs",
       "environmental_justice_report"
     ),
+    # make_conditional_panel_survey(
+    #   "Tree Knowledge",
+    #   "trees_greenery_survey_qs",
+    #   "trees_greenery"
+    # ),
     make_conditional_panel_survey(
       "Tree Knowledge",
-      "trees_greenery_survey_qs",
+      "tree_knowledge_qs",
       "trees_greenery"
     ),
     make_conditional_panel_survey(
       "Carbon Concerns", "carbon_survey_qs",
       "carbon"
     ),
+    # make_conditional_panel_survey(
+    #   "Energy Concerns", "energy_survey_qs",
+    #   "energy"
+    # ),
     make_conditional_panel_survey(
-      "Energy Concerns", "energy_survey_qs",
+      "Energy Concerns", "energy_concerns_qs",
       "energy"
     ),
     make_conditional_panel_survey(
       "General Survey", "general_survey_qs",
       "general"
     ),
+    # make_conditional_panel_survey(
+    #   "Health Impacts",
+    #   "heat_health_survey_qs",
+    #   "heat_health"
+    # ),
     make_conditional_panel_survey(
       "Health Impacts",
-      "heat_health_survey_qs",
+      "health_impacts_qs",
       "heat_health"
     ),
+    #     "Tree Knowledge" = "tree_knowledge_qs",
+    # "Energy Concerns" = "energy_concerns_qs",
+    # "General Survey" = "general_survey_qs",
+    # "Health Impacts" = "health_impacts_qs"
     p(""),
     p(""),
 

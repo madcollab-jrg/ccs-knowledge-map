@@ -45,7 +45,11 @@ surveyInputId <- c(
   "Energy Survey" = "energy_survey_qs",
   "General Survey" = "general_survey_qs",
   "Heat Health Survey" = "heat_health_survey_qs",
-  "Trees Greenery Survey" = "trees_greenery_survey_qs"
+  "Trees Greenery Survey" = "trees_greenery_survey_qs",
+  "Tree Knowledge" = "tree_knowledge_qs",
+  "Energy Concerns" = "energy_concerns_qs",
+  "General Survey" = "general_survey_qs",
+  "Health Impacts" = "health_impacts_qs"
 )
 
 has_results <- c(
@@ -55,6 +59,9 @@ has_results <- c(
   "Air Quality Map" = TRUE, "Tree Canopy Map" = FALSE, "Urban Heat Map" = FALSE,
   "Carbon Survey" = TRUE,
   "Carbon Concerns" = TRUE,
+  "Tree Knowlege" = TRUE,
+  "Energy Concerns" = TRUE,
+  "Health Impacts" = TRUE,
   "Energy Survey" = TRUE, "General Survey" = TRUE,
   "Heat Health Survey" = TRUE,
   "Trees Greenery Survey" = TRUE
@@ -77,10 +84,15 @@ input_to_data_demo <- c(
   "Urban Heat Map" = "urban-heat-map",
   "Air Quality Map" = "air-quality-map",
   "Tree Canopy Map" = "tree-canopy-map",
-  "Carbon Survey" = "carbon_survey",
-  "Energy Survey" = "energy_survey",
-  "General Survey" = "general_survey",
-  "Heat Health Survey" = "heat_health_survey",
+  "Carbon Concerns" = "carbon-concerns",
+  "Tree Knowledge" = "tree-knowledge",
+  "Energy Concerns" = "energy-concerns",
+  "General Survey" = "general-survey",
+  "Health Impacts" = "health-impacts",
+  # "Carbon Survey" = "carbon_survey",
+  # "Energy Survey" = "energy_survey",
+  # "General Survey" = "general_survey",
+  # "Heat Health Survey" = "heat_health_survey",
   "Trees Greenery Survey" = "trees_greenery_survey"
 )
 census_input_to_data <- c(
@@ -242,7 +254,8 @@ server <- function(input, output, session) {
       # import data here - reactive to input$survey
       name <- input$survey
       # survey_data <-
-      #   read.csv(paste(survey_data_loc, input_to_data_survey[[name]], sep = ""))
+      #   read.csv(paste(survey_data_loc,
+      # input_to_data_survey[[name]], sep = ""))
       survey_data <-
         read.csv(paste(survey_data_loc, input_to_data_survey_desc[[name]], "/",
           input_to_data_survey_desc[[name]], ".csv",
@@ -378,11 +391,11 @@ server <- function(input, output, session) {
 
   # results graphics
 
-  resulting_graphics(
-    input, output, survey_data, is_survey,
-    question_number, question_type, question_subtype,
-    demographic_desc = demographic_data()
-  )
+  # resulting_graphics(
+  #   input, output, survey_data, is_survey,
+  #   question_number, question_type, question_subtype,
+  #   demographic_desc = demographic_data()
+  # )
 
   # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {

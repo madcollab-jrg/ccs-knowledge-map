@@ -18,14 +18,13 @@ survey_characteristic_odds <- function(df, x, census_level, log = TRUE) {
 
   # print(paste("census_level", x[[census_level]]))
 
-  census_level <- "district_GEOID"
+  # census_level <- "district_GEOID"
 
   # df <-
-  #   df %>% filter(!is.na(state_fips) & !!sym(census_level) == x[[census_level]])
-  # df <- df %>% filter(!!sym(census_level) == x[[census_level]])
+  # df %>% filter(!is.na(state_fips) & !!sym(census_level) == x[[census_level]])
+  df <- df %>% filter(!!sym(census_level) == x[[census_level]])
 
-  # df <- df %>% filter(!!sym("district_GEOID") == x[["district_GEOID"]])
-  df <- df %>% filter(!!sym("district_GEOID") %in% x[["district_GEOID"]])
+  # df <- df %>% filter(!!sym("district_GEOID") %in% x[["district_GEOID"]])
 
   n <- nrow(df)
 
@@ -63,12 +62,17 @@ surveillance_characteristic_odds <- function(df, x, query_type, log = TRUE) {
   query <- x[["query"]]
   subpop <- x[["subpop"]]
 
-  print(query)
+  print(paste("query:", query))
 
   for (c in names(query)) {
     df <- df %>% filter(!!sym(c) == query[[c]])
   }
-  print(query_type)
+
+  if (query_type == "gender") {
+    query_type <- "Gender"
+  }
+
+  print(paste("query_type:", query_type))
 
   count_x <- 0
   # n <- df[[x[["target_pop"]]]]
@@ -120,6 +124,7 @@ log_disparity <- function(
   print("*****")
   print(log_disp)
   print("*****")
+  print("work")
   to_return$log_disparity <- log_disp
 
   return(to_return)

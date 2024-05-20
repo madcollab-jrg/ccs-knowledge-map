@@ -145,6 +145,7 @@ QUERY_TYPE_MAP <- c(
   "age" = "_age.csv",
   "income" = "_income.csv",
   "education" = "_genderedu.csv",
+  # "gender" = "_genderedu.csv",
   "gender" = "_genderedu.csv",
   "race" = "_genderedu.csv"
 )
@@ -184,7 +185,27 @@ HEAD <-
 # Define paths to data directories
 demographic_data <-
   "/Volumes/cbjackson2/ccs-knowledge/ccs-data-demographic_unprocessed/"
-SURVEYS <- c("air-quality-survey")
+# SURVEYS <- c("air-quality-survey")
+# SURVEYS <- c("ej-survey")
+# SURVEYS <- c("tree-canopy-survey")
+# SURVEYS <- c("urban-heat-survey")
+# SURVEYS <- c("urban-heat-map")
+# SURVEYS <- c("air-quality-map")
+# SURVEYS <- c("tree-canopy-map")
+# SURVEYS <- c("ej-storytile")
+# SURVEYS <- c("ej-report")
+# SURVEYS <- c("tree-knowledge")
+# SURVEYS <- c("carbon-concerns")
+# SURVEYS <- c("energy-concerns")
+# SURVEYS <- c("general-survey")
+# SURVEYS <- c("health-impacts")
+
+SURVEYS <- c(
+  "tree-knowledge", "carbon-concerns",
+  "energy-concerns", "general-survey", "health-impacts"
+)
+
+
 
 # Read YAML files containing census codes, queries, and target populations
 census_codes <- get_yaml("data_preprocessing/rosetta/stone.yaml")
