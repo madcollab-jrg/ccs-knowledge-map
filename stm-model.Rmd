@@ -30,11 +30,11 @@ meta <- out$meta
 
 
 # Fit the topic model
-num_topics <- 4  # choose an appropriate number of topics
+num_topics <- 3  # choose an appropriate number of topics
 topic_model <- stm(documents=docs, vocab=vocab, K=num_topics, data=meta, max.em.its=75, init.type="Spectral")
 
 # Visualize the model
-tm_viz <- plot(topic_model, type="summary", main="Topic Model Summary")
+plot(topic_model, type="summary", main="Topic Model Summary")
 
 # Find thoughts (common comments)
 thoughts_df <- findThoughts(topic_model, texts=df$text_column[which(df$...1 %in% out$meta$...1)], n=2)
@@ -108,16 +108,15 @@ perform_topic_modeling <- function(df, attribute_name) {
   }
 }
 
-
+library(dplyr)
 filtered_categories <- df %>%
-  group_by(race_recode) %>%
+  group_by(edu_recode) %>%
   summarise(count = n()) %>%
   filter(count > 10) %>%
-  pull(race_recode)
+  pull(edu_recode)
 
 subset_df <- df %>%
-  filter(race_recode %in% filtered_categories, !is.na(race_recode)) 
-
+  filter(edu_recode %in% filtered_categories, !is.na(edu_recode)) 
 
 labelTopics(topic_model)
 ```
@@ -126,6 +125,6 @@ labelTopics(topic_model)
 
 ```{r specificstm-code-report}
 # Example of applying the function for 'race' and 'gender'
-perform_topic_modeling(subset_df, "race_recode")
+perform_topic_modeling(subset_df, "edu_recode")
 ```
 
