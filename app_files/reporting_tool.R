@@ -18,7 +18,9 @@ surveys <- c(
   "General Survey", "Health Impacts"
 )
 
-reporting_tool_body <- function(survey, demographic, geography, demo, demog) {
+reporting_tool_body <- function(
+    survey, demographic, geography,
+    demo, demog, surveyQues) {
   dashboard_body <- fluidRow(
     useShinyjs(),
     class = "container-row",
@@ -31,7 +33,7 @@ reporting_tool_body <- function(survey, demographic, geography, demo, demog) {
     column(
       8,
       get_data_description_ui(survey, demographic, geography, demo),
-      survey_results_ui(demog),
+      survey_results_ui(demog, surveyQues),
       uiOutput("results")
     ),
   )

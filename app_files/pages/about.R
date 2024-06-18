@@ -123,7 +123,7 @@ about_tab_body <- function() {
     column(
       4,
       img(
-        src = "assets/home-bg.jpg", width = "100%", height = 400,
+        src = "assets/about-bg.png", width = "100%", height = 300,
         style = "object-fit: cover"
       )
     )

@@ -170,7 +170,7 @@ survey_box_ui <- function(surveys) {
     ),
     make_conditional_panel_survey(
       "Tree Canopy Map", "tree_canopy_map_qs",
-      "tree_map"
+      "tree_canopy"
     ),
     make_conditional_panel_survey(
       "Environmental Justice Story",
@@ -286,7 +286,7 @@ survey_box_ui <- function(surveys) {
     ),
     width = 12
   )
-
+  useShinyjs()
   surveyui$script <- HTML('
   console.log("check");
     shinyjs.disableButton = function() {
@@ -306,10 +306,36 @@ survey_box_ui <- function(surveys) {
       var censusLevelValue = $("#census_level").val();
       var demographicValue = $("#demographic").val();
 
-      if (surveyValue !== "" && censusLevelValue !== "" && demographicValue !== "") {
+      if (surveyValue !== "" && censusLevelValue !== "" &&
+        demographicValue !== "") {
         shinyjs.enableButton();
       } else {
         shinyjs.disableButton();
+      }
+    });
+
+   document.addEventListener("input", function() {
+      var surveyValue = $("#survey").val();
+      // var censusDropdown = $("#census_level");
+
+      var censusDropdown = $("#census_level").siblings(".shiny-input-select").find(".selectize-dropdown-content");
+
+      console.log(censusDropdown);
+
+
+      if (surveyValue === "Tree Knowledge" || surveyValue ===
+      "Carbon Concerns") {
+        censusDropdown.find("option").each(function() {
+          if ($(this).val() !== "Zipcode") {
+            $(this).hide();
+          } else {
+            $(this).show();
+          }
+        });
+        censusDropdown.val("Zipcode").trigger("change");
+      } else {
+        censusDropdown.find("option").show();
+        censusDropdown.val("").trigger("change");
       }
     });
   ')

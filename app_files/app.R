@@ -24,14 +24,6 @@ source("pages/strategies_page.R")
 
 # source("pages/components/selection_box.R")
 
-surveys <- c(
-  "Air Quality Survey",
-  "Environmental Justice Survey",
-  "Tree Canopy Survey", "Urban Heat Survey",
-  "Urban Heat Map", "Air Quality Map", "Tree Canopy Map",
-  "Carbon Survey", "Energy Survey", "General Survey",
-  "Heat Health Survey", "Trees Greenery Survey"
-)
 surveyInputId <- c(
   "Air Quality Survey" = "air_quality_qs",
   "Environmental Justice Survey" = "ej_survey_qs",
@@ -53,13 +45,13 @@ surveyInputId <- c(
 )
 
 has_results <- c(
-  "Air Quality Survey" = TRUE, "Community Ideas Survey" = FALSE,
+  "Air Quality Survey" = TRUE,
   "Environmental Justice Survey" = TRUE, "Tree Canopy Survey" = TRUE,
   "Urban Heat Survey" = TRUE,
-  "Air Quality Map" = TRUE, "Tree Canopy Map" = FALSE, "Urban Heat Map" = FALSE,
+  "Air Quality Map" = TRUE, "Tree Canopy Map" = TRUE, "Urban Heat Map" = FALSE,
   "Carbon Survey" = TRUE,
   "Carbon Concerns" = TRUE,
-  "Tree Knowlege" = TRUE,
+  "Tree Knowledge" = TRUE,
   "Energy Concerns" = TRUE,
   "Health Impacts" = TRUE,
   "Energy Survey" = TRUE, "General Survey" = TRUE,
@@ -107,21 +99,6 @@ census_input_to_data <- c(
 census_level_input_to_data <-
   read_yaml("census_items/census_level_to_results.yaml")
 
-input_to_data_survey <- c(
-  "Air Quality Survey" = "air-quality/air_survey.csv",
-  "Environmental Justice Survey" = "ej-survey/ej_survey.csv",
-  "Tree Canopy Survey" = "tree-canopy/tree_survey.csv",
-  "Urban Heat Survey" = "urban-heat/heat_survey.csv",
-  "Urban Heat Map" = "urban-heat/heat_map.csv",
-  "Air Quality Map" = "air-quality/air_map.csv",
-  "Tree Canopy Map" = "tree-canopy/tree_map.csv",
-  "Carbon Survey" = "deliberation/oct_carbon.csv",
-  "Energy Survey" = "deliberation/oct_energy.csv",
-  "General Survey" = "deliberation/oct_general.csv",
-  "Heat Health Survey" = "deliberation/oct_heathealth.csv",
-  "Trees Greenery Survey" = "deliberation/oct_treesgreenery.csv"
-)
-
 input_to_data_survey_desc <- c(
   "Air Quality Map" = "air_map",
   "Air Quality Survey" = "air_survey",
@@ -131,12 +108,15 @@ input_to_data_survey_desc <- c(
   "Environmental Justice Survey" = "ej_survey",
   "Energy Concerns" = "energy_concerns",
   "General Survey" = "general_survey",
-  "Health Impact" = "health_impacts",
+  "Health Impacts" = "health_impacts",
+  "Urban Heat Survey" = "heat_survey",
+  "Urban Heat Map" = "heat_map",
   "Heat Map" = "heat_map",
   "Heat Survey" = "heat_survey",
   "Tree Knowledge" = "tree_knowledge",
   "Tree Map" = "tree_map",
-  "Tree Survey" = "tree_survey"
+  "Tree Survey" = "tree_survey",
+  "Tree Canopy Survey" = "tree_survey"
 )
 
 question_type_map <- c()
@@ -178,6 +158,7 @@ ui <- dashboardPage(
       navbarTab(tabName = "info_page", text = "Info"),
       navbarTab(tabName = "strategies_page", text = "Info 3")
     ),
+    useShinyjs(), # Initialize shinyjs
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "home.css"),
       tags$link(rel = "stylesheet", type = "text/css", href = "common.css"),
@@ -192,6 +173,66 @@ ui <- dashboardPage(
           "
         )
       ),
+      tags$script(HTML('
+      console.log("check");
+      shinyjs.disableButton = function() {
+        $("#run_report").prop("disabled", true);
+      }
+
+      shinyjs.enableButton = function() {
+        $("#run_report").prop("disabled", false);
+      }
+
+      // Disable the button initially
+      shinyjs.disableButton();
+
+      // Enable/disable the button based on input selection
+      document.addEventListener("input", function() {
+        var surveyValue = $("#survey").val();
+        var censusLevelValue = $("#census_level").val();
+        var demographicValue = $("#demographic").val();
+
+        if (surveyValue !== "" && censusLevelValue !== "" &&
+        demographicValue !== "") {
+          shinyjs.enableButton();
+        } else {
+          shinyjs.disableButton();
+        }
+      });
+
+      // Hide all census levels except Zipcode for specific surveys
+      $(document).on("change", "#survey", function() {
+        // var surveyValue = $("#survey").val();
+        var censusDropdown = $("#census_level").siblings(".shiny-input-select").find(".selectize-dropdown-content");
+
+        // console.log(surveyValue);
+
+        console.log(censusDropdown);
+
+        var surveyValue = $("#survey").val();
+        var selectedText = $("#survey").find("option:selected").text();
+        console.log(selectedText);
+
+        if (selectedText === "Tree Knowledge" ||
+          selectedText === "Carbon Concerns") {
+          // Hide all options except "Zipcode"
+          censusDropdown.find("option").each(function() {
+            if ($(this).val() !== "Zipcode") {
+              $(this).hide();
+            } else {
+              $(this).show();
+            }
+          });
+          // Set the census dropdown to "Zipcode" and trigger change
+          censusDropdown.val("Zipcode").trigger("change");
+        } else {
+          // Show all options
+          censusDropdown.find("option").show();
+          // Reset the dropdown selection
+          censusDropdown.val("").trigger("change");
+        }
+      });
+    '))
     ),
     tabItems(
       tabItem(tabName = "home_page", home_tab_body()),
@@ -201,7 +242,7 @@ ui <- dashboardPage(
         reporting_tool_body(
           textOutput("survey"), textOutput("demographic"),
           textOutput("census_level"), textOutput("demo"),
-          textOutput("demog")
+          textOutput("demog"), textOutput("surveyQues")
         )
       ),
       tabItem(tabName = "about", about_tab_body()),
@@ -220,6 +261,10 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   # Function to update the selected survey, demo, level
   output$survey <- renderText({
+    paste(input$survey)
+  })
+
+  output$surveyQues <- renderText({
     paste(input$survey)
   })
 
@@ -387,15 +432,17 @@ server <- function(input, output, session) {
   )
 
   # Representation
-  get_representative_reactive(input, output, file_to_get)
+  # get_representative_reactive(input, output, file_to_get)
 
   # results graphics
 
-  # resulting_graphics(
-  #   input, output, survey_data, is_survey,
-  #   question_number, question_type, question_subtype,
-  #   demographic_desc = demographic_data()
-  # )
+  # print(is_survey)
+
+  resulting_graphics(
+    input, output, survey_data, is_survey,
+    question_number, question_type, question_subtype,
+    demographic_desc = demographic_data()
+  )
 
   # all button and action link interaction on UI
   observeEvent(input$availDataBtn, {

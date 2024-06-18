@@ -33,14 +33,11 @@ get_data_description_ui <- function(survey, demographic, geography, demo) {
   #   See get_data_desc_rep_reaction()
   #   for the components.
   data_description <- box(
-    # title = HTML("<div class='card-title'><h1 class='page-subtitle'>
-    # [Survey] Representativeness by [Demographic] Compared to [Geography]</h1>
-    # <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"),
     title = HTML(paste(
       "<div class='card-title'><h1 class='page-subtitle'>", "<span>",
       survey, "</span>", "Representativeness by", "<span>", demographic,
       "</span>", "Compared to", geography, "</h1>
-      <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"
+      </div>"
     )),
     gt_output("new_table"),
     actionButton(
@@ -48,22 +45,13 @@ get_data_description_ui <- function(survey, demographic, geography, demo) {
       gradient = TRUE, class = "button-common"
     ),
     callout(
-      # title = HTML(paste(
-      #   "<div style='display: inline;'>",
-      #   "<p class='page-para'>Representativeness is low for one or more, </p>",
-      #   "<span>",
-      #   demographic,
-      #   "</span>",
-      #   "<p class='page-para'> ,categories.</p>",
-      #   "</div>"
-      # )),
       title = HTML(paste(
         "<div style='display: inline;'>",
-        "<p class='page-para'>Representativeness is low for one or more, </p>",
+        "<p class='page-para'>Representativeness is low for one or more</p>",
         "<span>",
         demo,
         "</span>",
-        "<p class='page-para'> ,categories.</p>",
+        "<p class='page-para'>categories.</p>",
         "</div>"
       )),
       # ionicon("alert"),
@@ -184,7 +172,7 @@ get_data_desc_rep_reaction <- function(
         # Rename the columns as needed:
         colnames(merged_tbl_data) <- c(
           "group",
-          "Total Count Survey", "Total Rep."
+          "Total Count Survey", "Representativeness"
         )
 
         # Convert the "group" column to factor
@@ -205,7 +193,7 @@ get_data_desc_rep_reaction <- function(
         # Extract only the columns needed for color calculation
         rep_data_numeric <- merged_tbl_data[, c(
           "Total Count Survey",
-          "Total Rep."
+          "Representativeness"
         )]
 
         # Ensure all values are numeric
@@ -236,7 +224,7 @@ get_data_desc_rep_reaction <- function(
         gt_tbl <- gt_tbl %>%
           fmt_number(
             columns = c(
-              "Total Rep."
+              "Representativeness"
             ),
             decimals = 2
           )
@@ -247,7 +235,7 @@ get_data_desc_rep_reaction <- function(
             method = "numeric",
             colors = colors,
             columns = c(
-              "Total Rep."
+              "Representativeness"
             )
           )
 
