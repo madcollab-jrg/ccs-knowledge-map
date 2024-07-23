@@ -21,7 +21,7 @@ row_names <- list(
   "$150,000 to $199,999", "$200,000 or more",
   "Black or African American", "Hispanic", "White",
   "Asian", "Native Hawaiian Pacific Islander",
-  "American Indian Alaskan Native", "Mixed"
+  "American Indian Alaskan Native", "Two or More Races"
 )
 
 get_data_description_ui <- function(survey, demographic, geography, demo) {

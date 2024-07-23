@@ -698,7 +698,7 @@ resulting_graphics <- function(
       race_options <- c(
         NA, "Black or African American", "Hispanic", "White",
         "Asian", "Native Hawaiian Pacific Islander",
-        "American Indian Alaskan Native", "Mixed"
+        "American Indian Alaskan Native", "Two or More Races"
       )
       race_color_mapping <- make_color_mapping(race_var, race_options)
 
