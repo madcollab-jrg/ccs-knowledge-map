@@ -47,18 +47,17 @@ get_data_description_ui <- function(survey, demographic, geography, demo) {
     callout(
       title = HTML(paste(
         "<div style='display: inline;'>",
-        title = HTML("<p class='page-para'>Representativeness is low for one or
-      more [Demographic] categories.</p> <br/> <br/>
-      <p>Some responses do not have enough data and are marked
-      as not applicable (or NA)</p>"),
+        "<p class='page-para'>Representativeness is low for one or more</p>",
         "<span>",
         demo,
         "</span>",
         "<p class='page-para'>categories.</p>",
+        actionLink("strategies", "Strategies", class = "page-para"),
+        "<br/><p class='page-para'>Some responses do not have enough data
+        and are marked as not applicable (or NA)</p>",
         "</div>"
       )),
       # ionicon("alert"),
-      actionLink("strategies", "Strategies"),
       status = "danger",
       width = 12,
       class = "strategies-banner"
