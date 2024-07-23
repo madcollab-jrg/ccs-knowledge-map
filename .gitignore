@@ -23,3 +23,7 @@ Rplot.pdf
 *.png
 *.png
 *.html
+ccs-analysis/urban-heat_cache/html/__packages
+ccs-analysis/urban-heat_cache/html/__packages
+*.RData
+ccs-analysis/heat_survey_check.csv

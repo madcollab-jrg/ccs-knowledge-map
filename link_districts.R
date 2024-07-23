@@ -56,3 +56,28 @@ tracts_with_assembly_districts$geometry <- NULL
 write.csv(tracts_with_assembly_districts,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/assemblydistrict_match.csv")
 
 
+### GET LOWER
+census_tracts_sf3 <- tracts(state = "WI", year = 2018) # For tracts
+
+# Load the shapefile for state legislative (assembly) districts
+state_lower_districts_sf <- state_legislative_districts(state = "WI",   house = "lower", year = 2018, cb = TRUE)
+
+# Make sure the coordinate reference systems match
+#census_blocks_sf <- st_transform(census_blocks_sf, crs = st_crs(state_assembly_districts_sf))
+# OR
+census_tracts_sf3 <- st_transform(census_tracts_sf3, crs = st_crs(state_lower_districts_sf))
+
+# Perform the spatial join to get the assembly district for each block or tract
+#blocks_with_assembly_districts <- st_join(census_blocks_sf, state_assembly_districts_sf)
+# OR
+tracts_with_lower_districts <- st_join(census_tracts_sf3, state_lower_districts_sf)
+
+# Extract the state assembly district identifier
+#blocks_with_assembly_districts$assembly_district <- blocks_with_assembly_districts$SLDLST
+# OR
+tracts_with_lower_districts$lower_district <- tracts_with_lower_districts$NAME.y
+tracts_with_lower_districts$geometry <- NULL
+
+write.csv(tracts_with_lower_districts,"/Volumes/cbjackson2/ccs-knowledge/ccs-data/census_add/lowerdistrict_match.csv")
+
+
