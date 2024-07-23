@@ -47,7 +47,10 @@ get_data_description_ui <- function(survey, demographic, geography, demo) {
     callout(
       title = HTML(paste(
         "<div style='display: inline;'>",
-        "<p class='page-para'>Representativeness is low for one or more</p>",
+        title = HTML("<p class='page-para'>Representativeness is low for one or
+      more [Demographic] categories.</p> <br/> <br/>
+      <p>Some responses do not have enough data and are marked
+      as not applicable (or NA)</p>"),
         "<span>",
         demo,
         "</span>",

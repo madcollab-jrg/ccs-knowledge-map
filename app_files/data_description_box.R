@@ -25,7 +25,8 @@ get_data_description_ui <- function() {
     callout(
       title = HTML("<p class='page-para'>Representativeness is low for one or
       more [Demographic] categories.</p> <br/> <br/>
-      <p>N.A : Data Not Available</p>"),
+      <p>Some responses do not have enough data and are marked
+      as not applicable (or NA)</p>"),
       actionLink("strategies", "Strategies"),
       status = "danger",
       width = 12,
