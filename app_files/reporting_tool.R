@@ -1,13 +1,6 @@
 library(bs4Dash)
 library(shinydashboard)
 
-# surveys <- c(
-#   "Air Quality Survey", "Community Ideas Survey",
-#   "Story From the Community Survey", "Environmental Justice Survey",
-#   "Tree Canopy Survey", "Urban Heat Survey",
-#   "Urban Heat Map", "Air Quality Map", "Tree Canopy Map"
-# )
-
 surveys <- c(
   "Air Quality Survey",
   "Environmental Justice Survey",

@@ -61,7 +61,24 @@ custom_dict <- c(
   "smoke" = "smoke", "pollut" = "pollute", "respiratori" = "respiratory",
   "peopl" = "people", "resourc" = "resource", "vulner" = "vulnerability",
   "experi" = "experience", "diseas" = "disease", "bodi" = "body",
-  "communiti" = "community", "reduc" = "reduce", "improv" = "improve"
+  "communiti" = "community", "reduc" = "reduce", "improv" = "improve",
+  "particip" = "participate", "injustic" = "injustice", "promot" = "promote",
+  "togeth" = "together", "advoc" = "advocate", "bodi" = "body",
+  "initi" = "initialize", "citi" = "city", "compani" = "company",
+  "activ" = "active", "anoth" = "another", "resourc" = "resource",
+  "agenc" = "agency", "voic" = "voice", "lifestyl" = "lifestyle",
+  "natur" = "nature", "provid" = "provide", "environ" = "environment",
+  "sens" = "sense", "activ" = "active", "valu" = "value",
+  "properti" = "properties", "sunstrok" = "sunstroke",
+  "experienc" = "experience", "basketbal" = "basketball",
+  "temperatur" = "temperature", "condit" = "condition",
+  "alreadi" = "already", "emerg" = "emergency",
+  "immedi" = "immediately", "bodi" = "body", "extrem" = "extrem",
+  "guidanc" = "guidance", "awar" = "aware", "energi" = "energy",
+  "increas" = "increase", "encourag" = "encourage", "busi" = "busy",
+  "consumpt" = "consumption", "abil" = "ability", "alreadi" = "already",
+  "vehicl" = "vehicle", "mani" = "many", "pollution-rel" = "pollution-related",
+  "negat" = "negate", "contribut" = "contribute", "resid" = "reside"
 )
 
 replace_word_lemma <- function(word) {
@@ -102,8 +119,8 @@ perform_topic_modeling <- function(
     gsub("[[:punct:]0-9]", " ", example_open$response_cleaned)
   example_open$response_cleaned <-
     removeWords(example_open$response_cleaned, c(
-      stopwords("english"),
-      malletwords
+      stopwords("english")
+      # malletwords
     ))
   example_open$response_cleaned <-
     stripWhitespace(example_open$response_cleaned)
@@ -340,6 +357,10 @@ matrix_questions <- function(example_matrix, demographic_variable, q_type) {
     data = matrix_summary,
     x = ~freq,
     y = ~question,
+    text = ~ paste(
+      "<b>Response</b>: ", response
+    ),
+    hoverinfo = "text",
     type = "bar",
     orientation = "h",
     color = color_var,
@@ -458,17 +479,21 @@ multi_choice_questions <- function(
     data = multi_summary,
     x = ~freq,
     y = ~wrapped_labels,
+    text = ~ paste(
+      "<b>Response</b>: ", response
+    ),
+    hoverinfo = "text",
     type = "bar",
     orientation = "h",
     color = color_var,
     showlegend = TRUE,
     width = 800,
     height = 400,
-    legendgroup = legendgroup,
-    hovertemplate = paste(
-      "<b>Response</b>: %{y}",
-      "<br><b>Frequency</b>: %{x}<br>"
-    )
+    legendgroup = legendgroup
+    # hovertemplate = paste(
+    #   "<b>Response</b>: %{y}"
+    #   "<br><b>Frequency</b>: %{x}<br>"
+    # )
   ) %>%
     layout(
       yaxis = list(
@@ -572,7 +597,10 @@ select_box_questions <- function(
     x = ~wrapped_labels,
     y = ~count,
     type = "bar",
-    # orientation = "h",
+    text = ~ paste(
+      "<b>Response</b>: ", response
+    ),
+    hoverinfo = "text",
     color = color_var,
     width = 800,
     height = 400,

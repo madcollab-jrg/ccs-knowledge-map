@@ -43,7 +43,7 @@ get_census_items <- function(census_item) {
   return(survey_questions)
 }
 
-make_conditional_panel_survey <- function(survey, id, fileName = NA) {
+make_conditional_panel_survey <- function(survey, id, file_name = NA) {
   # make a conditional panel for the survey box ui that
   # gives provides different question for tshe different
   # survey responses
@@ -64,7 +64,7 @@ make_conditional_panel_survey <- function(survey, id, fileName = NA) {
         style = "font-size:0.85rem;",
         "STEP 2: Select a question from the survey"
       ),
-      choices = get_survey_questions(survey, fileName),
+      choices = get_survey_questions(survey, file_name),
       selectize = FALSE
     )
   )
@@ -218,10 +218,6 @@ survey_box_ui <- function(surveys) {
       "health_impacts_qs",
       "heat_health"
     ),
-    #     "Tree Knowledge" = "tree_knowledge_qs",
-    # "Energy Concerns" = "energy_concerns_qs",
-    # "General Survey" = "general_survey_qs",
-    # "Health Impacts" = "health_impacts_qs"
     p(""),
     p(""),
 
@@ -286,60 +282,5 @@ survey_box_ui <- function(surveys) {
     ),
     width = 12
   )
-  useShinyjs()
-  surveyui$script <- HTML('
-  console.log("check");
-    shinyjs.disableButton = function() {
-      $("#run_report").prop("disabled", true);
-    }
-
-    shinyjs.enableButton = function() {
-      $("#run_report").prop("disabled", false);
-    }
-
-    // Disable the button initially
-    shinyjs.disableButton();
-
-    // Enable/disable the button based on input selection
-    document.addEventListener("input", function() {
-      var surveyValue = $("#survey").val();
-      var censusLevelValue = $("#census_level").val();
-      var demographicValue = $("#demographic").val();
-
-      if (surveyValue !== "" && censusLevelValue !== "" &&
-        demographicValue !== "") {
-        shinyjs.enableButton();
-      } else {
-        shinyjs.disableButton();
-      }
-    });
-
-   document.addEventListener("input", function() {
-      var surveyValue = $("#survey").val();
-      // var censusDropdown = $("#census_level");
-
-      var censusDropdown = $("#census_level").siblings(".shiny-input-select").find(".selectize-dropdown-content");
-
-      console.log(censusDropdown);
-
-
-      if (surveyValue === "Tree Knowledge" || surveyValue ===
-      "Carbon Concerns") {
-        censusDropdown.find("option").each(function() {
-          if ($(this).val() !== "Zipcode") {
-            $(this).hide();
-          } else {
-            $(this).show();
-          }
-        });
-        censusDropdown.val("Zipcode").trigger("change");
-      } else {
-        censusDropdown.find("option").show();
-        censusDropdown.val("").trigger("change");
-      }
-    });
-  ')
-
-
   return(surveyui)
 }

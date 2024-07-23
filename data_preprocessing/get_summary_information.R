@@ -78,11 +78,11 @@ SURVEYS <- c(
   # "urban-heat-map",
   # "urban-heat-survey"
   # new surveys
-  "carbon-concerns",
-  "energy-concerns",
-  "general-survey",
-  "health-impacts",
-  "tree-knowledge"
+  # "carbon-concerns",
+  # "energy-concerns",
+  # "general-survey",
+  "health-impacts"
+  # "tree-knowledge"
 )
 
 # SURVEYS = c("air-quality-map")
