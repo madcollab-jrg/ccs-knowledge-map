@@ -100,7 +100,6 @@ This project is licensed under the [MIT License](LICENSE).
 For any questions or feedback, please contact us at:
 
 - Email: [yourname@example.com](mailto:yourname@example.com)
-- Twitter: [@yourhandle](https://twitter.com/yourhandle)
 - LinkedIn: [Your Name](https://linkedin.com/in/yourname)
 
 ## Acknowledgements
