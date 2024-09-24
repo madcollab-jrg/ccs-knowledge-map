@@ -1,0 +1,9 @@
+  - State Senate District NA
+  - State Senate District 26
+  - State Senate District 27
+  - State Senate District 16
+  - State Senate District 15
+  - State Senate District 14
+  - State Senate District 13
+  - State Senate District 11
+  - State Senate District 20

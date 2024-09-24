@@ -1,0 +1,82 @@
+Survey,Question,Type,SubType,CCS
+Air Quality,"Do you feel you are experiencing air quality problems in your neighborhood? If so, what are the specific air quality problems, and how are they impacting you, your family, or your neighbors?",Open-ended,,1
+Air Quality,Have you or anyone you know experienced the following health issues related to poor air quality?,Multi-Choice,,1
+Air Quality,What do you think are the sources of air pollution in your community?,Multi-Choice,,1
+Air Quality,Have you noticed any changes in air quality in your community over the past 5 years?,Select Box,,1
+Air Quality,"Do you feel that vulnerable populations (e.g., low-income individuals, children, elderly individuals) are disproportionately affected by air pollution in your community?",Open-ended,,1
+Air Quality,Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?,Multi-Choice,,1
+Air Quality,If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?,Multi-Choice,,1
+Air Quality,"Have you done anything to improve the air quality in your home or neighborhood? If so, what did you do? If not, what prevents you from taking action?",Open-ended,,1
+Air Quality,"If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?",Multi-Choice,,1
+Air Quality,If there will be opportunities for you to participate in deciding where to deploy the air quality monitoring sensors. How would you like to be part of it? What roles would you like to take?,Select Box,,1
+Urban Heat,"Have you or anyone you know experienced health issues related to urban heat (e.g., heat exhaustion, heat stroke) in the past year? If so, please tell us a bit about the persons' experiences.",Open-ended,,1
+Urban Heat,Please rate how frequently you have done each of the following during summer months and during extreme heat.,Matrix,frequency,1
+Urban Heat,How are individuals disproportionately affected by urban heat in your community,Open-ended,,1
+Urban Heat,Which of the following personal steps have you taken to reduce your contribution to urban heat and reduce greenhouse emissions?,Multi-Choice,,1
+Urban Heat,What can local government do to help mitigate urban heat in your community?,Open-ended,,1
+Urban Heat,Where do you currently go for information about heat (waves)? And how do you usually learn about extremely hot weather?,Multi-Choice,,1
+Urban Heat,Are you interested in participating in community-based efforts to address urban heat in your neighborhood?,Multi-Choice,,1
+Urban Heat,"In order to become more informed about urban heat and mitigation strategies, what specific information would you require?",Open-ended,,1
+Tree Canopy,"Over the past 10 years,",Matrix,change,1
+Tree Canopy,Please rate the importance of each of the following benefits of trees:,Matrix,importance,1
+Tree Canopy,Please rate your level of agreement with each of the following statements:,Matrix,agree 1,1
+Tree Canopy,Does your neighborhood have planted street trees (Street trees- Any tree that is planted in the public right-of-way near and along the roadways which shade sidewalks and grow over the road),Select Box,,1
+Tree Canopy,Have you observed tree-related damage to infrastructure in your neighborhood? Select all that apply,Multi-Choice,,1
+Tree Canopy,How do trees impact your quality of life and the quality of your community?,Open-ended,,1
+Tree Canopy,Which aspects of trees do you value? Select all that apply.,Multi-Choice,,1
+Tree Canopy,What general areas in your community need more trees? Select all that apply.,Multi-Choice,,1
+Tree Canopy,What type of trees would you like to see planted? Check all that apply.,Multi-Choice,,1
+Tree Canopy,What tree related goals would you like to see prioritized? Select up to 3,Multi-Choice,,1
+Tree Canopy,"If you are interested or hesitant about planting a tree on your property, what are the contributing factor(s)? Select all that apply.",Multi-Choice,,1
+Tree Canopy,"If you are interested in helping to support the Town's tree planting efforts, which of the following activities would you be willing to participate in? Select all that apply.",Multi-Choice,,1
+Environmental Justice,"What does the term ""environmental justice"" mean to you?",Multi-Choice,,1
+Environmental Justice,Which environmental justice issue do you think has the most significan impact on public health?,Multi-Choice,,1
+Environmental Justice,Which of the environmental issues below do you think has the most impact on your health?,Ranking,R,1
+Environmental Justice,Please rate how much do you agree/disagree with the statements,Matrix,agree 2,1
+Environmental Justice,Please rate how much do you agree/disagree with the statements,Matrix,agree 2,1
+Environmental Justice,What is the most important policy change needed to address environmental justice in the United States? (select up to 3),Multi-Choice,,1
+Environmental Justice,Rate the following entities on their responsibility for addressing environmental justice issues,Matrix,responsible,1
+Environmental Justice,"Rank the following actions in order of effectiveness in addressing environmental injustice (1 being most effective, 4 being least effective)",Ranking,R,1
+Environmental Justice,To what extent do you believe that new technology has the potential to slow down climate change?,Multi-Choice,,1
+Environmental Justice,"If there was new technology to slow down climate change, how willing would you be to use it in your community?",Multi-Choice,,1
+Environmental Justice,Who do you think should be responsible for ensuring that new technology is deployed equitably in our community (Please select all the options that you think apply)?,Matrix,agree 3,1
+Environmental Justice,What are some ways that communities can work together to address environmental injustice?,Open-ended,,1
+Environmental Justice,What steps can individuals take to support environmental justice initiatives in their communities?,Open-ended,,1
+oct_treesgreenery,How important are trees to your everyday life,Matrix,importance,0
+oct_treesgreenery,Do you agree/disagree that having green spaces and trees has impacted your health and quality of life?,Matrix,agree,0
+oct_treesgreenery,Trees capture carbon from the atmosphere.,Matrix,aware,0
+oct_treesgreenery,Trees can reduce flooding during summer.,Matrix,aware,0
+oct_carbon,Climate pollutants come from transportation and buildings that burn lots of fossil fuels etc.,Matrix,aware,0
+oct_carbon,Carbon dioxide can be removed by growing more trees.,Matrix,aware,0
+oct_carbon,Carbon dioxide can be removed by new technologies.,Matrix,aware,0
+oct_energy,How important is energy saving at home to your everyday life,Matrix,importance,0
+oct_energy,Do you agree/disagree that energy saving has impacted your quality of life?,Matrix,agree,0
+oct_general,What do you think are the most urgent environmental issues facting your community?,Open-ended,,0
+oct_general,I would like to learn more about how environmental issues impact my community.,Matrix,agree,0
+oct_general,"When I have questions about climate change or environmental issues, I know where to go for the information.",Matrix,agree,0
+oct_general,How informed would you now say you are about environmental issues in your community?,Matrix,informed,0
+oct_general,How much do you now feel like you know about climate change?,Matrix,amount,0
+oct_general,People like me can have a say in the environment justice issues related to my community.,Matrix,agree,0
+oct_general,People like me can have an impact on the environment policymaking process in my community. ,Matrix,agree,0
+oct_general,I have the knowledge and skills I need to improve environment in my community. ,Matrix,agree,0
+oct_general,I have the knowledge and skills I need to respond to the collective problems facing my community. ,Matrix,agree,0
+oct_general,I want to work with other community members to take actions to improve environment in my community. ,Matrix,agree,0
+oct_general,I can create positive changes in my life. ,Matrix,agree,0
+oct_general,I have the ownership over environment problems facing my community. ,Matrix,agree,0
+oct_general,What are your goals to improve the quality of environment?,Open-ended,agree,0
+oct_general,Do you agree/disagree that new technology can slow down climate change?,Matrix,agree,0
+oct_general,"If there is new technology to slow down climate change, how likely are you willing to use it in your community?",Matrix,agree,0
+oct_general,Who do you think should be responsible for ensuring that new technology is developed to slow down climate change?,Multi-Choice,,0
+oct_general,Who do you think should be responsible for ensuring that new technology is deployed equitably in our community?,Multi-Choice,,0
+oct_general,What are your concerns of deploying new technologies such as the carbon dioxide removal storage in your neighborhood?,Open-ended,,0
+oct_general,Climate change affects my health.,Matrix,aware,0
+oct_general,"In the future, what is the most convenient way for you to share your opinions about environmental issues and other social issues?",Multi-Choice,,0
+oct_general,Do you agree or disagree with the statement that climate change is happening?,Matrix,agree,0
+oct_general,Do you agree or disagree with the statement that climate change is caused by human activities?,Matrix,agree,0
+oct_health,How important is extreme heat to your everyday life ,Matrix,importance,0
+oct_health,Do you agree/disagree that extreme heat has impacted your life?,Matrix,agree,0
+oct_health,Insulation and weatherization are ways to reduce energy consumption at my home.,Matrix,aware,0
+oct_health,Electrification is one way to reduce carbon emissions at my home.,Matrix,aware,0
+oct_health,I can go to a cooling center during extreme heat weather to stay cool.,Matrix,aware,0
+oct_health,"In Dane County, days over 100F will double in the next 30 years.",Matrix,aware,0
+oct_health,Extreme heat is dangerous to my health.,Matrix,aware,0
