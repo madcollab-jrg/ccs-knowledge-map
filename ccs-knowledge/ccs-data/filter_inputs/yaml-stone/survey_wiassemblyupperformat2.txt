@@ -1,0 +1,9 @@
+NA: State Senate District NA
+55026: State Senate District 26
+55027: State Senate District 27
+55016: State Senate District 16
+55015: State Senate District 15
+55014: State Senate District 14
+55013: State Senate District 13
+55011: State Senate District 11
+55020: State Senate District 20
