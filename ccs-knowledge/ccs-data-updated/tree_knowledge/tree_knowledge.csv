@@ -1,0 +1,90 @@
+,ID,How important are trees to your everyday life,Do you agree/disagree that having green spaces and trees has impacted your health and quality of life?,Trees capture carbon from the atmosphere.,Trees can reduce flooding during summer.,Gender,edu_recode,income_recode,race_recode,zip
+1,101,Extremely Important,Agree Somewhat,Aware,NA,Male,High School Graduate (Includes Equivalency),"$35,000 to $49,999",Black,53713
+2,103,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53704
+3,104,NA,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"Less than $25,000",Other,53562
+4,105,Extremely Important,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53711
+5,107,Extremely Important,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53711
+6,110,Neither Important nor Unimportant,Neutral,Aware,Aware,Male,High School Graduate (Includes Equivalency),"$50,000 to $74,999",Black,NA
+7,112,Very Important,Agree Somewhat,Aware,Aware,Female,Bachelors Degree or Higher,"Less than $25,000",Black,53711
+8,113,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$25,000 to $34,999",Black,NA
+9,114,Somewhat Important,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$35,000 to $49,999",Black,53713
+10,117,Extremely Important,Agree Strongly,NA,Aware,Female,Bachelors Degree or Higher,NA,Other,53713
+11,119,Very Important,Agree Strongly,Aware,NA,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,NA
+12,122,Very Important,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$35,000 to $49,999",Black,53714
+13,125,Extremely Important,Agree Strongly,Aware,Aware,Male,High School Graduate (Includes Equivalency),"Less than $25,000",Black,NA
+14,126,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$25,000 to $34,999",Black,53711
+15,127,Extremely Unimportant,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",White,53714
+16,129,Very Important,Neutral,Aware,NA,Male,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53704
+17,131,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$35,000 to $49,999",White,53715
+18,133,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$75,000 to $99,999",Black,53718
+19,136,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53704
+20,139,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53719
+21,142,Neither Important nor Unimportant,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",White,53703
+22,144,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$35,000 to $49,999",Black,53719
+23,145,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$25,000 to $34,999",Black,NA
+24,149,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$50,000 to $74,999",Black,NA
+25,150,Extremely Important,Agree Strongly,Aware,Aware,Female,NA,"$50,000 to $74,999",Black,53719
+26,153,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53713
+27,154,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"Less than $25,000",Black,53704
+28,155,Extremely Important,Neutral,Aware,Aware,Male,High School Graduate (Includes Equivalency),"Less than $25,000",Black,NA
+29,156,Very Important,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",White,53719
+30,157,Extremely Important,Agree Strongly,Aware,Aware,Male,High School Graduate (Includes Equivalency),"$75,000 to $99,999",Black,53713
+31,158,Extremely Important,Agree Strongly,Aware,Aware,Non-binary,Bachelors Degree or Higher,"Less than $25,000",Black,53704
+32,159,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$200,000 or more",White,53704
+33,163,Somewhat Unimportant,Neutral,Aware,Aware,Female,NA,"Less than $25,000",NA,53713
+34,164,Very Important,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53711
+35,165,Extremely Important,Agree Strongly,Aware,Aware,Male,High School Graduate (Includes Equivalency),"Less than $25,000",Black,53713
+36,169,Extremely Important,Agree Strongly,Aware,Aware,Non-binary,High School Graduate (Includes Equivalency),"Less than $25,000",Black,NA
+37,170,Very Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"Less than $25,000",White,53713
+38,171,Somewhat Important,Agree Somewhat,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$50,000 to $74,999",Black,NA
+39,200,Extremely Important,Agree Somewhat,Aware,Aware,Female,NA,"Less than $25,000",NA,53711
+40,103,Extremely Important,Agree Somewhat,Aware,Aware,Male,Some College or Associates Degree,"$35,000 to $49,999",Hispanic,53562
+41,104,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$35,000 to $49,999",Hispanic,53562
+42,105,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$35,000 to $49,999",Hispanic,NA
+43,107,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$35,000 to $49,999",Hispanic,53713
+44,108,Extremely Important,Agree Strongly,Aware,Aware,Female,Less than High School Diploma,"Less than $25,000",Hispanic,53593
+45,109,Extremely Important,Agree Strongly,Aware,Aware,Female,Less than High School Diploma,"Less than $25,000",Hispanic,53593
+46,111,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$25,000 to $34,999",Hispanic,NA
+47,112,Extremely Important,Agree Strongly,Aware,Aware,Male,Bachelors Degree or Higher,"$25,000 to $34,999",Hispanic,53562
+48,113,Extremely Important,Agree Strongly,Aware,Aware,Male,Less than High School Diploma,"Less than $25,000",Hispanic,NA
+49,114,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$25,000 to $34,999",Hispanic,53704
+50,115,Extremely Important,Agree Strongly,Aware,Aware,Male,Bachelors Degree or Higher,"$75,000 to $99,999",Hispanic,53704
+51,116,Extremely Important,Agree Strongly,Aware,Aware,Male,Some College or Associates Degree,"Less than $25,000",Hispanic,53562
+52,118,Extremely Important,Agree Somewhat,NA,Aware,Female,Some College or Associates Degree,"Less than $25,000",Hispanic,53713
+53,119,Extremely Important,Agree Somewhat,Aware,Aware,Male,High School Graduate (Includes Equivalency),"$25,000 to $34,999",Hispanic,53704
+54,122,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,NA,Hispanic,53713
+55,124,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Hispanic,53562
+56,125,Extremely Important,Agree Strongly,NA,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Hispanic,53562
+57,126,Extremely Important,Agree Strongly,NA,Aware,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Hispanic,53562
+58,127,Extremely Important,Disagree Strongly,Aware,Aware,Male,High School Graduate (Includes Equivalency),"Less than $25,000",Hispanic,53713
+59,130,Extremely Important,Agree Strongly,Aware,Aware,Male,Some College or Associates Degree,"$25,000 to $34,999",Hispanic,53562
+60,131,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"Less than $25,000",Hispanic,53562
+61,132,Extremely Important,Agree Strongly,Aware,Aware,Female,High School Graduate (Includes Equivalency),"$75,000 to $99,999",Hispanic,53562
+62,133,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$25,000 to $34,999",Hispanic,53719
+63,135,Extremely Important,Agree Strongly,Aware,Aware,Female,NA,"Less than $25,000",Hispanic,53719
+64,136,Extremely Important,Agree Somewhat,Aware,Aware,Male,Some College or Associates Degree,"Less than $25,000",Hispanic,53719
+65,137,Extremely Important,Disagree Strongly,Aware,Aware,Female,NA,"$35,000 to $49,999",Hispanic,53562
+66,138,Extremely Important,Agree Strongly,Aware,Aware,Male,Bachelors Degree or Higher,"$75,000 to $99,999",Hispanic,53562
+67,141,NA,Agree Strongly,NA,NA,Female,NA,NA,Hispanic,53593
+68,144,Extremely Important,Agree Somewhat,NA,NA,Female,High School Graduate (Includes Equivalency),"Less than $25,000",Hispanic,53704
+69,145,Very Unimportant,Agree Somewhat,Aware,Aware,Female,Some College or Associates Degree,"Less than $25,000",Hispanic,53713
+70,146,Extremely Unimportant,Disagree Strongly,NA,NA,Male,Some College or Associates Degree,"$25,000 to $34,999",Hispanic,53713
+71,147,Very Important,Agree Strongly,Aware,Aware,Male,High School Graduate (Includes Equivalency),"Less than $25,000",Hispanic,53715
+72,148,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"Less than $25,000",Hispanic,NA
+73,149,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$50,000 to $74,999",Hispanic,53593
+74,150,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$25,000 to $34,999",Hispanic,53562
+75,152,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$75,000 to $99,999",Hispanic,53575
+76,153,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$35,000 to $49,999",Hispanic,53575
+77,154,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$25,000 to $34,999",Hispanic,53719
+78,155,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$50,000 to $74,999",Hispanic,53562
+79,156,Extremely Important,Agree Strongly,Aware,Aware,Male,High School Graduate (Includes Equivalency),"$75,000 to $99,999",Hispanic,53711
+80,157,Extremely Important,Agree Strongly,Aware,Aware,Male,Some College or Associates Degree,"$35,000 to $49,999",Hispanic,53562
+81,158,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$75,000 to $99,999",Hispanic,53711
+82,159,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,NA,Hispanic,53703
+83,160,Extremely Important,Agree Strongly,Aware,Aware,Female,Bachelors Degree or Higher,"$75,000 to $99,999",Hispanic,53562
+84,162,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"$50,000 to $74,999",Hispanic,53590
+85,163,Extremely Important,Agree Strongly,Aware,Aware,Female,NA,NA,Hispanic,NA
+86,165,Extremely Important,Agree Strongly,Aware,Aware,Male,High School Graduate (Includes Equivalency),"$35,000 to $49,999",Hispanic,53593
+87,170,Very Important,Agree Somewhat,Aware,Aware,Female,Some College or Associates Degree,"$25,000 to $34,999",Hispanic,53562
+88,171,Extremely Important,Agree Strongly,Aware,Aware,Female,Some College or Associates Degree,"Less than $25,000",Hispanic,5137
+89,173,Very Important,Agree Somewhat,Aware,Aware,Male,Less than High School Diploma,"Less than $25,000",Hispanic,NA
