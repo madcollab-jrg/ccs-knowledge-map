@@ -1,0 +1,157 @@
+---
+title: "Assessing Representativeness of Survey Samples: A Case Study"
+author: "Corey Jackson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+```
+
+# Introduction
+
+In this case study, we demonstrate the use of the Log Disparity metric to assess the representativeness of survey samples relative to a population baseline. The population baseline data is derived from the American Community Survey (ACS), and the survey sample data is fictional but designed to reflect realistic scenarios. Our focus is on assessing representation in three Wisconsin counties: **Dane**, **Jefferson**, and **Milwaukee**. Subgroups are defined based on race/ethnicity.
+
+
+# Methodology
+
+The **Log Disparity metric** quantifies the representativeness of subgroups as follows:
+
+\[\text{Log Disparity} = \log \text{odds}(g(x) = 1 | y_0 = 1) - \log \text{odds}(g(x) = 1)\]
+
+Where:
+
+- \(g(x)\): Subgroup indicator function.
+- \(y_0\): Enrollment indicator for the observed sample.
+- The odds are calculated as \(P(g(x) = 1) / P(g(x) = 0)\). 
+
+Thresholds:
+
+- Values near 0 indicate equitable representation.  
+- Negative values suggest underrepresentation.  
+- Positive values suggest overrepresentation.  
+
+# Example Case
+
+## Target Population (ACS Data)
+
+These data are captured from the American Community Survey data. The ACS is.. 
+
+```{r}
+acs_data <- data.frame(
+  county = c("Dane", "Jefferson", "Milwaukee"),
+  subgroup = c("Hispanic", "Non-Hispanic White", "Non-Hispanic Black"),
+  total_population = c(300000, 85000, 950000),
+  subgroup_population = c(25000, 65000, 250000)
+)
+acs_data <- acs_data %>%
+  mutate(
+    ideal_rate = subgroup_population / total_population
+  )
+kable(acs_data, caption = "Target Population (ACS Data)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+## Survey Sample Data
+```{r}
+survey_data <- data.frame(
+  county = c("Dane", "Jefferson", "Milwaukee"),
+  subgroup = c("Hispanic", "Non-Hispanic White", "Non-Hispanic Black"),
+  sample_size = c(1500, 2500, 3500),
+  subgroup_sample = c(100, 2200, 600)
+)
+survey_data <- survey_data %>%
+  mutate(
+    observed_rate = subgroup_sample / sample_size
+  )
+kable(survey_data, caption = "Survey Sample Data") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+## Calculation of Log Disparity
+
+We merge the ACS and survey data, then compute the Log Disparity metric.
+
+```{r}
+data_combined <- merge(acs_data, survey_data, by = c("county", "subgroup"))
+data_combined <- data_combined %>%
+  mutate(
+    log_disparity = log(observed_rate / (1 - observed_rate)) -
+      log(ideal_rate / (1 - ideal_rate))
+  )
+kable(data_combined, caption = "Log Disparity Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+## Visualization 
+
+The following plot shows the Log Disparity metric for each county.
+```{r}
+ggplot(data_combined, aes(x = county, y = log_disparity, fill = subgroup)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Log Disparity Metric by County and Subgroup",
+    x = "County",
+    y = "Log Disparity"
+  ) +
+  theme_minimal()
+```
+
+## Table
+```{r}
+## Results Table with Interpretation
+
+# Compute interpretation based on log disparity thresholds
+data_combined <- data_combined %>%
+  mutate(
+    interpretation = case_when(
+      log_disparity >= -0.25 & log_disparity <= 0.25 ~ "Equally Represented",
+      log_disparity > 0.25 & log_disparity <= 1 ~ "Overrepresented",
+      log_disparity > 1 ~ "Very Overrepresented",
+      log_disparity < -0.25 & log_disparity >= -1 ~ "Underrepresented",
+      log_disparity < -1 ~ "Very Underrepresented"
+    )
+  )
+
+# Create a summary table
+summary_table <- data_combined %>%
+  select(
+    county, subgroup, sample_size, subgroup_sample, 
+    total_population, subgroup_population, log_disparity, interpretation
+  ) %>%
+  rename(
+    `County` = county,
+    `Demographic Category` = subgroup,
+    `Survey Count` = subgroup_sample,
+    `Survey Total` = sample_size,
+    `Population Count` = subgroup_population,
+    `Population Total` = total_population,
+    `Log Disparity` = log_disparity,
+    `Interpretation` = interpretation
+  )
+
+# Display the table
+kable(summary_table, caption = "Representation Summary Table") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+
+
+## Interpretation
+
+- **Dane County** has underrepresentation for the **Hispanic** subgroup.
+- **Jefferson County** overrepresents the **Non-Hispanic White** subgroup.
+- **Milwaukee County** shows moderate underrepresentation for the **Non-Hispanic Black** subgroup.
+
+
+
+
