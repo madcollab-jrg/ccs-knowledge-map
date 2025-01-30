@@ -7,7 +7,7 @@ library(gtsummary)
 library(dplyr)
 
 options(tigris_use_cache = TRUE)
-census_api_key("087b597eb48c2a5edee92ce40fb7b889f0aa69ac", overwrite=TRUE) 
+census_api_key("", overwrite=TRUE) 
 
 # https://walker-data.com/tidycensus/articles/basic-usage.html
 # https://fgeerolf.com/code/R/tidycensus.html
