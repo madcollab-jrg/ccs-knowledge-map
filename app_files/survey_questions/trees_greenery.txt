@@ -1,4 +1,3 @@
-Q1: How important are trees to your everyday life
-Q2: Do you agree/disagree that having green spaces and trees has impacted your health and quality of life?
-Q3: Trees capture carbon from the atmosphere.
-Q4: Trees can reduce flooding during summer.
+Q1: Do you agree/disagree that having green spaces and trees has impacted your health and quality of life?
+Q2: Trees capture carbon from the atmosphere.
+Q3: Trees can reduce flooding during summer.

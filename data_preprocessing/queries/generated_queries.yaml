@@ -1,424 +1,4 @@
-query0:
-  col: Black
-  row: Less than $25,000
-  surveillance_query:
-    query: null
-    subpop: BLACK_less25
-    target_pop: null
-  survey_query:
-    query:
-      income_recode: Less than $25,000
-      race_recode: Black or African American
-  type: income
 query1:
-  col: Black
-  row: $25,000 to $34,999
-  surveillance_query:
-    query: null
-    subpop: BLACK_25_to_34
-    target_pop: null
-  survey_query:
-    query:
-      income_recode: $25,000 to $34,999
-      race_recode: Black or African American
-  type: income
-query10:
-  col: Black
-  row: 18_to_24
-  surveillance_query:
-    query: null
-    subpop: BLACK_18_to_24
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 18_to_24
-      race_recode: Black or African American
-  type: age
-query11:
-  col: Black
-  row: 25_to_34
-  surveillance_query:
-    query: null
-    subpop: BLACK_25_to_34
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 25_to_34
-      race_recode: Black or African American
-  type: age
-query12:
-  col: Black
-  row: 35_to_44
-  surveillance_query:
-    query: null
-    subpop: BLACK_35_to_44
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 35_to_44
-      race_recode: Black or African American
-  type: age
-query13:
-  col: Black
-  row: 45_to_54
-  surveillance_query:
-    query: null
-    subpop: BLACK_45_to_54
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 45_to_54
-      race_recode: Black or African American
-  type: age
-query14:
-  col: Black
-  row: 55_to_64
-  surveillance_query:
-    query: null
-    subpop: BLACK_55_to_64
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 55_to_64
-      race_recode: Black or African American
-  type: age
-query15:
-  col: Black
-  row: 65_over
-  surveillance_query:
-    query: null
-    subpop: BLACK_65_over
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 65_over
-      race_recode: Black or African American
-  type: age
-query16:
-  col: Black
-  row: LESS_THAN_HS
-  surveillance_query:
-    query: null
-    subpop: BLACK_LESS_HS_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: LESS_THAN_HS
-      race_recode: Black or African American
-  type: education
-query17:
-  col: Black
-  row: HS
-  surveillance_query:
-    query: null
-    subpop: BLACK_HS_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: HS
-      race_recode: Black or African American
-  type: education
-query18:
-  col: Black
-  row: SOME_COLLEGE
-  surveillance_query:
-    query: null
-    subpop: BLACK_SOME_COLLEGE_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: SOME_COLLEGE
-      race_recode: Black or African American
-  type: education
-query19:
-  col: Black
-  row: COLLEGE
-  surveillance_query:
-    query: null
-    subpop: BLACK_COLLEGE_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: COLLEGE
-      race_recode: Black or African American
-  type: education
-query2:
-  col: Black
-  row: $35,000 to $49,999
-  surveillance_query:
-    query: null
-    subpop: BLACK_35_to_49
-    target_pop: null
-  survey_query:
-    query:
-      income_recode: $35,000 to $49,999
-      race_recode: Black or African American
-  type: income
-query20:
-  col: Hispanic
-  row: Less than $25,000
-  surveillance_query:
-    query: null
-    subpop: HISP_less25
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: Less than $25,000
-  type: income
-query21:
-  col: Hispanic
-  row: $25,000 to $34,999
-  surveillance_query:
-    query: null
-    subpop: HISP_25_to_34
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: $25,000 to $34,999
-  type: income
-query22:
-  col: Hispanic
-  row: $35,000 to $49,999
-  surveillance_query:
-    query: null
-    subpop: HISP_35_to_49
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: $35,000 to $49,999
-  type: income
-query23:
-  col: Hispanic
-  row: $50,000 to $74,999
-  surveillance_query:
-    query: null
-    subpop: HISP_50_to_74
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: $50,000 to $74,999
-  type: income
-query24:
-  col: Hispanic
-  row: $75,000 to $99,999
-  surveillance_query:
-    query: null
-    subpop: HISP_75_to_99
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: $75,000 to $99,999
-  type: income
-query25:
-  col: Hispanic
-  row: $100,000 to $149,999
-  surveillance_query:
-    query: null
-    subpop: HISP_100_to_149
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: $100,000 to $149,999
-  type: income
-query26:
-  col: Hispanic
-  row: $150,000 to $199,999
-  surveillance_query:
-    query: null
-    subpop: HISP_150_to_199
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: $150,000 to $199,999
-  type: income
-query27:
-  col: Hispanic
-  row: $200,000 or more
-  surveillance_query:
-    query: null
-    subpop: HISP_200_more
-    target_pop: null
-  survey_query:
-    query:
-      hisp_code: Hispanic
-      income_recode: $200,000 or more
-  type: income
-query28:
-  col: Hispanic
-  row: Female
-  surveillance_query:
-    query: null
-    subpop: HISP_FEMALE
-    target_pop: null
-  survey_query:
-    query:
-      Gender: Female
-      hisp_code: Hispanic
-  type: gender
-query29:
-  col: Hispanic
-  row: Male
-  surveillance_query:
-    query: null
-    subpop: HISP_MALE
-    target_pop: null
-  survey_query:
-    query:
-      Gender: Male
-      hisp_code: Hispanic
-  type: gender
-query3:
-  col: Black
-  row: $50,000 to $74,999
-  surveillance_query:
-    query: null
-    subpop: BLACK_50_to_74
-    target_pop: null
-  survey_query:
-    query:
-      income_recode: $50,000 to $74,999
-      race_recode: Black or African American
-  type: income
-query30:
-  col: Hispanic
-  row: 18_to_24
-  surveillance_query:
-    query: null
-    subpop: HISP_18_to_24
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 18_to_24
-      hisp_code: Hispanic
-  type: age
-query31:
-  col: Hispanic
-  row: 25_to_34
-  surveillance_query:
-    query: null
-    subpop: HISP_25_to_34
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 25_to_34
-      hisp_code: Hispanic
-  type: age
-query32:
-  col: Hispanic
-  row: 35_to_44
-  surveillance_query:
-    query: null
-    subpop: HISP_35_to_44
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 35_to_44
-      hisp_code: Hispanic
-  type: age
-query33:
-  col: Hispanic
-  row: 45_to_54
-  surveillance_query:
-    query: null
-    subpop: HISP_45_to_54
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 45_to_54
-      hisp_code: Hispanic
-  type: age
-query34:
-  col: Hispanic
-  row: 55_to_64
-  surveillance_query:
-    query: null
-    subpop: HISP_55_to_64
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 55_to_64
-      hisp_code: Hispanic
-  type: age
-query35:
-  col: Hispanic
-  row: 65_over
-  surveillance_query:
-    query: null
-    subpop: HISP_65_over
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 65_over
-      hisp_code: Hispanic
-  type: age
-query36:
-  col: Hispanic
-  row: LESS_THAN_HS
-  surveillance_query:
-    query: null
-    subpop: HISP_LESS_HS_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: LESS_THAN_HS
-      hisp_code: Hispanic
-  type: education
-query37:
-  col: Hispanic
-  row: HS
-  surveillance_query:
-    query: null
-    subpop: HISP_HS_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: HS
-      hisp_code: Hispanic
-  type: education
-query38:
-  col: Hispanic
-  row: SOME_COLLEGE
-  surveillance_query:
-    query: null
-    subpop: HISP_SOME_COLLEGE_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: SOME_COLLEGE
-      hisp_code: Hispanic
-  type: education
-query39:
-  col: Hispanic
-  row: COLLEGE
-  surveillance_query:
-    query: null
-    subpop: HISP_COLLEGE_TOTAL
-    target_pop: null
-  survey_query:
-    query:
-      edu_recode: COLLEGE
-      hisp_code: Hispanic
-  type: education
-query4:
-  col: Black
-  row: $75,000 to $99,999
-  surveillance_query:
-    query: null
-    subpop: BLACK_75_to_99
-    target_pop: null
-  survey_query:
-    query:
-      income_recode: $75,000 to $99,999
-      race_recode: Black or African American
-  type: income
-query40:
   col: Total
   row: Less than $25,000
   surveillance_query:
@@ -430,7 +10,7 @@ query40:
       income_recode: Less than $25,000
       min: 'yes'
   type: income
-query41:
+query2:
   col: Total
   row: $25,000 to $34,999
   surveillance_query:
@@ -442,7 +22,7 @@ query41:
       income_recode: $25,000 to $34,999
       min: 'yes'
   type: income
-query42:
+query3:
   col: Total
   row: $35,000 to $49,999
   surveillance_query:
@@ -454,7 +34,7 @@ query42:
       income_recode: $35,000 to $49,999
       min: 'yes'
   type: income
-query43:
+query4:
   col: Total
   row: $50,000 to $74,999
   surveillance_query:
@@ -466,7 +46,7 @@ query43:
       income_recode: $50,000 to $74,999
       min: 'yes'
   type: income
-query44:
+query5:
   col: Total
   row: $75,000 to $99,999
   surveillance_query:
@@ -478,7 +58,7 @@ query44:
       income_recode: $75,000 to $99,999
       min: 'yes'
   type: income
-query45:
+query6:
   col: Total
   row: $100,000 to $149,999
   surveillance_query:
@@ -490,7 +70,7 @@ query45:
       income_recode: $100,000 to $149,999
       min: 'yes'
   type: income
-query46:
+query7:
   col: Total
   row: $150,000 to $199,999
   surveillance_query:
@@ -502,7 +82,7 @@ query46:
       income_recode: $150,000 to $199,999
       min: 'yes'
   type: income
-query47:
+query8:
   col: Total
   row: $200,000 or more
   surveillance_query:
@@ -514,19 +94,21 @@ query47:
       income_recode: $200,000 or more
       min: 'yes'
   type: income
-query48:
+
+query9:
   col: Total
   row: Female
   surveillance_query:
     query: null
-    subpop: UNDERREP_FEMALE
+    # subpop: UNDERREP_FEMALE
+    subpop: UNDERREP_FEMALE_TOTAL
     target_pop: null
   survey_query:
     query:
       Gender: Female
       min: 'yes'
   type: gender
-query49:
+query10:
   col: Total
   row: Male
   surveillance_query:
@@ -538,91 +120,81 @@ query49:
       Gender: Male
       min: 'yes'
   type: gender
-query5:
-  col: Black
-  row: $100,000 to $149,999
-  surveillance_query:
-    query: null
-    subpop: BLACK_100_to_149
-    target_pop: null
-  survey_query:
-    query:
-      income_recode: $100,000 to $149,999
-      race_recode: Black or African American
-  type: income
-query50:
-  col: Total
-  row: 18_to_24
-  surveillance_query:
-    query: null
-    subpop: UNDERREP_18_to_24
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 18_to_24
-      min: 'yes'
-  type: age
-query51:
-  col: Total
-  row: 25_to_34
-  surveillance_query:
-    query: null
-    subpop: UNDERREP_25_to_34
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 25_to_34
-      min: 'yes'
-  type: age
-query52:
-  col: Total
-  row: 35_to_44
-  surveillance_query:
-    query: null
-    subpop: UNDERREP_35_to_44
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 35_to_44
-      min: 'yes'
-  type: age
-query53:
-  col: Total
-  row: 45_to_54
-  surveillance_query:
-    query: null
-    subpop: UNDERREP_45_to_54
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 45_to_54
-      min: 'yes'
-  type: age
-query54:
-  col: Total
-  row: 55_to_64
-  surveillance_query:
-    query: null
-    subpop: UNDERREP_55_to_64
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 55_to_64
-      min: 'yes'
-  type: age
-query55:
-  col: Total
-  row: 65_over
-  surveillance_query:
-    query: null
-    subpop: UNDERREP_65_over
-    target_pop: null
-  survey_query:
-    query:
-      Year.of.Birth: 65_over
-      min: 'yes'
-  type: age
-query56:
+
+# query11:
+#   col: Total
+#   row: 18_to_24
+#   surveillance_query:
+#     query: null
+#     subpop: UNDERREP_18_to_24
+#     target_pop: null
+#   survey_query:
+#     query:
+#       Year.of.Birth: 18_to_24
+#       min: 'yes'
+#   type: age
+# query12:
+#   col: Total
+#   row: 25_to_34
+#   surveillance_query:
+#     query: null
+#     subpop: UNDERREP_25_to_34
+#     target_pop: null
+#   survey_query:
+#     query:
+#       Year.of.Birth: 25_to_34
+#       min: 'yes'
+#   type: age
+# query13:
+#   col: Total
+#   row: 35_to_44
+#   surveillance_query:
+#     query: null
+#     subpop: UNDERREP_35_to_44
+#     target_pop: null
+#   survey_query:
+#     query:
+#       Year.of.Birth: 35_to_44
+#       min: 'yes'
+#   type: age
+# query14:
+#   col: Total
+#   row: 45_to_54
+#   surveillance_query:
+#     query: null
+#     subpop: UNDERREP_45_to_54
+#     target_pop: null
+#   survey_query:
+#     query:
+#       Year.of.Birth: 45_to_54
+#       min: 'yes'
+#   type: age
+# query15:
+#   col: Total
+#   row: 55_to_64
+#   surveillance_query:
+#     query: null
+#     subpop: UNDERREP_55_to_64
+#     target_pop: null
+#   survey_query:
+#     query:
+#       Year.of.Birth: 55_to_64
+#       min: 'yes'
+#   type: age
+# query16:
+#   col: Total
+#   row: 65_over
+#   surveillance_query:
+#     query: null
+#     subpop: UNDERREP_65_over
+#     target_pop: null
+#   survey_query:
+#     query:
+#       Year.of.Birth: 65_over
+#       min: 'yes'
+#   type: age
+
+query17:
   col: Total
   row: LESS_THAN_HS
   surveillance_query:
@@ -634,7 +206,7 @@ query56:
       edu_recode: LESS_THAN_HS
       min: 'yes'
   type: education
-query57:
+query18:
   col: Total
   row: HS
   surveillance_query:
@@ -646,7 +218,7 @@ query57:
       edu_recode: HS
       min: 'yes'
   type: education
-query58:
+query19:
   col: Total
   row: SOME_COLLEGE
   surveillance_query:
@@ -658,7 +230,7 @@ query58:
       edu_recode: SOME_COLLEGE
       min: 'yes'
   type: education
-query59:
+query20:
   col: Total
   row: COLLEGE
   surveillance_query:
@@ -670,51 +242,96 @@ query59:
       edu_recode: COLLEGE
       min: 'yes'
   type: education
-query6:
-  col: Black
-  row: $150,000 to $199,999
+
+query21:
+  col: Total
+  row: Black or African American
   surveillance_query:
     query: null
-    subpop: BLACK_150_to_199
-    target_pop: null
+    subpop: BLACK_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
-      income_recode: $150,000 to $199,999
-      race_recode: Black or African American
-  type: income
-query7:
-  col: Black
-  row: $200,000 or more
+      # race_recode: Black or African American
+      race_recode: Black
+      min: 'yes'
+  type: race
+
+query22:
+  col: Total
+  row: Hispanic
   surveillance_query:
     query: null
-    subpop: BLACK_200_more
-    target_pop: null
+    subpop: HISP_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
-      income_recode: $200,000 or more
-      race_recode: Black or African American
-  type: income
-query8:
-  col: Black
-  row: Female
+      # hisp_code: Hispanic
+      race_recode: Hispanic
+      min: 'yes'
+  type: race
+
+query23:
+  col: Total
+  row: White
   surveillance_query:
     query: null
-    subpop: BLACK_FEMALE
-    target_pop: null
+    subpop: WHITE_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
-      Gender: Female
-      race_recode: Black or African American
-  type: gender
-query9:
-  col: Black
-  row: Male
+      race_recode: White
+      min: 'yes'
+  type: race
+
+query24:
+  col: Total
+  row: Asian
   surveillance_query:
     query: null
-    subpop: BLACK_MALE
-    target_pop: null
+    subpop: ASIAN_TOTAL
+    target_pop: ALL_TOTAL
   survey_query:
     query:
-      Gender: Male
-      race_recode: Black or African American
-  type: gender
+      race_recode: Asian
+      min: 'yes'
+  type: race
+
+query25:
+  col: Total
+  row: Mixed
+  surveillance_query:
+    query: null
+    subpop: MIXED_TOTAL
+    target_pop: ALL_TOTAL
+  survey_query:
+    query:
+      race_recode: Mixed
+      min: 'yes'
+  type: race
+
+query26:
+  col: Total
+  row: Native Hawaiian Pacific Islander
+  surveillance_query:
+    query: null
+    subpop: NHPI_TOTAL
+    target_pop: ALL_TOTAL
+  survey_query:
+    query:
+      race_recode: Native Hawaiian Pacific Islander
+      min: 'yes'
+  type: race
+
+query27:
+  col: Total
+  row: American Indian Alaskan Native
+  surveillance_query:
+    query: null
+    subpop: AI_AN_TOTAL
+    target_pop: ALL_TOTAL
+  survey_query:
+    query:
+      race_recode: American Indian Alaskan Native
+      min: 'yes'
+  type: race

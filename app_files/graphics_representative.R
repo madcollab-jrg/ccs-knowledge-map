@@ -5,7 +5,8 @@ result_rows <- list(
   "gender" = 1:2,
   "age" = 3:8,
   "education" = 9:12,
-  "income" = 13:20
+  "income" = 13:20,
+  "race" = 21:27
 )
 
 safe_load <- function(file) {
@@ -63,7 +64,7 @@ get_representative_reactive <- function(input, output, file_loc = NA) {
       loaded_data <- get_table(data_loc)
       tbl_data <- loaded_data[[1]]
       rows_to_extract <- result_rows[["age"]]
-      tbl_data_filtered <- tbl_data[rows_to_extract, ]
+      tbl_data_filtered <- tbl_data[rows_to_extract, , drop = FALSE]
       gt_tbl <- gt(tbl_data_filtered, rownames_to_stub = TRUE)
       colors <- NULL
       if (sum(is.na(tbl_data_filtered)) < 60) {

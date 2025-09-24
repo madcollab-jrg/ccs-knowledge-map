@@ -1,5 +1,5 @@
 ---
-title: 'CCS Knowledge Map Results: Air Quality'
+title: "CCS Knowledge Map Results: Air Quality"
 author: "Corey Jackson"
 date: "`r Sys.Date()`"
 output:
@@ -18,23 +18,24 @@ library(DT)
 library(ggsci)
 library(gridExtra)
 library(stringr)
+library(data.table)
 
 potential_fakes <- c(316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 327, 329,
-                     330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345, 
-                     346, 348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359, 360, 361, 
+                     330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 342, 343, 344, 345,
+                     346, 348, 349, 350, 351, 352, 353, 354, 355, 356, 358, 359, 360, 361,
                      362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 374, 376, 378, 379, 380,
                      381, 382, 383, 384, 385, 389, 390, 391, 392, 392, 393, 395, 396, 397, 398, 399,18,23,28)
 
-participant_geographies <- fread("/Volumes/cbjackson2/ccs-knowledge/ccs-data[papers]/participant_geographies.csv")
+participant_geographies <- fread("../ccs-knowledge/ccs-data[papers]/participant_geographies.csv")
 
 
-air_survey <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_survey.csv")
+air_survey <- read.csv("../ccs-knowledge/ccs-data/air-quality/air_survey.csv")
 air_survey <- air_survey %>%
   select(17,5:14) %>%
   filter(!`Member.ID` %in% potential_fakes)
 ## REPLACE GEOGRAPHY DATA
 
-air_map <- read.csv("/Volumes/cbjackson2/ccs-knowledge/ccs-data/air-quality/air_map.csv")
+air_map <- read.csv("../ccs-knowledge/ccs-data/air-quality/air_map.csv")
 
 # remove dupes
 air_survey <- air_survey %>%
@@ -43,8 +44,8 @@ air_survey <- air_survey %>%
 # Questions - https://docs.google.com/document/d/1hl5Eb66a8j7TDE1EzzOF4eUjUguet5dMsw7UJydr_uY/edit
 
 
-### ### ### ### ### ### ### ### ### ## 
-### Functions for MATRIX QUESTIONS ### 
+### ### ### ### ### ### ### ### ### ##
+### Functions for MATRIX QUESTIONS ###
 ### ### ### ### ### ### ### ### ### ##
 
 clean_matrix <- function(dataframe, column_name) {
@@ -52,12 +53,12 @@ clean_matrix <- function(dataframe, column_name) {
     separate_rows({{ column_name }}, sep = "; ") %>%
     separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
   cleaned_data$answer <- as.factor(cleaned_data$answer)
-  
+
   summary_data <- cleaned_data %>%
     group_by(question, answer) %>%
     summarise(n = n()) %>%
     mutate(freq = round((n / sum(n)),digits=2     )*100)
-  
+
   return(summary_data)
 }
 
@@ -81,12 +82,12 @@ clean_matrix_eval <- function(dataframe, column_name, demographic_var) {
     separate_rows({{ column_name }}, sep = "; ") %>%
     separate({{ column_name }}, into = c("question", "answer"), sep = " - ")
   cleaned_data$answer <- as.factor(cleaned_data$answer)
-  
+
   summary_data <- cleaned_data %>%
     group_by( {{demographic_var}},question,answer) %>%
     summarise(n = n()) %>%
     mutate(freq = round((n / sum(n)),digits=2     )*100)
-  
+
   return(summary_data)
 }
 
@@ -103,9 +104,9 @@ clean_matrix_eval_viz <- function(dataframe, demographic_var) {
 }
 
 
-### ### ### ### ### ### ### ### ### 
-### Functions for BOX QUESTIONS ### 
-### ### ### ### ### ### ### ### ### 
+### ### ### ### ### ### ### ### ###
+### Functions for BOX QUESTIONS ###
+### ### ### ### ### ### ### ### ###
 
 clean_box <- function(data, response) {
   summary_data <- data %>%
@@ -127,7 +128,7 @@ people <- air_survey_experiences %>%
 # Calculate the summary data including frequencies
 summary_data <- air_survey_experiences %>%
     group_by({{demographic_var}}, {{column_name}}) %>%
-    summarise(n = n()) 
+    summarise(n = n())
 
 summary_data <- merge(summary_data,people, by = "vulnerable")
 
@@ -138,7 +139,7 @@ return(summary_data)
 }
 
 viz_clean_box_eval <- function(dataframe,graph_title) {
- 
+
   # Create the bar chart
    # Create the bar chart with differentiation for 'vulnerable' levels within each 'question'
   ggplot(dataframe, aes(x=reorder(question, -freq), y=freq, fill=vulnerable)) +
@@ -156,13 +157,13 @@ viz_clean_box_eval <- function(dataframe,graph_title) {
 
 
 ### ### ### ### ### ### ### ### ### #
-### Functions for MULTI QUESTIONS ### 
+### Functions for MULTI QUESTIONS ###
 ### ### ### ### ### ### ### ### ### #
 
 clean_multi <- function(data, response) {
   cleaned_data <- data %>%
     separate_rows({{ response }}, sep = "; ")
-  
+
   summary_data <- cleaned_data %>%
     group_by({{ response }}) %>%
     summarise(count = n()) %>%
@@ -202,7 +203,7 @@ return(summary_data)
 }
 
 viz_clean_multi_eval <- function(dataframe,graph_title) {
- 
+
   # Create the bar chart
    # Create the bar chart with differentiation for 'vulnerable' levels within each 'question'
   ggplot(dataframe, aes(x=reorder(question, -freq), y=freq, fill=vulnerable)) +
@@ -223,7 +224,7 @@ viz_box_multi <- function(dataframe,graph_title) {
   # Order the dataframe by decreasing frequency
   ordered_df <- dataframe %>%
     arrange(desc(freq))
-  
+
   # Create the bar chart
   ggplot(ordered_df, aes(x=reorder(response, -freq), y=freq)) +
     geom_bar(stat="identity", fill="blue") +
@@ -240,16 +241,16 @@ scale_fill_nejm()
 ### STATS ANALYSIS
 clean_matrix_eval_chi <- function(questions_df) {
   results_list <- list() # Initialize an empty list to store the results dataframes
-  
+
   # Loop through each unique question in the questions dataframe
   for(i in unique(questions_df$question)){
     data <- questions_df %>% filter(question == i)
-    
+
     # Assuming 'vulnerable' is a column in your 'data' dataframe for categorization
     # You may need to adjust 'vulnerable' to the actual column name in 'summary_data'
     contingency_table <- xtabs(n ~ answer + vulnerable, data = data)
     chi_squared_test <- chisq.test(contingency_table,correct = TRUE)
-    
+
     # Create a dataframe with the Chi-Squared test results
     results_df <- data.frame(
       question = i,
@@ -257,14 +258,14 @@ clean_matrix_eval_chi <- function(questions_df) {
       pvalue = chi_squared_test$p.value,
       degreeof = chi_squared_test$parameter
     )
-    
+
     # Store the results dataframe in the list
     results_list[[i]] <- results_df
   }
-  
+
   # Combine all result dataframes in the list into a single dataframe
   final_results_df <- do.call(rbind, results_list)
-  
+
   return(final_results_df)
 }
 
@@ -294,74 +295,78 @@ names(air_survey)[2:11] <- c('air_quality_experience',
 
 ```
 
-
 # Air Quality Survey
 
-1 **Do you feel you are experiencing air quality problems in your neighborhood? If so, what are the specific air quality problems, and how are they impacting you, your family, or your neighbors?**  (Open-ended)
-  
+1 **Do you feel you are experiencing air quality problems in your neighborhood? If so, what are the specific air quality problems, and how are they impacting you, your family, or your neighbors?** (Open-ended)
+
 2. **Have you or anyone you know experienced the following health issues related to poor air quality?** (Multi-choice)
-  - Respiratory Issues  
-  - Asthma  
-  - Lung Cancer
-  
+
+- Respiratory Issues
+- Asthma
+- Lung Cancer
+
 3. **What do you think are the sources of air pollution in your community?** (Multi-choice)
-  - Stationary sources (e.g., power plants, industrial facilities and factories, oil refineries)  
-  - Mobile sources (e.g., cars, buses, trains)  
-  - Natural sources (e.g., wind-blown dust)  
-  - Pollution producing sites from agricultural areas, cities and wood-burning appliances  
- 
+
+- Stationary sources (e.g., power plants, industrial facilities and factories, oil refineries)
+- Mobile sources (e.g., cars, buses, trains)
+- Natural sources (e.g., wind-blown dust)
+- Pollution producing sites from agricultural areas, cities and wood-burning appliances
+
 4. **Have you noticed any changes in air quality in your community over the past 5 years?** (Select Box)
-  - Yes, air quality has improved  
-  - No, air quality has decreased  
-  - I do not feel any changes in the air quality
+
+- Yes, air quality has improved
+- No, air quality has decreased
+- I do not feel any changes in the air quality
 
 5. **Do you feel that vulnerable populations (e.g., low-income individuals, children, elderly individuals) are disproportionately affected by air pollution in your community?** (Open-ended)
-   
 
-5. **Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?** (Multi-choice)
-   - Yes  
+6. **Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?** (Multi-choice)
+
+   - Yes
    - No
 
-6. **If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?** (Multi-choice)
-   - Shopping area  
-   - Schools  
-   - No, but I wish we did.  
+7. **If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?** (Multi-choice)
+
+   - Shopping area
+   - Schools
+   - No, but I wish we did.
    - No and I prefer not having them.
 
-9. **Have you done anything to improve the air quality in your home or neighborhood? If so, what did you do? If not, what prevents you from taking action?** (Long text)
+8. **Have you done anything to improve the air quality in your home or neighborhood? If so, what did you do? If not, what prevents you from taking action?** (Long text)
 
-
-10. **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?)**  (Multi-choice) 
-    - Attending the community outreach event  
-    - Connect with local working group to be the messenger to deliver this information to your neighborhood  
-
+9. **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?)** (Multi-choice)
+   - Attending the community outreach event
+   - Connect with local working group to be the messenger to deliver this information to your neighborhood
 
 # Indices
+
 These indices provide a composite score reflecting various factors, including economic, health, and environmental indicators, which can significantly affect community perceptions.
 
 ## [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)
+
 ```{r}
 #datatable(svi_response)
 ```
 
 ## [Environmental Justice Index Indicators](https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html)
+
 ```{r}
 #datatable(eji_response)
 ```
 
 ## [Environmental Justice Index Indicators](https://www.epa.gov/ejscreen/ej-and-supplemental-indexes-ejscreen)
+
 ```{r}
 #datatable(ejscreen_response)
 ```
 
-# Analysis 
+# Analysis
 
 Comparative Analysis - Use comparative statistics (t-tests, ANOVA) to determine if there are statistically significant differences in responses between demographic groups, geographic locations, or SVI/EJI categories. For example, comparing the importance of tree benefits between communities with high vs. low vulnerability scores.
 
-Regression Analysis - Conduct regression analyses (linear regression, logistic regression) to examine the relationship between demographic or SVI/EJI indicators and specific perceptions or attitudes. This can help identify factors that most strongly predict positive or negative perceptions. For example, if people from low vulnerability areas are more/less likely to report issues. 
+Regression Analysis - Conduct regression analyses (linear regression, logistic regression) to examine the relationship between demographic or SVI/EJI indicators and specific perceptions or attitudes. This can help identify factors that most strongly predict positive or negative perceptions. For example, if people from low vulnerability areas are more/less likely to report issues.
 
 Correlation Analysis - Explore correlations between SVI/EJI scores and survey responses to see if higher vulnerability or environmental injustice scores are associated with specific perceptions or concerns about trees and green spaces.
-
 
 ```{r, include=FALSE}
 
@@ -381,7 +386,7 @@ pol_contam <- clean_multi(air_survey,contaminants_awareness_knowledge)# Single C
 pol_contam <- pol_contam[which(pol_contam$freq >0),]
 pol_contam_viz <- viz_box_multi(pol_contam,"Awareness of Contaminants")
 
-pol_sensor <- clean_multi(air_survey,sensor_location_suggestions) # Multiple Response 
+pol_sensor <- clean_multi(air_survey,sensor_location_suggestions) # Multiple Response
 pol_sensor <- pol_sensor[which(pol_sensor$freq >0),]
 pol_sensor_viz <- viz_box_multi(pol_sensor,"Location of Sensors")
 
@@ -409,6 +414,7 @@ pol_interest_viz <- viz_box_multi(pol_interest,"Deployment Interest")
 ## Response Summary
 
 ### Health Issues Related to Trees
+
 **Have you or anyone you know experienced the following health issues related to poor air quality?**
 
 ```{r}
@@ -419,50 +425,59 @@ pol_impact_viz
 ### Community Pollution Sources
 
 **What do you think are the sources of air pollution in your community**
+
 ```{r}
 datatable(pol_sources)
 pol_sources_viz
 ```
 
-### Community Air Quality Changes 
+### Community Air Quality Changes
 
 **Have you noticed any changes in air quality in your community over the past 5 years?**
+
 ```{r}
 datatable(pol_changes)
 pol_changes_viz
 ```
 
 ### PM and Ground-level Ozone
+
 **Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?**
+
 ```{r}
 datatable(pol_contam)
 pol_contam_viz
 ```
 
 ### Air Quality Monitors
+
 **If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?**
+
 ```{r}
 datatable(pol_sensor)
 pol_sensor_viz
 ```
 
-
 ### Being Informed about Air Quality
+
 **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?**
+
 ```{r}
 datatable(pol_alerts)
 pol_alerts_viz
 ```
 
 ### Deploying AQ Sensors Follow-up
+
 **If there will be opportunities for you to participate in deciding where to deploy the air quality monitoring sensors. How would you like to be part of it? What roles would you like to take?**
+
 ```{r}
 datatable(pol_interest)
 pol_interest_viz
 ```
 
-
 ## Place Analysis for Air Quality
+
 ```{r place-analysis, include=FALSE, cache=FALSE}
 
 
@@ -473,7 +488,7 @@ data_tracts_2020 <- as.character(c(unique(air_survey$Census_Tract_GEOID_2020)))
 
 
 # https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
-svi_tract <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/svi/svi-wi-tract.csv")
+svi_tract <- read.csv("../ccs-knowledge/census-data/svi/svi-wi-tract.csv")
 svi_tract$FIPS <- as.character(svi_tract$FIPS)
 
 svi_compute <- svi_tract[which(svi_tract$COUNTY %in% c("Dane")),]
@@ -487,14 +502,14 @@ svi_response$vulnerable <- ifelse(svi_response$RPL_THEMES > Q3_svi, "High","Less
 #https://www.atsdr.cdc.gov/placeandhealth/eji/indicators.html
 # Data Dictionary: Census tract boundaries are taken from 2019 TIGER/ Line Files and are based on the 2010 decennial census.   https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
 
-eji <- read.csv("//Volumes/cbjackson2/ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
+eji <- read.csv("/../ccs-knowledge/census-data/environmental/eji-wisconsin.csv")
 #eji <- eji[which(!is.na(eji$RPL_EBM)),]
 eji_compute <- eji[which(eji$COUNTY %in% c("Dane")),]
 # RPL_EBM is the rank environmental burden measure (EBM) while SPL_EBM is the composite score for the environmental burden measure
-#Q1_eji <- quantile(eji_compute$RPL_EBM, 0.25,na.rm = TRUE) 
+#Q1_eji <- quantile(eji_compute$RPL_EBM, 0.25,na.rm = TRUE)
 #Q3_eji <- quantile(eji_compute$RPL_EBM, 0.75,na.rm = TRUE)
 
-Q1_eji <- quantile(eji_compute$SPL_EBM , 0.25,na.rm = TRUE) 
+Q1_eji <- quantile(eji_compute$SPL_EBM , 0.25,na.rm = TRUE)
 Q3_eji <- quantile(eji_compute$SPL_EBM , 0.75,na.rm = TRUE)
 
 eji$geoid <- as.factor(eji$geoid)
@@ -504,30 +519,31 @@ eji_response$vulnerable <- ifelse(eji_response$SPL_EBM > Q3_eji, "High","Less se
 
 eji_response_analysis <- eji_response %>%
   dplyr::select(OBJECTID,statefp,countyfp,tractce,affgeoid,geoid,name,COUNTY,StateAbbr,StateDesc,Location,E_TOTPOP,SPL_EJI,RPL_EJI,RPL_EBM,SPL_EBM,EPL_OZONE,EPL_PM,EPL_DSLPM,EPL_TOTCR,SPL_EBM_THEME1,RPL_EBM_DOM1,vulnerable)
-# Which indicators are important to include in the analysis? 
+# Which indicators are important to include in the analysis?
 
 
 
-# Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf 
+# Indicators: https://www.atsdr.cdc.gov/placeandhealth/eji/docs/EJI-2022-Indicators-508.pdf
 # Dictionary: https://eji.cdc.gov/Documents/Data/2022/EJI_2022_Data_Dictionary_508.pdf
 # EJI -> Environmental Burden -> Air Pollution-> ALL (Ozone EPL_OZONE  ,PM2.5 EPL_PM  ,Disel Particulate Matter EPL_DSLPM, Air Toxic Cancer Risks EPL_TOTCR)
-  # SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter. 
+  # SPL_EBM_THEME1: Domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
   # RPL_EBM_DOM1: Percentile rank of domain consisting of ozone, PM2.5, air toxics cancer risk, and diesel particulate matter.
 # EJI -> Environmental Burden -> Built Environment -> (Recreational Parks)
 
-# SPL_EJI: Summation of the HVM, EBI, and SVI module percentile ranks 
+# SPL_EJI: Summation of the HVM, EBI, and SVI module percentile ranks
 # RPL_EJI: Percentile ranks of SPL_EJI
 
 eji_response_analysis$E_TOTPOP <- as.numeric(gsub(",", "", eji_response_analysis$E_TOTPOP))
 
 #https://www.epa.gov/ejscreen/understanding-ejscreen-results
-#ejscreen <- read.csv("/Volumes/cbjackson2/ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
+#ejscreen <- read.csv("../ccs-knowledge/census-data/environmental/ejm-wisconsin.csv")
 #ejscreen_response <- ejscreen[which(ejscreen$Census.tract.2010.ID %in% data_tracts),]
 
 # Which variables are important to include in the analysis?
 ```
 
-# Categorizing Vulnerability 
+# Categorizing Vulnerability
+
 ```{r vulnerability, eval=TRUE, include=FALSE}
 # Summarize our data
 summary_eji <- eji_response_analysis %>%
@@ -543,9 +559,9 @@ options(scipen=999)
 
 
 # Load the shapefile
-#wisconsin_blocks <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
-#wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
-wisconsin_tract <- st_read("/Volumes/cbjackson2/ccs-knowledge/ccs-data/geography/tl_2019_55_tract//tl_2019_55_tract.shp")
+#wisconsin_blocks <- st_read("../ccs-knowledge/ccs-data/geography/WI_CensusTL_BlockGroups_2020/WI_CensusTL_BlockGoups_2020.shp")
+#wisconsin_tract <- st_read("../ccs-knowledge/ccs-data/geography/tl_2018_55_tract/tl_2018_55_tract.shp")
+wisconsin_tract <- st_read("../ccs-knowledge/ccs-data/geography/tl_2019_55_tract//tl_2019_55_tract.shp")
 
 # Filter to include only your tracts
 #tree_survey$census_block_group <- substr(tree_survey$census_block_full, start = 1, stop = 12)
@@ -559,16 +575,16 @@ wisconsin_tracts_filtered <- wisconsin_tract %>%
 eji_response_analysis$geoid <- as.character(eji_response_analysis$geoid)
 
 
-wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid")) 
+wisconsin_tracts_filtered <- left_join(wisconsin_tracts_filtered,eji_response_analysis[c("geoid","RPL_EJI","vulnerable")], by =c("GEOID"="geoid"))
 
 # Plot using ggplot2
 county_data <- ggplot() +
   geom_sf(data = wisconsin_tracts_filtered, aes(fill = RPL_EJI), color = "black") +
     scale_fill_gradient(low = "lightblue", high = "darkblue", name = "RPL EJI Scale") + # Customize color scale as needed
   theme_minimal() +
-   theme_bw() + theme(panel.border = element_blank(), 
+   theme_bw() + theme(panel.border = element_blank(),
                       panel.grid.major = element_blank(),
-                      panel.grid.minor = element_blank(), 
+                      panel.grid.minor = element_blank(),
                       axis.line = element_blank(),
                       axis.text = element_blank(),
                       axis.ticks = element_blank()) +
@@ -576,7 +592,6 @@ county_data <- ggplot() +
 
 library(plotly)
 ```
-
 
 ```{r}
 ggplotly(county_data)
@@ -590,7 +605,7 @@ datatable(summary_eji)
 
 ```{r include=FALSE, warning=FALSE, }
 air_survey$Census_Tract_GEOID_2010 <- as.character(air_survey$Census_Tract_GEOID_2010)
-# Group people into least/most vulnerable areas 
+# Group people into least/most vulnerable areas
 air_survey <- left_join(air_survey, eji_response_analysis, by =c("Census_Tract_GEOID_2010"="geoid"))
 air_survey_experiences <- air_survey
 air_survey_experiences <- air_survey_experiences[which(!is.na(air_survey_experiences$vulnerable)),]
@@ -651,9 +666,10 @@ vulnerable_q10 <-clean_box_eval(air_survey_experiences,deployment_participation_
 vulnerable_q10_viz <- viz_clean_box_eval(vulnerable_q10,"Deployment Interest")
 ```
 
-2. **Have you or anyone you know experienced the following health issues related to poor air quality?** (Multi-choice)  
-- Respiratory Issues  
-- Asthma  
+2. **Have you or anyone you know experienced the following health issues related to poor air quality?** (Multi-choice)
+
+- Respiratory Issues
+- Asthma
 - Lung Cancer
 
 ```{r}
@@ -662,11 +678,12 @@ vulnerable_q2_viz
 vulnerable_q2_chi
 ```
 
-3. **What do you think are the sources of air pollution in your community?** (Multi-choice)  
-- Stationary sources (e.g., power plants, industrial facilities and factories, oil refineries)  
-- Mobile sources (e.g., cars, buses, trains)   
-- Natural sources (e.g., wind-blown dust)  
-- Pollution producing sites from agricultural areas, cities and wood-burning appliances  
+3. **What do you think are the sources of air pollution in your community?** (Multi-choice)
+
+- Stationary sources (e.g., power plants, industrial facilities and factories, oil refineries)
+- Mobile sources (e.g., cars, buses, trains)
+- Natural sources (e.g., wind-blown dust)
+- Pollution producing sites from agricultural areas, cities and wood-burning appliances
 
 ```{r}
 datatable(vulnerable_q3)
@@ -674,10 +691,11 @@ vulnerable_q3_viz
 vulnerable_q3_chi
 ```
 
-4. **Have you noticed any changes in air quality in your community over the past 5 years?** (Select Box)  
-- Yes, air quality has improved  
-- No, air quality has decreased  
-- I do not feel any changes in the air quality  
+4. **Have you noticed any changes in air quality in your community over the past 5 years?** (Select Box)
+
+- Yes, air quality has improved
+- No, air quality has decreased
+- I do not feel any changes in the air quality
 
 ```{r}
 datatable(vulnerable_q4)
@@ -685,28 +703,31 @@ vulnerable_q4_viz
 datatable(vulnerable_q4_chi)
 ```
 
-6. **Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?** (Multi-choice)  
-- Yes   
-- No  
+6. **Did you know Particulate matter (PM) and ground-level Ozone are common air contaminants harmful to human health?** (Multi-choice)
+
+- Yes
+- No
+
 ```{r}
 datatable(vulnerable_q6)
 vulnerable_q6_viz
 datatable(vulnerable_q6_chi)
 ```
 
+7. **If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?** (Multi-choice)
 
-7. **If you are providing suggestions for the city regarding where to install air quality monitoring sensors across Madison. Where would you like to see these sensors located?** (Multi-choice)  
-- Shopping area  
-- Schools  
-- No, but I wish we did.  
+- Shopping area
+- Schools
+- No, but I wish we did.
 - No and I prefer not having them.
+
 ```{r}
 datatable(vulnerable_q7)
 vulnerable_q7_viz
 datatable(vulnerable_q7_chi)
 ```
 
-9. **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?** (Multi-choice) 
+9. **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?** (Multi-choice)
 
 ```{r}
 datatable(vulnerable_q9)
@@ -714,9 +735,10 @@ vulnerable_q9_viz
 datatable(vulnerable_q9_chi)
 ```
 
-10. **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?)**  (Multi-choice)   
-- Attending the community outreach event  
-- Connect with local working group to be the messenger to deliver this information to your neighborhood  
+10. **If air quality becomes an issue and alerts need to be sent, how would you like to receive information about the air quality in your neighborhood?)** (Multi-choice)
+
+- Attending the community outreach event
+- Connect with local working group to be the messenger to deliver this information to your neighborhood
 
 ```{r}
 datatable(vulnerable_q10)

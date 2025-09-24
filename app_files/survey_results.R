@@ -15,29 +15,26 @@ library(igraph)
 library(RColorBrewer)
 library(ggthemes)
 library(tm)
-library(tidytext)
 library(textdata)
 library(topicmodels)
-
+library(networkD3)
 library(SnowballC)
 library(plotly)
+library(wordcloud)
+library(wordcloud2)
+library(stm)
+library(topicmodels)
+library(tm)
+library(tokenizers)
 
-
-survey_results_ui <- function() {
-  # print(demographic_desc)
+survey_results_ui <- function(demog, surveyQues) {
   ui <- box(
-    title = HTML("<div class='card-title'><h1 class='page-subtitle'>
-   Response by [Demographic]</h1>
-    <p class='text-lighter font-sm'>Have you or anyone you know...</p></div>"),
-    plotOutput("survey_results1"),
-    # box(title = "Income", plotOutput("survey_results1"), width = 12),
-    # box(title = "Education", plotOutput("survey_results2"), width = 12),
-    # box(title = "Age", plotOutput("survey_results3"), width = 12),
-    # box(title = "Gender", plotOutput("survey_results4"), width = 12),
-    actionButton(
-      inputId = "downloadTable", label = "Save Table",
-      gradient = TRUE, class = "button-common"
-    ),
+    title = HTML(paste(
+      "<div class='card-title'><h1 class='page-subtitle'>Response by ",
+      demog, "</h1>",
+      "<p class='text-lighter font-sm'>", surveyQues, "</p></div>"
+    )),
+    plotlyOutput("survey_results"), # for plotly
     width = 12,
     collapsible = FALSE,
     maximizable = TRUE,
@@ -58,7 +55,43 @@ make_color_mapping <- function(column, options) {
   return(color_mapping)
 }
 
-text_questions <- function(survey_data, demographic_variable) {
+custom_dict <- c(
+  "qualiti" = "quality", "problem" = "problem",
+  "caus" = "cause", "neighborhood" = "neighborhood",
+  "smoke" = "smoke", "pollut" = "pollute", "respiratori" = "respiratory",
+  "peopl" = "people", "resourc" = "resource", "vulner" = "vulnerability",
+  "experi" = "experience", "diseas" = "disease", "bodi" = "body",
+  "communiti" = "community", "reduc" = "reduce", "improv" = "improve",
+  "particip" = "participate", "injustic" = "injustice", "promot" = "promote",
+  "togeth" = "together", "advoc" = "advocate", "bodi" = "body",
+  "initi" = "initialize", "citi" = "city", "compani" = "company",
+  "activ" = "active", "anoth" = "another", "resourc" = "resource",
+  "agenc" = "agency", "voic" = "voice", "lifestyl" = "lifestyle",
+  "natur" = "nature", "provid" = "provide", "environ" = "environment",
+  "sens" = "sense", "activ" = "active", "valu" = "value",
+  "properti" = "properties", "sunstrok" = "sunstroke",
+  "experienc" = "experience", "basketbal" = "basketball",
+  "temperatur" = "temperature", "condit" = "condition",
+  "alreadi" = "already", "emerg" = "emergency",
+  "immedi" = "immediately", "bodi" = "body", "extrem" = "extrem",
+  "guidanc" = "guidance", "awar" = "aware", "energi" = "energy",
+  "increas" = "increase", "encourag" = "encourage", "busi" = "busy",
+  "consumpt" = "consumption", "abil" = "ability", "alreadi" = "already",
+  "vehicl" = "vehicle", "mani" = "many", "pollution-rel" = "pollution-related",
+  "negat" = "negate", "contribut" = "contribute", "resid" = "reside"
+)
+
+replace_word_lemma <- function(word) {
+  if (word %in% names(custom_dict)) {
+    return(custom_dict[[word]])
+  } else {
+    return(word)
+  }
+}
+
+perform_topic_modeling <- function(
+    survey_data, demographic_variable,
+    num_topics = 4) {
   # Import stoplist
   malletwords <-
     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
@@ -67,66 +100,172 @@ text_questions <- function(survey_data, demographic_variable) {
     )
 
   # Extract example question and demographic data
-  print(names(survey_data))
   example_open <- survey_data
   names(example_open)[2] <- "response"
 
-  example_open$response_cleaned <- tolower(gsub(
-    "[[:punct:]]",
-    " ",
-    example_open$response
-  ))
-  example_open$response_cleaned <- removeWords(
-    example_open$response_cleaned,
-    c(stopwords("english"), malletwords)
-  )
+  # example_open$response_cleaned <- tolower(gsub(
+  #   "[[:punct:]]", " ",
+  #   example_open$response
+  # ))
+  # example_open$response_cleaned <- removeWords(
+  #   example_open$response_cleaned,
+  #   c(stopwords("english"), malletwords)
+  # )
+  # example_open$response_cleaned <-
+  #   lemmatize_words(example_open$response_cleaned)
+
+  example_open$response_cleaned <- tolower(example_open$response)
+  example_open$response_cleaned <-
+    gsub("[[:punct:]0-9]", " ", example_open$response_cleaned)
+  example_open$response_cleaned <-
+    removeWords(example_open$response_cleaned, c(
+      stopwords("english")
+      # malletwords
+    ))
+  example_open$response_cleaned <-
+    stripWhitespace(example_open$response_cleaned)
+  example_open$response_cleaned <-
+    wordStem(example_open$response_cleaned, language = "english")
   example_open$response_cleaned <-
     lemmatize_words(example_open$response_cleaned)
 
-  ###### BIGRAMS
-  bigram_response <- example_open %>%
-    unnest_tokens(unigram,
-      response_cleaned,
-      token = "ngrams", n = 2
-    )
+  survey_data <- example_open
 
-  bigram_response.m <- bigram_response %>%
-    pivot_longer(!`Contribution.ID`:Gender,
-      names_to = "tokens",
-      values_to = "word"
-    )
+  # Preprocess the text data
+  processed_texts <- textProcessor(
+    documents = survey_data$response,
+    metadata = survey_data
+  )
+  out <- prepDocuments(
+    processed_texts$documents, processed_texts$vocab,
+    processed_texts$meta
+  )
+  docs <- out$documents
+  vocab <- out$vocab
+  meta <- out$meta
 
-  # Summarize data by demographic factors - Gender,
-  # Hipanic/Latino/Spanish Origin,
-  # Race / Ethnicity, Year of Birth, Annual Household Income
-  # level, Education Level
-  bigram_summary <- bigram_response.m %>%
-    group_by(!!sym(demographic_variable), word) %>%
-    summarise(count = n()) %>%
-    mutate(freq = round(count / sum(count), digits = 2))
+  # Fit the STM model
+  num_topics <- 2 # Choose an appropriate number of topics
+  topic_model <- stm(
+    documents = docs, vocab = vocab,
+    K = num_topics, data = meta, max.em.its = 150, init.type = "Spectral"
+  )
 
-  bigram_graph <- bigram_summary %>%
-    filter(freq >= .02) %>%
-    graph_from_data_frame() %>%
-    ggraph(layout = "fr") +
-    geom_edge_link(aes(edge_alpha = count, edge_width = count),
-      edge_colour = "darkred"
-    ) +
-    geom_node_point(size = 5) +
-    geom_node_text(aes(label = name),
-      repel = TRUE,
-      point.padding = unit(0.2, "lines")
-    ) +
-    theme_void()
+  print("***********")
+  top_words <- labelTopics(topic_model)
+  print(top_words)
+  topic_words <- top_words$prob
 
-  return(bigram_graph)
+  human_readable_topics <- apply(topic_words, 1, function(topic) {
+    words <- unlist(strsplit(topic, ", "))
+    readable_words <- sapply(words, function(word) {
+      # Replace with custom dictionary if needed
+      replace_word_lemma(word)
+    })
+    paste(readable_words, collapse = ", ")
+  })
+
+  for (i in 1:num_topics) {
+    topic <- paste("Topic", i, "-", human_readable_topics[i])
+    print(topic)
+  }
+
+  topics1 <- topic_words[1, ]
+  topics2 <- topic_words[2, ]
+
+  # topics1 <- paste(topics1, collapse = ", ")
+  # topics2 <- paste(topics2, collapse = ", ")
+
+  # topics1 <- paste("Topic 1 - ", topics1)
+  # topics2 <- paste("Topic 2 - ", topics2)
+
+  # print(topics1)
+  # print(topics2)
+
+  print("***********")
+
+
+  # Get document-topic matrix
+  doc_topic_matrix <- topic_model$theta
+
+  # Convert matrix to data frame
+  doc_topic_df <- as.data.frame(doc_topic_matrix)
+  doc_topic_df$Document <- rownames(doc_topic_df)
+
+  # Melt the data frame for plotting
+  doc_topic_melted <- reshape2::melt(doc_topic_df, id.vars = "Document")
+
+  # print(doc_topic_melted)
+
+  # Get top words associated with each topic
+  # top_words <- terms(topic_model, 10)
+
+  # print(top_words)
+  print("---------------------------------------------")
+  # print(doc_topic_matrix)
+
+  column_sum1 <- sum(doc_topic_matrix[, 1])
+  print(paste("column_sum1", column_sum1))
+
+  column_sum2 <- sum(doc_topic_matrix[, 2])
+  print(paste("column_sum2", column_sum2))
+
+  topic_sums <- colSums(doc_topic_matrix)
+  topic_descriptions <- paste0(
+    "Topic ", 1:num_topics, " - ",
+    human_readable_topics
+  )
+
+  trace1 <- list(
+    type = "bar",
+    # x = c(column_sum1 / 400, column_sum2 / 400),
+    # y = c(topics1, topics2),
+    x = topic_sums / 400,
+    y = topic_descriptions,
+    marker = list(
+      line = list(
+        color = "rgb(8,48,107)",
+        width = 1.5
+      ),
+      color = "rgb(158,202,225)"
+    ),
+    opacity = 0.6,
+    orientation = "h"
+  )
+  data <- list(trace1)
+  layout <- list(
+    title = "Topic Modelling",
+    xaxis = list(domain = c(0.15, 1)),
+    margin = list(
+      b = 80,
+      l = 120,
+      r = 10,
+      t = 140
+    ),
+    barmode = "stack",
+    plot_bgcolor = "rgb(255, 255, 255)",
+    paper_bgcolor = "rgb(255, 255, 255)"
+  )
+  p <- plot_ly()
+  p <- add_trace(p,
+    type = trace1$type, x = trace1$x,
+    y = trace1$y, marker = trace1$marker,
+    opacity = trace1$opacity, orientation = trace1$orientation
+  )
+  p <- layout(p,
+    title = layout$title,
+    xaxis = layout$xaxis, margin = layout$margin,
+    barmode = layout$barmode, plot_bgcolor = layout$plot_bgcolor,
+    paper_bgcolor = layout$paper_bgcolor
+  )
 }
+
 
 matrix_questions <- function(example_matrix, demographic_variable, q_type) {
   names(example_matrix)[2] <- "response"
 
-  # Since the questions are in one column, we need to seperate them
-  # and then the question and respone variables. ONLY FOR CCS QUESTIONS.
+  # Since the questions are in one column, we need to separate them
+  # and then the question and response variables. ONLY FOR CCS QUESTIONS.
   # In the allquestions_types questions in the CCS column = 1
   example_matrix <- example_matrix %>%
     separate_rows(response, sep = "; ") %>%
@@ -141,346 +280,127 @@ matrix_questions <- function(example_matrix, demographic_variable, q_type) {
   matrix_summary <- matrix_summary %>%
     filter(!is.na(!!sym(demographic_variable)))
 
-  if (q_type == "frequency") {
-    ############## FREQUENCY ##############
-    color_set_frequency <- data.frame(
-      answer = c("Always", "Often", "Sometimes", "Rarely", "Never"),
-      col = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99")
+  # print(matrix_summary)
+
+  # Define color sets based on q_type
+  color_sets <- list(
+    frequency = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99"),
+    agree = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99"),
+    agree1 = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99"),
+    agree2 = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99"),
+    responsible = c("#E66101", "#FDB863", "#FAE9D6", "#B2ABD2", "#F7F7F7"),
+    awareness = c("#E66101", "#5E3C99"),
+    informed = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99"),
+    amount = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99"),
+    binary = c("#E66101", "#5E3C99"),
+    importance = c(
+      "#E66101", "#FDB863", "#FAE9D6", "#F7F7F7",
+      "#B2ABD2", "#6753D7", "#3F009E"
     )
+  )
 
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_frequency$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
+  color_set <- color_sets[[q_type]]
 
-    matrix_summary <- merge(matrix_summary, color_set_frequency, by = "answer")
-    # merge colors with dataframe
+  matrix_summary <- merge(matrix_summary,
+    data.frame(answer = levels(matrix_summary$answer), col = color_set),
+    by = "answer"
+  )
 
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Always",
-      "Often"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Never",
-      "Rarely"
-    )), ]
-    mylevels <- c("Always", "Often", "Sometimes", "Rarely", "Never")
-  } else if (q_type == "agree") {
-    color_set_agree <- data.frame(answer = c(
-      "Agree Strongly", "Agree Somewhat",
-      "Neutral", "Disagree Somewhat", "Disagree Strongly"
-    ), col = c(
-      "#E66101",
-      "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99"
+  # Create high and lows tables
+  highs <- matrix_summary %>%
+    filter(answer %in% c(
+      "Always", "Often", "Agree Strongly",
+      "Agree", "Strongly agree"
     ))
 
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_agree$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-    matrix_summary <- merge(matrix_summary, color_set_agree, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Agree Strongly",
-      "Agree Somewhat"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Disagree Somewhat",
-      "Disagree Strongly"
-    )), ]
-    mylevels <- c(
-      "Agree Strongly", "Agree Somewhat", "Neutral", "Disagree Somewhat",
-      "Disagree Strongly"
-    )
-  } else if (q_type == "agree 1") {
-    color_set_agree1 <- data.frame(answer = c(
-      "Strongly agree", "Agree", "Neutral",
+  lows <- matrix_summary %>%
+    filter(answer %in% c(
+      "Never", "Rarely", "Disagree Somewhat",
       "Disagree", "Strongly disagree"
-    ), col = c(
-      "#E66101", "#FDB863", "#F7F7F7",
-      "#B2ABD2", "#5E3C99"
     ))
 
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_agree1$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
+  mylevels <- levels(matrix_summary$answer)
 
-    matrix_summary <- merge(matrix_summary, color_set_agree1, by = "answer")
-    # merge colors with dataframe
+  matrix_summary <- matrix_summary[, -ncol(matrix_summary)]
 
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Strongly agree",
-      "Agree"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Disagree",
-      "Strongly disagree "
-    )), ]
-    mylevels <- c(
-      "Strongly agree", "Agree", "Neutral", "Disagree",
-      "Strongly disagree"
-    )
-  } else if (q_type == "agree 2") {
-    color_set_agree2 <- data.frame(
-      answer = c(
-        "Strongly agree", "Agree",
-        "Neither Agree nor disagree", "Disagree", "Strongly disagree"
-      ),
-      col = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99")
-    )
+  # print(matrix_summary)
 
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_agree2$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
+  switch(demographic_variable,
+    "Gender" = {
+      color_var <- ~Gender
+      legendgroup <- ~Gender
+      legendtext <- "Gender"
+    },
+    "income_recode" = {
+      color_var <- ~income_recode
+      legendgroup <- ~income_recode
+      legendtext <- "Income Groups"
+    },
+    "edu_recode" = {
+      color_var <- ~edu_recode
+      legendgroup <- ~edu_recode
+      legendtext <- "Education Levels"
+    },
+    "Year.of.Birth" = {
+      color_var <- ~Year.of.Birth
+      legendgroup <- ~Year.of.Birth
+      legendtext <- "Age Group"
+    },
+    "race_recode" = {
+      color_var <- ~race_recode
+      legendgroup <- ~race_recode
+      legendtext <- "Race"
+    }
+  )
 
-    matrix_summary <- merge(matrix_summary, color_set_agree2, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Strongly agree",
-      "Agree"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Disagree",
-      "Strongly disagree "
-    )), ]
-    mylevels <- c(
-      "Strongly agree", "Agree", "Neither Agree nor disagree", "Disagree",
-      "Strongly disagree"
-    )
-  } else if (q_type == "responsible") {
-    color_set_fchange <- data.frame(
-      answer = c(
-        "Highly responsible",
-        "Moderately responsible", "Somewhat responsible",
-        "Not responsible", "Unsure"
-      ),
-      col = c("#E66101", "#FDB863", "#FAE9D6", "#B2ABD2", "#F7F7F7")
-    )
-
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_fchange$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-    matrix_summary <- merge(matrix_summary, color_set_fchange, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Highly responsible",
-      "Moderately responsible"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Not responsible",
-      "Unsure"
-    )), ]
-    mylevels <- c(
-      "Highly responsible", "Moderately responsible",
-      "Somewhat responsible", "Not responsible", "Unsure"
-    )
-  } else if (q_type == "awareness") {
-    color_set_awareness <- data.frame(
-      answer = c("Aware", "Not Aware"),
-      col = c("#E66101", "#5E3C99")
-    )
-
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_awareness$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-    matrix_summary <- merge(matrix_summary, color_set_awareness, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c("Aware")), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c("Not Aware")), ]
-    mylevels <- c("Aware", "Not Aware")
-  } else if (q_type == "informed") {
-    color_set_informed <- data.frame(
-      answer = c(
-        "Very Informed", "Informed", "Moderately Informed",
-        "Slightly Informed", "Not at all Informed"
-      ),
-      col = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99")
-    )
-
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_informed$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-    matrix_summary <- merge(matrix_summary, color_set_informed, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Very Informed",
-      "Informed"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Slightly Informed",
-      "Not at all Informed"
-    )), ]
-    mylevels <- c(
-      "Very Informed", "Informed", "Moderately Informed",
-      "Slightly Informed", "Not at all Informed"
-    )
-  } else if (q_type == "amount") {
-    color_set_amount <- data.frame(
-      answer = c("A lot", "A Good Amount", "Some", "A Little", "Nothing"),
-      col = c("#E66101", "#FDB863", "#F7F7F7", "#B2ABD2", "#5E3C99")
-    )
-
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_amount$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-    matrix_summary <- merge(matrix_summary, color_set_amount, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "A lot",
-      "A Good Amount"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "A Little",
-      "Nothing"
-    )), ]
-    mylevels <- c("A lot", "A Good Amount", "Some", "A Little", "Nothing")
-  } else if (q_type == "binary") {
-    color_set_binary <- data.frame(
-      answer = c("Yes", "No"),
-      col = c("#E66101", "#5E3C99")
-    )
-
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_binary$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-    matrix_summary <- merge(matrix_summary, color_set_binary, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c("Yes")), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c("No")), ]
-    mylevels <- c("Yes", "No")
-  } else if (q_type == "importance") {
-    color_set_importance <- data.frame(
-      answer = c(
-        "Extremely Unimportant", "Very Unimportant", "Somewhat Unimportant",
-        "Neither Important nor Unimportant", "Somewhat Important",
-        "Very Important", "Extremely Important"
-      ), col =
-        c(
-          "#E66101", "#FDB863", "#FAE9D6", "#F7F7F7", "#B2ABD2", "#6753D7",
-          "#3F009E"
-        )
-    )
-
-    # Create high and lows tables with question, group, outcome (question),
-    # variable, value, and color
-    numlevels <- length(color_set_importance$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-
-    matrix_summary <- merge(matrix_summary, color_set_importance, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Extremely Unimportant",
-      "Very Unimportant", "Somewhat Unimportant"
-    )), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c(
-      "Somewhat Important",
-      "Very Important", "Extremely Important"
-    )), ]
-    mylevels <- c(
-      "Extremely Unimportant", "Very Unimportant",
-      "Somewhat Unimportant", "Neither Important nor Unimportant",
-      "Somewhat Important", "Very Important", "Extremely Important"
-    )
-  } else if (q_type == "change") {
-    color_set_fchange <- data.frame(
-      answer = c(
-        "Increased",
-        "Decreased", "Stayed the same", "I don't Know"
-      ),
-      col = c("#E66101", "#FDB863", "#3F009E", "#F7F7F7")
-    )
-
-    # Create high and lows tables with question, group, outcome
-    # (question), variable, value, and color
-    numlevels <- length(color_set_fchange$answer)
-    pal <- brewer.pal((numlevels), "PuOr")
-    legend.pal <- pal
-
-    matrix_summary <- merge(matrix_summary, color_set_fchange, by = "answer")
-    # merge colors with dataframe
-
-    # TRANSFORM HIGH/LOWS
-    highs <- matrix_summary[which(matrix_summary$answer %in% c("Increased")), ]
-    lows <- matrix_summary[which(matrix_summary$answer %in% c("Decreased")), ]
-    mylevels <- c("Increased", "Decreased", "Stayed the same", "I don't Know")
-  }
-  matrix_visualization <- ggplot() +
-    geom_bar(
-      data = highs, aes(x = question, y = freq, fill = col),
-      position = "stack", stat = "identity"
-    ) +
-    geom_bar(
-      data = lows, aes(x = question, y = -freq, fill = col),
-      position = "stack", stat = "identity"
-    ) +
-    facet_grid(cols = vars(!!sym(demographic_variable))) +
-    geom_hline(yintercept = 0, color = c("white")) +
-    scale_fill_identity("Percent of Respondents",
-      labels = mylevels,
-      breaks = legend.pal,
-      guide = "legend"
-    ) +
-    theme_classic() +
-    coord_flip() +
-    scale_x_discrete(labels = function(x) {
-      str_wrap(str_replace_all(x, "foo", " "),
-        width = 40
+  matrix_visualization <- plot_ly(
+    data = matrix_summary,
+    x = ~freq,
+    y = ~question,
+    text = ~ paste(
+      "<b>Response</b>: ", response
+    ),
+    hoverinfo = "text",
+    type = "bar",
+    orientation = "h",
+    color = color_var,
+    width = 800,
+    height = 400,
+    legendgroup = ~answer,
+    group = color_var
+  ) %>%
+    layout(
+      xaxis = list(title = "Percentage of Respondents", family = "'Inter'"),
+      yaxis = list(title = "Questions", family = "'Inter'"),
+      barmode = "stack",
+      legend = list(
+        x = 0,
+        y = -0.2,
+        orientation = "h",
+        font = list(size = 12, family = "'Inter'"),
+        title = list(
+          text = legendtext,
+          font = list(size = 16, family = "'Inter'")
+        ),
+        itemsizing = "constant",
+        showlegend = TRUE
       )
-    }) +
-    labs(y = "", x = "") +
-    theme(
-      legend.position = "bottom"
     )
-  scale_y_continuous(breaks = seq(-10, 100, 25))
+
   return(matrix_visualization)
 }
 
+category_color <- list(
+  "Male" = "#B2ABD2",
+  "age" = "#5E3C99",
+  "default" = "#808080" # Add a default color for <NA>
+)
+
+# Multi-Choice Questions
 multi_choice_questions <- function(
     example_multi, demographic_variable,
     filter_input, coloring, options) {
-  # example_multi <- survey_data[,c(2,col_num,45:53,19,22)]
+  print(head(example_multi))
   names(example_multi)[2] <- "response"
 
   example_multi <- example_multi %>%
@@ -508,85 +428,100 @@ multi_choice_questions <- function(
 
   multi_summary <- merge(multi_summary, coloring, by = demographic_variable)
 
-  # Visualization (HORIZONTAL BAR CHART)
-  multi_visualization <-
-    ggplot(data = multi_summary, aes(x = response, y = freq, fill = col)) +
-    geom_bar(
-      stat = "identity", color = "black",
-      position = position_dodge(width = 0.7, preserve = "single")
-    ) +
-    labs(y = "Percent of Respondents") +
-    coord_flip() +
-    theme_classic() +
-    scale_fill_identity("Counts",
-      labels = coloring[[demographic_variable]],
-      breaks = coloring$col, guide = "legend"
-    ) +
-    scale_x_discrete(labels = function(x) {
-      str_wrap(str_replace_all(x, "foo", " "),
-        width = 40
+  multi_summary <- multi_summary[, -ncol(multi_summary)]
+
+  # Manually wrap labels
+  wrap_labels <- function(labels, max_length = 20, ellipsis_length = 2) {
+    ifelse(nchar(labels) > max_length, paste0(substr(
+      labels, 1,
+      max_length - ellipsis_length
+    ), ".."), labels)
+  }
+  multi_summary$wrapped_labels <- wrap_labels(multi_summary$response)
+
+  # print(multi_summary)
+
+  print(demographic_variable)
+
+  # based on demographics determine the variables
+  switch(demographic_variable,
+    "Gender" = {
+      color_var <- ~Gender
+      legendgroup <- ~Gender
+      legendtext <- "Gender"
+    },
+    "income_recode" = {
+      color_var <- ~income_recode
+      legendgroup <- ~income_recode
+      legendtext <- "Income Groups"
+    },
+    "edu_recode" = {
+      color_var <- ~edu_recode
+      legendgroup <- ~edu_recode
+      legendtext <- "Education Levels"
+    },
+    "Year.of.Birth" = {
+      color_var <- ~Year.of.Birth
+      legendgroup <- ~Year.of.Birth
+      legendtext <- "Age Group"
+    },
+    "race_recode" = {
+      color_var <- ~race_recode
+      legendgroup <- ~race_recode
+      legendtext <- "Race"
+    }
+  )
+
+  multi_visualization <- NA
+
+  # Visualization (HORIZONTAL BAR CHART) using Plotly
+  multi_visualization <- plot_ly(
+    data = multi_summary,
+    x = ~freq,
+    y = ~wrapped_labels,
+    text = ~ paste(
+      "<b>Response</b>: ", response
+    ),
+    hoverinfo = "text",
+    type = "bar",
+    orientation = "h",
+    color = color_var,
+    showlegend = TRUE,
+    width = 800,
+    height = 400,
+    legendgroup = legendgroup
+    # hovertemplate = paste(
+    #   "<b>Response</b>: %{y}"
+    #   "<br><b>Frequency</b>: %{x}<br>"
+    # )
+  ) %>%
+    layout(
+      yaxis = list(
+        tickangle = -45, title = "Responses", family = "'Inter'",
+        ticktext = ~wrapped_labels
+      ),
+      xaxis = list(title = "Percent of Respondents", family = "'Inter'"),
+      legend = list(
+        x = 0,
+        y = -0.2,
+        orientation = "h",
+        font = list(size = 12, family = "'Inter'"),
+        title = list(
+          text = legendtext,
+          font = list(size = 16, family = "'Inter'")
+        ),
+        itemsizing = "constant", # Ensures legend items have constant size
+        showlegend = FALSE
       )
-    }) +
-    theme(
-      legend.position = "bottom",
-      axis.text = element_text(size = 8)
     )
+
+  print("---------")
+
+  print(multi_visualization)
+  print("---------")
+
   return(multi_visualization)
 }
-
-# multi_choice_questions <- function(
-#     example_multi, demographic_variable,
-#     filter_input, coloring, options) {
-#   # example_multi <- survey_data[,c(2,col_num,45:53,19,22)]
-#   names(example_multi)[2] <- "response"
-
-#   example_multi <- example_multi %>%
-#     separate_rows(response, sep = "; ")
-
-#   if (!is.na(filter_input)) {
-#     example_multi <- example_multi %>%
-#       filter(!!sym(demographic_variable) == !!filter_input)
-#   }
-
-#   # Also extract other and run topic modeling?
-#   multi_summary <- example_multi %>%
-#     group_by(!!sym(demographic_variable), response) %>%
-#     summarise(count = n()) %>%
-#     mutate(freq = round(count / sum(count), digits = 2))
-
-#   # Remove other responses
-#   multi_summary <- multi_summary %>%
-#     filter(!grepl("^Other \\(please specify\\)", response)) %>%
-#     filter(!is.na(!!sym(demographic_variable)))
-
-#   if (demographic_variable == "Gender") {
-#     multi_summary <- multi_summary %>% filter(!Gender == "Non-binary")
-#   }
-
-#   multi_summary <- merge(multi_summary, coloring, by = demographic_variable)
-
-#   # Visualization (HORIZONTAL BAR CHART)
-#   multi_visualization <- plot_ly(
-#     data = multi_summary, x = ~response,
-#     y = ~freq, type = "bar", color = ~col
-#   ) %>%
-#     layout(
-#       yaxis = list(title = "Percent of Respondents"),
-#       xaxis = list(
-#         tickangle = -45,
-#         tickmode = "array",
-#         tickvals = ~response,
-#         ticktext = ~ str_wrap(str_replace_all(response, "foo", " "), width = 40)
-#       ),
-#       legend = list(
-#         orientation = "h",
-#         x = 0,
-#         y = -0.1
-#       )
-#     )
-
-#   return(multi_visualization)
-# }
 
 select_box_questions <- function(
     survey_data, demographic_variable,
@@ -608,47 +543,99 @@ select_box_questions <- function(
     select_summary <- select_summary %>% filter(Gender != "Non-binary")
   }
 
-  select_summary <- merge(select_summary, coloring,
-    by = demographic_variable
-  ) # USE SAME COLORS FROM OTHER
-  print(select_summary$response)
+  select_summary <- merge(select_summary, coloring, by = demographic_variable)
 
-  select_visualization <-
-    ggplot(data = select_summary, aes(x = response, y = freq, fill = col)) +
-    geom_bar(
-      stat = "identity", color = "black",
-      position = position_dodge(width = 0.7, preserve = "single")
-    ) +
-    labs(y = "Count") +
-    coord_flip() +
-    scale_fill_identity("Counts",
-      labels = options, breaks = coloring,
-      guide = "legend"
-    ) +
-    scale_x_discrete(labels = function(x) {
-      str_wrap(str_replace_all(x, "foo", " "),
-        width = 40
+  select_summary <- select_summary[, -ncol(select_summary)]
+
+  # Manually wrap labels
+  # wrap_labels <- function(labels, max_length = 60) {
+  #   str_wrap(labels, width = max_length, indent = 0, exdent = 0)
+  # }
+  wrap_labels <- function(labels, max_length = 20, ellipsis_length = 2) {
+    ifelse(nchar(labels) > max_length, paste0(substr(
+      labels, 1,
+      max_length - ellipsis_length
+    ), ".."), labels)
+  }
+
+  select_summary$wrapped_labels <- wrap_labels(select_summary$response)
+
+  # print(select_summary)
+
+  switch(demographic_variable,
+    "Gender" = {
+      color_var <- ~Gender
+      legendgroup <- ~Gender
+      legendtext <- "Gender"
+    },
+    "income_recode" = {
+      color_var <- ~income_recode
+      legendgroup <- ~income_recode
+      legendtext <- "Income Groups"
+    },
+    "edu_recode" = {
+      color_var <- ~edu_recode
+      legendgroup <- ~edu_recode
+      legendtext <- "Education Levels"
+    },
+    "Year.of.Birth" = {
+      color_var <- ~Year.of.Birth
+      legendgroup <- ~Year.of.Birth
+      legendtext <- "Age Group"
+    },
+    "race_recode" = {
+      color_var <- ~race_recode
+      legendgroup <- ~race_recode
+      legendtext <- "Race"
+    }
+  )
+
+  select_visualization <- NA
+
+  select_visualization <- plot_ly(
+    data = select_summary,
+    x = ~wrapped_labels,
+    y = ~count,
+    type = "bar",
+    text = ~ paste(
+      "<b>Response</b>: ", response
+    ),
+    hoverinfo = "text",
+    color = color_var,
+    width = 800,
+    height = 400,
+    legendgroup = legendgroup
+  ) %>%
+    layout(
+      xaxis = list(title = "Responses", family = "'Inter'"),
+      yaxis = list(title = "Count", family = "'Inter'"),
+      legend = list(
+        x = 420,
+        y = 50,
+        orientation = "h",
+        font = list(size = 12, family = "'Inter'"),
+        title = list(
+          text = legendtext,
+          font = list(size = 16, family = "'Inter'")
+        ),
+        itemsizing = "constant", # Ensures legend items have constant size
+        showlegend = TRUE
       )
-    }) +
-    theme(
-      legend.position = "bottom", axis.title.y = element_blank(),
-      axis.text = element_text(size = 8)
     )
-
-  # datatable(select_summary[, c(1:4), drop=FALSE]) %>%
-  # formatStyle('Gender',
-  #            backgroundColor = styleEqual(gender_color_mapping$Gender, gender_color_mapping$col)
-  # )
 
   return(select_visualization)
 }
+
 
 demographic_data_to_var <- c(
   "age" = "age_var",
   "gender" = "gender_var",
   "income" = "income_var",
-  "education" = "edu_var"
+  "education" = "edu_var",
+  "race" = "race_var"
 )
+
+data_for_visualization <- NA
 
 resulting_graphics <- function(
     input, output, survey_data, is_survey,
@@ -657,19 +644,31 @@ resulting_graphics <- function(
   # Populate the survey results boxes with the required graphics
   reaction <- observeEvent(input$run_report, {
     req(input$survey)
+    # print(question_type())
     q_type <- question_type()
     survey_flag <- is_survey()
-    message(q_type)
+
+    # print(paste("is_survey", is_survey))
+    # print(paste("q_type", q_type))
+
+
+    # print(q_type)
+    # message(q_type)
+    # print(input$survey)
+    # print(survey_flag)
+
     if (q_type != "Ranking" & survey_flag) {
       # Unsure how rank type questions are suppose to be displayed
       question_num <- question() # column number of question
-      # print(question_num)
+
+      print(paste("question_num", question_num))
 
       # column names of categories
       income_var <- "income_recode"
       edu_var <- "edu_recode"
       age_var <- "Year.of.Birth"
       gender_var <- "Gender"
+      race_var <- "race_recode"
 
       # subcategories options + color mapping
       income_options <- c(
@@ -696,12 +695,19 @@ resulting_graphics <- function(
       gender_options <- c(NA, "Non-binary", "Male", "Female")
       gender_color_mapping <- make_color_mapping(gender_var, gender_options)
 
+      race_options <- c(
+        NA, "Black or African American", "Hispanic", "White",
+        "Asian", "Native Hawaiian Pacific Islander",
+        "American Indian Alaskan Native", "Two or More Races"
+      )
+      race_color_mapping <- make_color_mapping(race_var, race_options)
+
       # get data and change year of birth
       data <- survey_data()
 
       if ("Year.of.Birth" %in% names(data)) {
         data <- data %>%
-          mutate(Year.of.Birth = 2023 - Year.of.Birth) %>%
+          mutate(Year.of.Birth = 2024 - Year.of.Birth) %>%
           mutate(Year.of.Birth = case_when(
             Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
             Year.of.Birth >= 25 & Year.of.Birth <= 34 ~ "25_to_34",
@@ -715,10 +721,9 @@ resulting_graphics <- function(
           mutate(Year.of.Birth = "18_to_24")
       }
 
-
-
       # data needed to make graphics by survey
       data_for_visualization <- NA
+      # print(input$survey)
       if (input$survey == "Urban Heat Survey") {
         data_for_visualization <- data[, c(2, question_num + 3, 45:53, 22, 19)]
       } else if (input$survey == "Tree Canopy Survey") {
@@ -729,9 +734,20 @@ resulting_graphics <- function(
         data_for_visualization <- data[, c(2, question_num + 3, 28:58, 27, 24)]
       } else if (input$survey == "General Survey") {
         data_for_visualization <- data[, c(1, question_num + 1, 25:28, 24)]
-      } else if (input$survey == "Carbon Survey") {
-        data_for_visualization <- data[, c(1, question_num + 1, 6:9, 5)]
-      } else if (input$survey == "Energy Survey") {
+      } else if (input$survey == "Carbon Concerns") {
+        data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Tree Knowledge") {
+        data_for_visualization <- data[, c(1, question_num + 1, 7:10, 6)]
+        # data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Energy Concerns") {
+        data_for_visualization <- data[, c(1, question_num + 1, 5:8, 4)]
+        # data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "General Survey") {
+        data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Health Impacts") {
+        data_for_visualization <- data[, c(1, question_num + 1, 10:13, 9)]
+        # data_for_visualization <- data[, c(1, question_num + 1, 2:5, 5)]
+      } else if (input$survey == "Energy Concerns") {
         data_for_visualization <- data[, c(1, question_num + 1, 5:8, 4)]
       } else if (input$survey == "Heat Health Survey") {
         data_for_visualization <- data[, c(1, question_num + 1, 10:13, 9)]
@@ -740,95 +756,124 @@ resulting_graphics <- function(
       }
 
       # print based on question type
-      message(q_type)
+      # message(q_type)
       if (q_type == "matrix") {
         q_subtype <- question_subtype()
-        message(q_subtype)
+        # message(q_subtype)
+        message(demographic_desc)
         if (demographic_desc == "income") {
-          output$survey_results1 <- renderPlot(matrix_questions(
+          output$survey_results <- renderPlotly(matrix_questions(
             data_for_visualization,
             income_var, q_subtype
           ))
         } else if (demographic_desc == "education") {
-          output$survey_results1 <- renderPlot(matrix_questions(
+          output$survey_results <- renderPlotly(matrix_questions(
             data_for_visualization,
             edu_var, q_subtype
           ))
         } else if (demographic_desc == "age") {
-          output$survey_results1 <- renderPlot(matrix_questions(
+          output$survey_results <- renderPlotly(matrix_questions(
             data_for_visualization,
             age_var, q_subtype
           ))
         } else if (demographic_desc == "gender") {
-          output$survey_results1 <- renderPlot(matrix_questions(
+          output$survey_results <- renderPlotly(matrix_questions(
             data_for_visualization,
             gender_var, q_subtype
+          ))
+        } else if (demographic_desc == "race") {
+          output$survey_results <- renderPlotly(matrix_questions(
+            data_for_visualization,
+            race_var, q_subtype
           ))
         }
       } else if (q_type == "open-ended") {
         if (demographic_desc == "income") {
-          output$survey_results1 <- renderPlot(text_questions(
+          output$survey_results <- renderPlotly(perform_topic_modeling(
             data_for_visualization,
             income_var
           ))
         } else if (demographic_desc == "education") {
-          output$survey_results1 <- renderPlot(text_questions(
+          output$survey_results <- renderPlotly(perform_topic_modeling(
             data_for_visualization,
             edu_var
           ))
         } else if (demographic_desc == "age") {
-          output$survey_results1 <- renderPlot(text_questions(
+          output$survey_results <- renderPlotly(perform_topic_modeling(
             data_for_visualization,
             age_var
           ))
         } else if (demographic_desc == "gender") {
-          output$survey_results1 <- renderPlot(text_questions(
+          output$survey_results <- renderPlotly(perform_topic_modeling(
             data_for_visualization,
             gender_var
+          ))
+          # output$survey_results <- renderPlotly(perform_topic_modeling(
+          #   data_for_visualization,
+          #   gender_var
+          # ))
+        } else if (demographic_desc == "race") {
+          # output$survey_results <- renderPlotly(text_questions(
+          #   data_for_visualization,
+          #   race_var
+          # ))
+          output$survey_results <- renderPlotly(perform_topic_modeling(
+            data_for_visualization,
+            race_var
           ))
         }
       } else if (q_type == "multi-choice") {
         if (demographic_desc == "income") {
-          output$survey_results1 <- renderPlot(multi_choice_questions(
+          output$survey_results <- renderPlotly(multi_choice_questions(
             data_for_visualization,
             income_var, NA, income_color_mapping, income_options
           ))
         } else if (demographic_desc == "education") {
-          output$survey_results1 <- renderPlot(multi_choice_questions(
+          output$survey_results <- renderPlotly(multi_choice_questions(
             data_for_visualization,
             edu_var, NA, edu_color_mapping, edu_options
           ))
         } else if (demographic_desc == "age") {
-          output$survey_results1 <- renderPlot(multi_choice_questions(
+          output$survey_results <- renderPlotly(multi_choice_questions(
             data_for_visualization,
             age_var, NA, age_color_mapping, age_options
           ))
         } else if (demographic_desc == "gender") {
-          output$survey_results1 <- renderPlot(multi_choice_questions(
+          output$survey_results <- renderPlotly(multi_choice_questions(
             data_for_visualization,
             gender_var, NA, gender_color_mapping, gender_options
+          ))
+        } else if (demographic_desc == "race") {
+          output$survey_results <- renderPlotly(multi_choice_questions(
+            data_for_visualization,
+            race_var, NA, race_color_mapping, race_options
           ))
         }
       } else if (q_type == "select box") {
         if (demographic_desc == "income") {
-          output$survey_results1 <- renderPlot(select_box_questions(
+          output$survey_results <- renderPlotly(select_box_questions(
             data_for_visualization,
             income_var, NA, income_color_mapping, income_options
           ))
         } else if (demographic_desc == "education") {
-          output$survey_results1 <- renderPlot(select_box_questions(
+          output$survey_results <- renderPlotly(select_box_questions(
             data_for_visualization,
             edu_var, NA, edu_color_mapping, edu_options
           ))
         } else if (demographic_desc == "age") {
-          output$survey_results1 <- renderPlot(select_box_questions(
+          output$survey_results <- renderPlotly(select_box_questions(
             data_for_visualization,
             age_var, NA, age_color_mapping, age_options
           ))
         } else if (demographic_desc == "gender") {
-          output$survey_results1 <- renderPlot(select_box_questions(
+          output$survey_results <- renderPlotly(select_box_questions(
             data_for_visualization,
             gender_var, NA, gender_color_mapping, gender_options
+          ))
+        } else if (demographic_desc == "race") {
+          output$survey_results <- renderPlotly(select_box_questions(
+            data_for_visualization,
+            race_var, NA, race_color_mapping, race_options
           ))
         }
       }

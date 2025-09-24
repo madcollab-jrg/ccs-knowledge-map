@@ -3,21 +3,22 @@ library(htmltools)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  
   tags$style(HTML("
   .navbar-brand {
     color: red !important;
     font-weight: bold;
   }
   ")),
-
-  navbarPage("Community Climate Solutions - Knowledge Map",
-  tabPanel("Page 1"),
-  tabPanel("Page 2"),
-  tabPanel("Page 3"),
-  navbarMenu("More",
-             tabPanel("Information"),
-             tabPanel("About"))
+  navbarPage(
+    "Community Climate Solutions - Knowledge Map",
+    tabPanel("Page 1"),
+    tabPanel("Page 2"),
+    tabPanel("Page 3"),
+    navbarMenu(
+      "More",
+      tabPanel("Information"),
+      tabPanel("About")
+    )
   ),
   tags$div(
     style = "border: 2px solid black; padding: 10px; margin: 0px; width: 65%; float: left;",
@@ -48,7 +49,7 @@ ui <- fluidPage(
     ),
     tags$p(
       style = "font-size: 20px;",
-     "We have goals for this project:"
+      "We have goals for this project:"
     ),
     tags$ul(
       style = "font-size: 20px;",
@@ -72,7 +73,6 @@ ui <- fluidPage(
       "Learn more about our team" # button text
     )
   ),
-  
   tags$div(
     style = "border: 2px solid black; padding: 10px; margin-top: 10px; width: 30%; float: right; text-align:center;",
     tags$p(
@@ -88,7 +88,6 @@ ui <- fluidPage(
       "Learn more about our approach" # button text
     )
   ),
-  
   tags$div(
     style = "border: 2px solid black; padding: 10px; margin-top: 10px; width: 30%; float: right; text-align:center;",
     tags$p(
@@ -99,12 +98,11 @@ ui <- fluidPage(
     br(),
     br(),
     tags$a(
-      style = "font-weight: bold; background-color: red; color: white; border: none; text-align: center; display: inline-block; font-size: 14px; border-radius: 10px;",
+      style = "font-weight: bold; background-color: ap; color: white; border: none; text-align: center; display: inline-block; font-size: 14px; border-radius: 10px;",
       class = "btn btn-primary", # add Bootstrap button classes
       "Fill out our survey here!" # button text
     )
   ),
-  
   tags$div(
     style = "border: 2px solid black; padding: 10px; margin-top: 10px; width: 30%; float: right; text-align:center;",
     tags$p(
@@ -130,5 +128,5 @@ server <- function(input, output) {
 
 }
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)

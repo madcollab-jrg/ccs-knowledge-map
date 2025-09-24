@@ -1,0 +1,75 @@
+census_level:
+  Census State: 
+    - Wisconsin
+
+  Census County:
+    - Dane
+    - Jefferson
+
+  Census Tract:
+    - Census Tract 1, Dane County, Wisconsin
+    - Census Tract 2.04, Dane County, Wisconsin
+    - Census Tract 5.01, Dane County, Wisconsin
+    - Census Tract 7, Dane County, Wisconsin
+    - Census Tract 8, Dane County, Wisconsin
+    - Census Tract 9.02, Dane County, Wisconsin
+    - Census Tract 14.01, Dane County, Wisconsin
+    - Census Tract 14.02, Dane County, Wisconsin
+    - Census Tract 15.02, Dane County, Wisconsin
+    - Census Tract 16.03, Dane County, Wisconsin
+    - Census Tract 16.04, Dane County, Wisconsin
+    - Census Tract 16.05, Dane County, Wisconsin
+    - Census Tract 17.04, Dane County, Wisconsin
+    - Census Tract 18.02, Dane County, Wisconsin
+    - Census Tract 18.04, Dane County, Wisconsin
+    - Census Tract 21, Dane County, Wisconsin
+    - Census Tract 23.01, Dane County, Wisconsin
+    - Census Tract 24.02, Dane County, Wisconsin
+    - Census Tract 25, Dane County, Wisconsin
+    - Census Tract 26.01, Dane County, Wisconsin
+    - Census Tract 27, Dane County, Wisconsin
+    - Census Tract 28, Dane County, Wisconsin
+    - Census Tract 29, Dane County, Wisconsin
+    - Census Tract 30.01, Dane County, Wisconsin
+    - Census Tract 32, Dane County, Wisconsin
+    - Census Tract 103, Dane County, Wisconsin
+    - Census Tract 104, Dane County, Wisconsin
+    - Census Tract 113.01, Dane County, Wisconsin
+    - Census Tract 115.06, Dane County, Wisconsin
+    - Census Tract 122.02, Dane County, Wisconsin
+    - Census Tract 124, Dane County, Wisconsin
+    - Census Tract 128, Dane County, Wisconsin
+    - Census Tract 137, Dane County, Wisconsin
+    - Census Tract 1004, Jefferson County, Wisconsin
+
+  Zipcode:
+    - 34787
+    - 53070
+    - 53527
+    - 53529
+    - 53531
+    - 53532
+    - 53562
+    - 53572
+    - 53575
+    - 53589
+    - 53590
+    - 53593
+    - 53594
+    - 53597
+    - 53598
+    - 53703
+    - 53704
+    - 53705
+    - 53706
+    - 53711
+    - 53713
+    - 53714
+    - 53715
+    - 53716
+    - 53717
+    - 53718
+    - 53719
+    - 53726
+    - 95207
+
