@@ -95,8 +95,8 @@ perform_topic_modeling <- function(
   # Import stoplist
   malletwords <-
     scan("/Volumes/cbjackson2/ccs-knowledge/ccs-data/report_data/mallet.txt",
-      character(),
-      quote = ""
+         character(),
+         quote = ""
     )
 
   # Extract example question and demographic data
@@ -358,14 +358,15 @@ matrix_questions <- function(example_matrix, demographic_variable, q_type) {
     x = ~freq,
     y = ~question,
     text = ~ paste(
-      "<b>Response</b>: ", response
+      "<b>Count</b>: ", n, "<br>",
+      "<b>Percentage</b>: ", round(freq * 100, 1), "%"
     ),
     hoverinfo = "text",
     type = "bar",
     orientation = "h",
     color = color_var,
-    width = 800,
-    height = 400,
+    width = 1000,
+    height = 600,
     legendgroup = ~answer,
     group = color_var
   ) %>%
@@ -373,10 +374,11 @@ matrix_questions <- function(example_matrix, demographic_variable, q_type) {
       xaxis = list(title = "Percentage of Respondents", family = "'Inter'"),
       yaxis = list(title = "Questions", family = "'Inter'"),
       barmode = "stack",
+      margin = list(r = 150), # Add right margin for legend
       legend = list(
-        x = 0,
-        y = -0.2,
-        orientation = "h",
+        x = 1.02,
+        y = 1,
+        orientation = "v",
         font = list(size = 12, family = "'Inter'"),
         title = list(
           text = legendtext,
@@ -480,38 +482,36 @@ multi_choice_questions <- function(
     x = ~freq,
     y = ~wrapped_labels,
     text = ~ paste(
-      "<b>Response</b>: ", response
+      "<b>Count</b>: ", count, "<br>",
+      "<b>Percentage</b>: ", round(freq * 100, 1), "%"
     ),
     hoverinfo = "text",
     type = "bar",
     orientation = "h",
     color = color_var,
     showlegend = TRUE,
-    width = 800,
-    height = 400,
+    width = 1000,
+    height = 600,
     legendgroup = legendgroup
-    # hovertemplate = paste(
-    #   "<b>Response</b>: %{y}"
-    #   "<br><b>Frequency</b>: %{x}<br>"
-    # )
   ) %>%
     layout(
       yaxis = list(
-        tickangle = -45, title = "Responses", family = "'Inter'",
+        tickangle = 0, title = "Responses", family = "'Inter'",
         ticktext = ~wrapped_labels
       ),
       xaxis = list(title = "Percent of Respondents", family = "'Inter'"),
+      margin = list(r = 150), # Add right margin for legend
       legend = list(
-        x = 0,
-        y = -0.2,
-        orientation = "h",
+        x = 1.02,
+        y = 1,
+        orientation = "v",
         font = list(size = 12, family = "'Inter'"),
         title = list(
           text = legendtext,
           font = list(size = 16, family = "'Inter'")
         ),
         itemsizing = "constant", # Ensures legend items have constant size
-        showlegend = FALSE
+        showlegend = TRUE
       )
     )
 
@@ -598,21 +598,23 @@ select_box_questions <- function(
     y = ~count,
     type = "bar",
     text = ~ paste(
-      "<b>Response</b>: ", response
+      "<b>Count</b>: ", count, "<br>",
+      "<b>Percentage</b>: ", round(freq * 100, 1), "%"
     ),
     hoverinfo = "text",
     color = color_var,
-    width = 800,
-    height = 400,
+    width = 1000,
+    height = 600,
     legendgroup = legendgroup
   ) %>%
     layout(
       xaxis = list(title = "Responses", family = "'Inter'"),
       yaxis = list(title = "Count", family = "'Inter'"),
+      margin = list(r = 150), # Add right margin for legend
       legend = list(
-        x = 420,
-        y = 50,
-        orientation = "h",
+        x = 1.02,
+        y = 1,
+        orientation = "v",
         font = list(size = 12, family = "'Inter'"),
         title = list(
           text = legendtext,
@@ -686,8 +688,8 @@ resulting_graphics <- function(
       edu_color_mapping <- make_color_mapping(edu_var, edu_options)
 
       age_options <- c(
-        NA, "18_to_24", "25_to_34", "35_to_44", "45_to_54",
-        "55_to_64", "65_over"
+        NA, "18-24", "25-34", "35-44", "45-54",
+        "55-64", "65+"
       )
       age_color_mapping <- make_color_mapping(age_var, age_options)
 
@@ -709,16 +711,16 @@ resulting_graphics <- function(
         data <- data %>%
           mutate(Year.of.Birth = 2024 - Year.of.Birth) %>%
           mutate(Year.of.Birth = case_when(
-            Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18_to_24",
-            Year.of.Birth >= 25 & Year.of.Birth <= 34 ~ "25_to_34",
-            Year.of.Birth >= 35 & Year.of.Birth <= 44 ~ "35_to_44",
-            Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45_to_54",
-            Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55_to_64",
-            Year.of.Birth >= 65 ~ "65_over"
+            Year.of.Birth >= 18 & Year.of.Birth <= 24 ~ "18-24",
+            Year.of.Birth >= 25 & Year.of.Birth <= 34 ~ "25-34",
+            Year.of.Birth >= 35 & Year.of.Birth <= 44 ~ "35-44",
+            Year.of.Birth >= 45 & Year.of.Birth <= 54 ~ "45-54",
+            Year.of.Birth >= 55 & Year.of.Birth <= 64 ~ "55-64",
+            Year.of.Birth >= 65 ~ "65+"
           ))
       } else {
         data <- data %>%
-          mutate(Year.of.Birth = "18_to_24")
+          mutate(Year.of.Birth = "18-24")
       }
 
       # data needed to make graphics by survey

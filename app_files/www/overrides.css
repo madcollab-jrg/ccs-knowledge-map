@@ -37,15 +37,19 @@ body.dark-mode {
   font-weight: 500;
   color: var(--primary-color) !important;
 }
+
 .nav-link.active {
   color: #000 !important;
 }
+
 .dark-mode .nav-link.active {
   color: var(--bg-color) !important;
 }
+
 .nav-link p {
   margin-bottom: 0;
 }
+
 /* .strategies_link {
   display: none;
 } */
@@ -74,11 +78,12 @@ body.dark-mode {
 .custom-control {
   margin-top: 0 !important;
 }
+
 .custom-switch:first-child {
   display: none;
 }
 
-.content-wrapper > .content {
+.content-wrapper>.content {
   padding: 0 !important;
 }
 
@@ -86,11 +91,12 @@ body.dark-mode {
   border: 1px solid var(--primary-color);
   background-color: rgba(40, 132, 249, 0.3);
 }
+
 .accordion .card .card-header {
   border: 1px solid var(--primary-color);
 }
 
-.dark-mode .card-white:not(.card-outline) > .card-header {
+.dark-mode .card-white:not(.card-outline)>.card-header {
   background-color: var(--primary-color);
 }
 
@@ -162,6 +168,25 @@ text,
   font-family: "Inter", sans-serif !important;
 }
 
+/* Ensure plotly charts are responsive and don't overflow */
+.js-plotly-plot {
+  max-width: 100% !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+/* Make sure the chart container is responsive */
+.plotly.html-widget {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Ensure proper spacing for larger charts */
+.box-body {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .ytitle,
 .xtitle {
   font-weight: 600 !important;
@@ -181,6 +206,7 @@ text,
   .nav-link[data-widget="pushmenu"] {
     display: none !important;
   }
+
   .nav-mobile {
     display: none;
   }
@@ -190,6 +216,7 @@ text,
   .nav-link[data-widget="pushmenu"] {
     visibility: visible !important;
   }
+
   .main-header .sidebar-menu {
     display: none;
   }
